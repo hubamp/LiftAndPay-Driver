@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/lift_line"
+        android:contentDescription="TODO" />
+
+    <RelativeLayout
+        android:id="@+id/relativeFooter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_centerVertical="true"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Proceed"
+            android:textSize="20sp"
+            android:layout_centerVertical="true"
+            android:layout_margin="5dp"
+            android:textColor="@color/black"/>
+
+        <ImageButton
+            android:id="@+id/btn_proceed_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/btn_next"
+            android:clickable="true"
+            android:contentDescription="bh"
+            android:focusable="true" />
+
+    </RelativeLayout>
+
+</RelativeLayout>
