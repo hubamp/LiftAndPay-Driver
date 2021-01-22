@@ -1,12 +1,12 @@
 package com.example.liftandpay_driver;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 public class UploadDetailsActivity_3 extends AppCompatActivity {
 
@@ -19,7 +19,7 @@ public class UploadDetailsActivity_3 extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_upload_details_2);
+        setContentView(R.layout.activity_upload_details_3);
 
         headerLayout = findViewById(R.id.headerView);
         footerLayout = findViewById(R.id.footerView);
@@ -35,8 +35,8 @@ public class UploadDetailsActivity_3 extends AppCompatActivity {
         proceedImgBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(UploadDetailsActivity_3.this , null));
-
+                startActivity(new Intent(UploadDetailsActivity_3.this , UploadDetailsActivity_4.class));
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }
         });
     }

@@ -17,4 +17,38 @@
     </style>
 
 
+    <style name="txt_CarDetails_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:text">Car Details</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_marginVertical" tools:targetApi="o">8dp</item>
+
+    </style>
+
+    <style name="TextInputLayout_style" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="boxBackgroundMode">outline</item>
+        <item name="boxCornerRadiusTopStart">0dp</item>
+        <item name="boxCornerRadiusTopEnd">0dp</item>
+        <item name="boxCornerRadiusBottomStart">0dp</item>
+        <item name="boxCornerRadiusBottomEnd">0dp</item>
+        <item name="android:layout_marginVertical" tools:targetApi="o">5dp</item>
+        <item name="boxBackgroundColor">@color/transparentColor</item>
+        <item name="android:textColorHint">@color/hintColor</item>
+        <item name="hintTextColor">@color/hintColor</item>
+        <item name="boxStrokeColor">@color/primaryColors</item>
+    </style>
+
+    <style name="TextInputText_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/primaryColors</item>
+        <item name="android:lines">1</item>
+    </style>
+
+
+
+
 </resources>

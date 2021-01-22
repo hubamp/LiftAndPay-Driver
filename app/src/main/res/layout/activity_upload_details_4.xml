@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UploadDetailsActivity_2">
+    android:backgroundTint="@color/mainBackgroundColor"
+    tools:context=".UploadDetailsActivity_4">
 
     <LinearLayout
         android:id="@+id/headerView"
@@ -14,7 +15,94 @@
         android:layout_alignParentTop="true"
         android:orientation="horizontal"/>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/headerView"
+        android:layout_above="@id/footerView"
+        android:paddingHorizontal="20dp"
+        android:orientation="vertical">
 
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Fill in the details to add info about the car"/>
+
+        <TextView
+            style="@style/txt_CarDetails_style"/>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="horizontal">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="5dp"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="3dp"
+                    >
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/primaryColors"
+                        android:text="Car image upload"/>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/img_camera"
+                        android:layout_alignParentEnd="true"/>
+                </RelativeLayout>
+
+
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_height="150dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:rippleColor="@color/fadedBlue"
+                    android:layout_width="match_parent"
+                    android:background="@drawable/img_bck_rectangle"
+                    >
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/img_upload_field"/>
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/img_bck_rectangle"/>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <RelativeLayout
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="15dp"
+                    android:paddingVertical="5dp"
+                    android:orientation="horizontal">
+                    <TextView
+                        style="@style/txt_CarDetails_style"
+                        android:text="Photos"
+                        android:paddingVertical="3dp"
+                        android:layout_marginTop="25dp"
+                        android:textSize="20sp"/>
+
+                </RelativeLayout>
+
+            </LinearLayout>
+        </ScrollView>
+
+    </LinearLayout>
 
 
     <LinearLayout

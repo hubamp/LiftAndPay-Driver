@@ -14,8 +14,6 @@
         android:layout_alignParentTop="true"
         android:orientation="horizontal"/>
 
-
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -68,6 +66,7 @@
                     android:layout_alignParentStart="true"
                     android:textSize="18sp"
                     android:text="Distance"/>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -76,8 +75,6 @@
                     android:text="2.4km"/>
 
             </RelativeLayout>
-
-
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
@@ -104,7 +101,6 @@
                 android:layout_below="@id/mapCard"
                 android:src="@drawable/lift_line"
                 android:contentDescription="TODO" />
-
 
             </RelativeLayout>
 

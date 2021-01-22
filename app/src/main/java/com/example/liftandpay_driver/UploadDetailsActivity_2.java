@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 public class UploadDetailsActivity_2 extends AppCompatActivity {
 
@@ -24,8 +25,8 @@ public class UploadDetailsActivity_2 extends AppCompatActivity {
         headerLayout = findViewById(R.id.headerView);
         footerLayout = findViewById(R.id.footerView);
 
-        headerView = getLayoutInflater().inflate(R.layout.header_view, null);
-        footerView = getLayoutInflater().inflate(R.layout.footer_view, null);
+        headerView = getLayoutInflater().inflate(R.layout.header_view, headerLayout,false);
+        footerView = getLayoutInflater().inflate(R.layout.footer_view, footerLayout,false);
         headerLayout.addView(headerView);
         footerLayout.addView(footerView);
 
@@ -35,8 +36,10 @@ public class UploadDetailsActivity_2 extends AppCompatActivity {
         proceedImgBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(UploadDetailsActivity_2.this , null));
-
+                Toast.makeText(UploadDetailsActivity_2.this,"Hellow world", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(UploadDetailsActivity_2.this , UploadDetailsActivity_3.class));
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                finish();
             }
         });
     }

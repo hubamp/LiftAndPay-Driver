@@ -24,8 +24,8 @@ public class UploadDetailsActivity_1 extends AppCompatActivity {
         headerLayout = findViewById(R.id.headerView);
         footerLayout = findViewById(R.id.footerView);
 
-        headerView = getLayoutInflater().inflate(R.layout.header_view, null);
-        footerView = getLayoutInflater().inflate(R.layout.footer_view, null);
+        headerView = getLayoutInflater().inflate(R.layout.header_view,headerLayout,false);
+        footerView = getLayoutInflater().inflate(R.layout.footer_view, footerLayout,false);
         headerLayout.addView(headerView);
         footerLayout.addView(footerView);
 
