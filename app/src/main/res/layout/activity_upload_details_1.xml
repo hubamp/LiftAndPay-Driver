@@ -44,14 +44,25 @@
                         android:textStyle="bold"
                         android:textSize="18sp"
                         android:text="Cost"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:textStyle="bold"
-                        android:textSize="18sp"
-                        android:textColor="@color/primaryColors"
-                        android:text="Ghc 5.22"/>
+
+                <TextView
+                    android:id="@+id/rideCostId"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:text="5.22"
+                    android:textColor="@color/primaryColors"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ghc "
+                    android:layout_toStartOf="@id/rideCostId"
+                    android:textColor="@color/primaryColors"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
             </RelativeLayout>
 
@@ -68,11 +79,20 @@
                     android:text="Distance"/>
 
                 <TextView
+                    android:id="@+id/rideDistanceId"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:textSize="18sp"
-                    android:text="2.4km"/>
+                    android:text="2.4"
+                    android:textSize="18sp" />
+
+                <TextView
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/rideDistanceId"
+                    android:text="km"
+                    android:textSize="18sp" />
 
             </RelativeLayout>
 
@@ -95,12 +115,10 @@
                 android:src="@drawable/img_map"
                 android:contentDescription="TODO" />
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/mapCard"
-                android:src="@drawable/lift_line"
-                android:contentDescription="TODO" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="@color/primaryColors"/>
 
             </RelativeLayout>
 
@@ -175,11 +193,10 @@
 
         </LinearLayout>
 
-        <ImageView
+        <View
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:src="@drawable/lift_line"
-            android:contentDescription="TODO" />
+            android:layout_height="2dp"
+            android:background="@color/primaryColors"/>
 
 
         <LinearLayout
@@ -201,14 +218,15 @@
                     android:text="No of seats: " />
 
                 <EditText
+                    android:id="@+id/nSeatsId"
                     android:layout_width="150dp"
                     android:layout_height="38dp"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:background="@drawable/text_input_bkg"
-                    android:textColor="@color/black"
                     android:inputType="number"
-                    android:paddingLeft="5dp"/>
+                    android:paddingLeft="5dp"
+                    android:textColor="@color/black" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -223,14 +241,15 @@
                 android:text="Occupants: "/>
 
                 <EditText
+                    android:id="@+id/nOccupantsId"
                     android:layout_width="150dp"
                     android:layout_height="38dp"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:background="@drawable/text_input_bkg"
-                    android:textColor="@color/black"
                     android:inputType="number"
-                    android:paddingLeft="5dp"/>
+                    android:paddingLeft="5dp"
+                    android:textColor="@color/black" />
 
             </RelativeLayout>
 

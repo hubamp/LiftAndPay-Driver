@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UploadDetailsActivity_4">
+    tools:context=".UploadDetailsActivity_3">
 
     <LinearLayout
         android:id="@+id/headerView"
@@ -14,7 +14,7 @@
         android:layout_alignParentTop="true"
         android:orientation="horizontal"/>
 
-    <LinearLayout
+   <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/headerView"
@@ -28,81 +28,64 @@
             android:layout_height="wrap_content"
             android:text="Fill in the details to add info about the car"/>
 
-        <TextView
-            style="@style/txt_CarDetails_style"/>
+       <TextView
+           style="@style/txt_CarDetails_style"/>
 
-        <ScrollView
+       <ScrollView
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"
+           android:scrollbars="horizontal">
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbars="horizontal">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingVertical="5dp"
-                android:orientation="vertical">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/TextInputLayout_style"
-                    >
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        style="@style/TextInputText_style"
-                        android:hint="Space (boot)"
-                        android:inputType="text" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/TextInputLayout_style">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        style="@style/TextInputText_style"
-                        android:inputType="text"
-                        android:hint="Payment schedule"/>
-
-                </com.google.android.material.textfield.TextInputLayout>
+            android:layout_height="wrap_content"
+            android:paddingVertical="5dp"
+            android:orientation="vertical">
 
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_height="90dp"
-                    style="@style/TextInputLayout_style">
+            <com.google.android.material.textfield.TextInputLayout
+              style="@style/TextInputLayout_style">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        style="@style/TextInputText_style"
-                        android:lines="5"
-                        android:layout_height="85dp"
-                        android:inputType="text"
-                        android:hint="Description (Sell your ride)"/>
+                <com.google.android.material.textfield.TextInputEditText
+                   style="@style/TextInputText_style"
+                    android:inputType="text"
+                    android:hint="Car Model"/>
 
-                </com.google.android.material.textfield.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <RelativeLayout
 
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="15dp"
-                android:paddingVertical="5dp"
-                android:orientation="horizontal">
-                <TextView
-                    style="@style/txt_CarDetails_style"
-                    android:text="Time of depature"
-                    android:paddingVertical="3dp"
-                    android:layout_marginTop="25dp"/>
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/TextInputLayout_style">
 
-                    <TimePicker
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_centerHorizontal="true"
-                        android:timePickerMode="spinner"
-                        />
+                <com.google.android.material.textfield.TextInputEditText
+                    style="@style/TextInputText_style"
+                    android:inputType="date"
+                    android:hint="Year of registration"/>
 
-            </RelativeLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-                 </LinearLayout>
-        </ScrollView>
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/TextInputLayout_style">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    style="@style/TextInputText_style"
+                    android:inputType="number"
+                    android:hint="Car Number"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/TextInputLayout_style">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    style="@style/TextInputText_style"
+                    android:inputType="text"
+                    android:hint="Transmission"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+       </ScrollView>
 
     </LinearLayout>
-
 
     <LinearLayout
         android:id="@+id/footerView"

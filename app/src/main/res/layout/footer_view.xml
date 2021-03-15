@@ -2,13 +2,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/white"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <ImageView
+    <View
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:src="@drawable/lift_line"
-        android:contentDescription="TODO" />
+        android:layout_height="2dp"
+        android:background="@color/primaryColors"/>
 
     <RelativeLayout
         android:id="@+id/relativeFooter"
@@ -17,6 +17,7 @@
         android:layout_margin="10dp"
         android:layout_centerVertical="true"
         android:orientation="horizontal">
+
         <TextView
             android:id="@+id/txt_proceed_id"
             android:layout_width="wrap_content"
@@ -33,6 +34,17 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:background="@drawable/btn_next"
+            android:clickable="true"
+            android:contentDescription="bh"
+            android:focusable="true" />
+
+        <ProgressBar
+            android:id="@+id/btnProgress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:visibility="gone"
+            android:progressTint="@color/white"
             android:clickable="true"
             android:contentDescription="bh"
             android:focusable="true" />

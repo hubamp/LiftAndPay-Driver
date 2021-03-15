@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="300dp"
+    android:padding="3dp"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- TODO: Update blank fragment layout -->
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="11dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="8dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="7dp"
+            android:textSize="20sp"
+            android:paddingEnd="50dp"
+            android:paddingStart="7dp"
+            android:textColor="@color/primaryColors"
+            android:background="@color/fadedBlue"
+            android:text="PENDING"/>
+
+        <view
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            />
+
+
+
+            <Button
+                android:layout_width="40dp"
+                android:layout_margin="7dp"
+                android:background="@drawable/btn_refresh"
+                android:layout_height="40dp"/>
+
+            <Button
+                style="@style/smallIconBtnStyle"
+                android:layout_width="40dp"
+                android:layout_margin="7dp"
+                android:layout_height="40dp"
+                android:background="@drawable/btn_delete"
+                />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/primaryColors"/>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            >
+            <TextView
+                style="@style/TextLabelForPendingFragment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="From:"/>
+
+            <TextView
+                style="@style/TextForPendingFragment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ablekuma"/>
+
+
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/primaryColors"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                style="@style/TextLabelForPendingFragment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="To:"/>
+
+            <TextView
+                style="@style/TextForPendingFragment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Lapaz"/>
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/primaryColors"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                style="@style/TextLabelForPendingFragment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Date:"/>
+
+            <TextView
+                style="@style/TextForPendingFragment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="15th March 1998"/>
+
+
+            <Button
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center"
+                android:background="@drawable/btn_edit"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/primaryColors"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+            <TextView
+                style="@style/TextLabelForPendingFragment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Time:"/>
+
+            <TextView
+                style="@style/TextForPendingFragment"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="15:00pm"/>
+
+            <Button
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center"
+                android:background="@drawable/btn_edit"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

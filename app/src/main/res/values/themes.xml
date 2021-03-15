@@ -2,8 +2,8 @@
     <!-- Base application theme. -->
     <style name="Theme.LiftAndPayDriver" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/black</item>
-        <item name="colorPrimaryVariant">@color/black</item>
+        <item name="colorPrimary">@color/primaryColors</item>
+        <item name="colorPrimaryVariant">#2F6AC8</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/black</item>
@@ -13,9 +13,52 @@
         <item name="android:textColor">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
+
         <!-- Customize your theme here. -->
     </style>
 
+    <style name="AppBottomSheetDialogTheme"
+        parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/AppModalStyle</item>
+    </style>
+
+    <style name="AppModalStyle"
+        parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/bottom_sheet_bkg</item>
+    </style>
+
+    <style name="txt_RideDetailHeading_Style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">5dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/primaryColors</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:gravity">end</item>
+    </style>
+
+    <style name="txt_LeftDetail_Style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="txt_RightDetail_Style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+
+    <style name="Layout_ForIndividualComponent_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/primaryColors</item>
+        <item name="android:layout_marginHorizontal" tools:targetApi="o">5dp</item>
+        <item name="android:layout_marginVertical" tools:targetApi="o">16dp</item>
+        <item  name="android:orientation">horizontal</item>
+    </style>
 
     <style name="txt_CarDetails_style">
         <item name="android:layout_width">match_parent</item>
@@ -42,11 +85,70 @@
     </style>
 
     <style name="TextInputText_style">
-        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@color/primaryColors</item>
         <item name="android:lines">1</item>
     </style>
+
+
+    <style name="TextInputText_UploadRide_style">
+        <item name="android:layout_width">200dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/primaryColors</item>
+        <item name="android:gravity">start</item>
+        <item name="background">@color/transparentColor</item>
+        <item name="android:textColorHint">#65000000</item>
+        <item name="android:lines">1</item>
+    </style>
+
+    <style name="TextInputLayout_UploadRide_style" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="boxBackgroundMode">outline</item>
+        <item name="boxCornerRadiusTopStart">0dp</item>
+        <item name="boxCornerRadiusTopEnd">0dp</item>
+        <item name="boxCornerRadiusBottomStart">0dp</item>
+        <item name="boxCornerRadiusBottomEnd">0dp</item>
+        <item name="android:layout_marginVertical" tools:targetApi="o">5dp</item>
+        <item name="boxBackgroundColor">@color/transparentColor</item>
+        <item name="android:textColorHint">@color/hintColor</item>
+        <item name="hintTextColor">@color/hintColor</item>
+        <item name="boxStrokeColor">@color/primaryColors</item>
+    </style>
+
+
+    <style name="TextLabelForPendingFragment">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">10dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:textColor">@color/primaryColors</item>
+    </style>
+
+    <style name="smallIconBtnStyle">
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:background">@drawable/ripplebtn</item>
+        <item name="android:layout_margin">3dp</item>
+        <item name="android:layout_height">30dp</item>
+        <item name="android:layout_width">30dp</item>
+        <item name="background">@drawable/ripplebtn</item>
+    </style>
+
+    <style name="TextForPendingFragment">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">10dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/primaryColors</item>
+    </style>
+
+
+
+
+
 
 
 

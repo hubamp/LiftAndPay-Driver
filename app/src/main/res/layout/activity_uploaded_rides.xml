@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".UploadedRidesActivity">
+
+    <TextView
+        android:id="@+id/topViewId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:background="@color/primaryColors"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true"
+        android:gravity="center"
+        android:padding="12dp"
+        android:textColor="@color/white"
+        android:lines="1"
+        android:text="YOUR RIDES"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewId"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/addRidebtnId"
+        android:layout_below="@id/topViewId"
+        android:layout_marginBottom="-3dp"
+        tools:listitem="@layout/uploaded_rides_model" />
+
+    <ImageButton
+        android:id="@+id/addRidebtnId"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_centerHorizontal="true"
+        android:padding="5dp"
+        android:layout_height="50dp"
+        android:src="@drawable/img_circle"
+        android:background="@drawable/ripple"
+        tools:ignore="MissingConstraints"
+        android:contentDescription="TODO" />
+
+
+
+</RelativeLayout>
