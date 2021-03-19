@@ -18,8 +18,11 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.android.material.textfield.TextInputEditText;
@@ -27,6 +30,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -190,24 +194,40 @@ public class UploadRideActivity extends AppCompatActivity {
                 ride.put("Ride Time" , time.getText().toString());
 
                 CollectionReference pendingRidesDb = FirebaseFirestore.getInstance().collection("Driver").document(theDriverId).collection("Pending Rides");
-                String path = ""+ dateText + timeText;
 
 
-// Add a new document with a generated ID
-                db.collection("Driver").document(theDriverId).collection("Pending Rides").document(path).set(ride)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                db.collection("Driver").document(theDriverId).collection("Pending Rides").get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                             @Override
-                            public void onSuccess(Void aVoid) {
-                                Toast.makeText(UploadRideActivity.this, "Uploaded successfully",Toast.LENGTH_LONG).show();
-                                openDialog();
-                            }
-                        })
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                                String size = ""+ task.getResult().size();
+
+                        db.collection("Driver").document(theDriverId).collection("Pending Rides").document(theDriverId+" "+ size).set(ride)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+
+                                                   task.getResult().size();
+                                                   db.collection("Rides").document(theDriverId + " "+size).set(ride);
+
+                                                }
+                                            });
+
+                                        Toast.makeText(UploadRideActivity.this, "Uploaded successfully",Toast.LENGTH_LONG).show();
+                                        openDialog();
+
+
+                                    }
+                                })
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 Toast.makeText(UploadRideActivity.this, "Could not upload. Restart app and Try again",Toast.LENGTH_LONG).show();
                             }
                         });
+
+
             }
         });
 
