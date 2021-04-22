@@ -8,19 +8,43 @@
     android:orientation="vertical"
     tools:context=".UploadedRidesActivity">
 
-    <TextView
-        android:id="@+id/topViewId"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
+        android:id="@+id/topViewId"
         android:background="@color/primaryColors"
-        android:marqueeRepeatLimit="marquee_forever"
-        android:scrollHorizontally="true"
-        android:gravity="center"
-        android:padding="12dp"
-        android:textColor="@color/white"
-        android:lines="1"
-        android:text="YOUR RIDES"/>
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:background="@color/primaryColors"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:gravity="center"
+            android:padding="12dp"
+            android:textColor="@color/white"
+            android:lines="1"
+            android:text="YOUR RIDES"/>
+
+        <ImageButton
+            android:id="@+id/menu_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/btn_menu"
+            android:tint="@color/white"
+            android:backgroundTint="@color/primaryColors"
+            android:layout_margin="5dp"
+            android:background="@drawable/ripplebtn"
+            />
+
+
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewId"

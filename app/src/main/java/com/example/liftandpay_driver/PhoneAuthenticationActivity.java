@@ -120,8 +120,6 @@ public class PhoneAuthenticationActivity extends AppCompatActivity {
             });
 
 
-
-
         
     }
 
@@ -131,10 +129,10 @@ public class PhoneAuthenticationActivity extends AppCompatActivity {
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        if(currentUser != null)
-        {
-            sendToUploadedRidesActivity();
-        }
+//        if(currentUser != null)
+//        {
+//            sendToUploadedRidesActivity();
+//        }
     }
 
 

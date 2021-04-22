@@ -9,4 +9,5 @@
     <string name="title_activity_uploaded_ride_map">Map</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="mapbox_access_token" translatable="false">pk.eyJ1IjoiaHViZXJ0LWJyYWtvIiwiYSI6ImNrbmM2cnNrdzFqOGEydnRheGFuaXNnbWwifQ.TMIkZbdoWTUR8m2CP11vFw</string>
 </resources>

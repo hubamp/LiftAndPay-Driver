@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".UploadRideActivity">
 
-
     <RelativeLayout
         android:id="@+id/topViewId"
         android:layout_width="match_parent"
@@ -38,6 +37,8 @@
             android:textColor="@color/primaryColors"
             android:layout_centerInParent="true"
             android:textSize="22sp"/>
+
+
 
     </RelativeLayout>
 
@@ -99,23 +100,25 @@
                 android:text="Start from : "/>
 
 
-            <View
+            <ProgressBar
+                android:id="@+id/stProgressId"
                 android:layout_width="0dp"
-                android:layout_height="0dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:visibility="invisible"
                 />
 
 
 
-                <com.google.android.material.textfield.TextInputEditText
+                <TextView
                     android:id="@+id/startingLocationId"
                     style="@style/TextInputText_UploadRide_style"
-                    android:drawableEnd="@drawable/img_camera"
+                    android:drawableEnd="@drawable/img_circle"
                     android:hint="Starting Location  "
                     />
 
-        </LinearLayout>
 
+        </LinearLayout>
 
             <LinearLayout
             style="@style/Layout_ForIndividualComponent_style"
@@ -125,21 +128,43 @@
                 style="@style/txt_LeftDetail_Style"
                 android:text="Destination : "/>
 
-            <View
+            <ProgressBar
+                android:id="@+id/endProgressId"
                 android:layout_width="0sp"
-                android:layout_height="0sp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:visibility="invisible"
                 />
 
-                <com.google.android.material.textfield.TextInputEditText
+                <TextView
                     android:id="@+id/endingLocationId"
                     style="@style/TextInputText_UploadRide_style"
-                    android:drawableEnd="@drawable/img_camera"
+                    android:drawableEnd="@drawable/img_circle"
                     android:hint="Ending Location "
                     />
 
         </LinearLayout>
+
+            <TextView
+                android:id="@+id/viewMapId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="@drawable/ripple"
+                android:foreground="@drawable/img_bck_rectangle"
+                android:layout_marginBottom="15dp"
+                android:layout_gravity="center"
+                android:paddingVertical="9dp"
+                android:paddingHorizontal="15dp"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/primaryColors"
+                android:text="View On Map"/>
+
         </LinearLayout>
+
     </LinearLayout>
 
 

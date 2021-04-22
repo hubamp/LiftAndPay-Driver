@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".UploadRideActivity">
+
+    <RelativeLayout
+        android:id="@+id/topViewId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="10dp"
+        android:padding="5dp"
+        >
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_alignParentTop="true"
+            android:elevation="50dp"
+            />
+
+        <ImageButton
+            android:id="@+id/backButton"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/btn_back"
+            android:background="@drawable/ripplebtn"
+            android:layout_centerVertical="true"
+            android:focusableInTouchMode="true"
+            android:focusable="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="More"
+            android:textColor="@color/primaryColors"
+            android:layout_centerInParent="true"
+            android:textSize="22sp"/>
+
+    </RelativeLayout>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/primaryColors"
+        android:layout_below="@id/topViewId"
+        android:contentDescription="TODO" />
+
+
+
+
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignTop="@id/scrollView"
+        android:layout_below="@id/topViewId"
+        >
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="@drawable/img_circle"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:layout_marginBottom="1dp"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/ProfileMenuText_Style"
+                android:gravity="center"
+                android:text="Hubert Amponsah - Driver"/>
+
+
+            <LinearLayout
+                android:id="@+id/profileViewId"
+                style="@style/ProfileMenuLayout_Style">
+
+                <ImageView
+                    style="@style/ProfileMenuImage_Style"
+                    android:src="@drawable/btn_profile"/>
+
+                <TextView
+                    style="@style/ProfileMenuText_Style"
+                    android:text="Profile"
+                 />
+
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/fadedBlue"
+                android:contentDescription="TODO" />
+
+            <LinearLayout
+                style="@style/ProfileMenuLayout_Style">
+
+                <ImageView
+                    style="@style/ProfileMenuImage_Style"
+                    android:src="@drawable/btn_refresh"/>
+
+                <TextView
+                    style="@style/ProfileMenuText_Style"
+                    android:text="History"
+                    android:layout_gravity="center_vertical"
+                   />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/fadedBlue"
+                android:contentDescription="TODO" />
+
+            <LinearLayout
+                style="@style/ProfileMenuLayout_Style">
+
+                <ImageView
+                    style="@style/ProfileMenuImage_Style"
+                    android:src="@drawable/btn_notifications"/>
+
+                <TextView
+                    style="@style/ProfileMenuText_Style"
+                    android:text="Notifications"
+                    android:layout_gravity="center_vertical"
+                  />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/fadedBlue"
+                android:contentDescription="TODO" />
+
+
+            <LinearLayout
+                style="@style/ProfileMenuLayout_Style">
+
+                <ImageView
+                    style="@style/ProfileMenuImage_Style"
+                    android:src="@drawable/btn_call"/>
+
+                <TextView
+                    style="@style/ProfileMenuText_Style"
+                    android:text="Contact"
+                    android:layout_gravity="center_vertical"
+                  />
+
+
+            </LinearLayout>
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/fadedBlue"
+                android:contentDescription="TODO" />
+
+            <LinearLayout
+                style="@style/ProfileMenuLayout_Style">
+
+                <ImageView
+                    style="@style/ProfileMenuImage_Style"
+                    android:src="@drawable/btn_report"/>
+
+                <TextView
+                    style="@style/ProfileMenuText_Style"
+                    android:text="Report"
+                    android:layout_gravity="center_vertical"
+                   />
+
+
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/fadedBlue"
+                android:contentDescription="TODO" />
+
+            <LinearLayout
+                style="@style/ProfileMenuLayout_Style">
+
+
+                <ImageView
+                    style="@style/ProfileMenuImage_Style"
+                    android:src="@drawable/btn_about"/>
+
+                <TextView
+                    style="@style/ProfileMenuText_Style"
+                    android:text="About"
+                    android:layout_gravity="center_vertical"
+                 />
+
+
+            </LinearLayout>
+        </LinearLayout>
+
+
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_alignParentBottom="true"
+        style="@style/ProfileMenuLayout_Style">
+
+
+        <ImageView
+            style="@style/ProfileMenuImage_Style"
+            android:src="@drawable/btn_power_off"
+            app:tint="#F14646" />
+
+        <TextView
+            style="@style/ProfileMenuText_Style"
+            android:text="Logout"
+            android:layout_gravity="center_vertical"
+            android:textColor="#F14646"
+            android:textSize="19sp"/>
+
+
+    </LinearLayout>
+
+
+</RelativeLayout>

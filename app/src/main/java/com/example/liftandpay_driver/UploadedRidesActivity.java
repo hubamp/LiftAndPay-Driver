@@ -1,5 +1,13 @@
 package com.example.liftandpay_driver;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -7,31 +15,26 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.text.Layout;
-import android.view.View;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
-
+import com.example.liftandpay_driver.driverProfile.ProfileActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.model.Document;
+
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Objects;
 
 public class UploadedRidesActivity extends AppCompatActivity {
 
@@ -44,16 +47,18 @@ public class UploadedRidesActivity extends AppCompatActivity {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String theDriverId = mAuth.getUid();
     private CoordinatorLayout coordinatorLayout;
+    private ImageButton menuBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_uploaded_rides);
 
-
        recyclerView = findViewById(R.id.recyclerViewId);
        uploadBtn = findViewById(R.id.addRidebtnId);
        mainLayout = findViewById(R.id.mainLayout);
+       menuBtn = findViewById(R.id.menu_spinner);
+
 
        uploadBtn.setOnClickListener(new View.OnClickListener() {
            @Override
@@ -62,6 +67,16 @@ public class UploadedRidesActivity extends AppCompatActivity {
                startActivity(intent);
            }
        });
+
+       menuBtn.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               Intent intent = new Intent(UploadedRidesActivity.this, ProfileActivity.class);
+               startActivity(intent);
+           }
+       });
+
+
 
 
  /*       uploadedRidesModel uploadedRidesModel = new uploadedRidesModel(
@@ -75,86 +90,36 @@ public class UploadedRidesActivity extends AppCompatActivity {
 */
 
 
-        CollectionReference pendingRides = db.collection("Driver").document(theDriverId).collection("Pending Rides");
+      CollectionReference pendingRides = db.collection("Driver").document(theDriverId).collection("Pending Rides");
 
-        db.collection("Driver").document("oS6CXZeTbDWsLdN34lfXgtPeRHn1").collection("Pending Rides")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+      pendingRides
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        Snackbar.make(recyclerView, "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
-
-                        for (QueryDocumentSnapshot documentSnapshot : task.getResult())
-                        {
-                            Toast.makeText(UploadedRidesActivity.this, "It works "+ documentSnapshot.getData()
-                                    , Toast.LENGTH_LONG).show();
-
+                    public void onEvent(@Nullable QuerySnapshot value,
+                                        @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Snackbar.make(recyclerView, e.toString(), Snackbar.LENGTH_SHORT).show();
+                            return;
                         }
 
-                    }
-                })
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        uploadedRidesModels.clear();
+                        for (DocumentSnapshot document : value.getDocuments()) {
+//                                Toast.makeText(UploadedRidesActivity.this, ""+ document.getData().get("Ride Time")+" "+document.getData().get("Ride Date"), Toast.LENGTH_LONG).show();
+                            uploadedRidesModel uploadedRidesModel = new uploadedRidesModel(
+                                    Objects.requireNonNull(Objects.requireNonNull(document.getData()).get("startLocation")).toString()+
+                                            " - "+ Objects.requireNonNull(document.getData().get("endLocation")).toString(),
+                                    Objects.requireNonNull(document.getData().get("Ride Date")).toString(),
+                                    Objects.requireNonNull(document.getData().get("Ride Time")).toString(),
+                                    4
+                            );
+                            uploadedRidesModels.add(uploadedRidesModel);
+                        }
 
-                        Toast.makeText(UploadedRidesActivity.this,"This is successful "+queryDocumentSnapshots.getDocuments().size()
-                                , Toast.LENGTH_LONG).show();
+                        recyclerView.setLayoutManager(new LinearLayoutManager(UploadedRidesActivity.this,LinearLayoutManager.VERTICAL,false));
+                        recyclerView.setAdapter(new UploadedRidesAdapter(UploadedRidesActivity.this, uploadedRidesModels));
 
                     }
                 });
-
-
-
-        pendingRides.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-
-                uploadedRidesModels.clear();
-                for (QueryDocumentSnapshot document : value) {
-                    uploadedRidesModel uploadedRidesModel = new uploadedRidesModel(
-                            document.getData().get("startLocation").toString()+" - "+document.getData().get("endLocation").toString() ,
-                            document.getData().get("Ride Date").toString(),
-                            document.getData().get("Ride Time").toString(),
-                            4
-                    );
-                    uploadedRidesModels.add(uploadedRidesModel);
-                }
-
-                recyclerView.setLayoutManager(new LinearLayoutManager(UploadedRidesActivity.this,LinearLayoutManager.VERTICAL,false));
-                recyclerView.setAdapter(new UploadedRidesAdapter(UploadedRidesActivity.this, uploadedRidesModels));
-            }
-        });
-
-        /*pendingRides
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-//                                Toast.makeText(UploadedRidesActivity.this, ""+ document.getData().get("Ride Time")+" "+document.getData().get("Ride Date"), Toast.LENGTH_LONG).show();
-                                uploadedRidesModel uploadedRidesModel = new uploadedRidesModel(
-                                        document.getData().get("startLocation").toString()+" - "+document.getData().get("endLocation").toString() ,
-                                        document.getData().get("Ride Date").toString(),
-                                        document.getData().get("Ride Time").toString(),
-                                       4
-                                );
-                                uploadedRidesModels.add(uploadedRidesModel);
-                            }
-
-                            recyclerView.setLayoutManager(new LinearLayoutManager(UploadedRidesActivity.this,LinearLayoutManager.VERTICAL,false));
-                            recyclerView.setAdapter(new UploadedRidesAdapter(UploadedRidesActivity.this, uploadedRidesModels));
-
-                        } else {
-                            Toast.makeText(UploadedRidesActivity.this, ""+ task.getException(), Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });*/
-
-
-
-
-
 
 
     }
@@ -171,4 +136,6 @@ public class UploadedRidesActivity extends AppCompatActivity {
             finish();
         }
     }
+
+
 }
