@@ -1,4 +1,4 @@
-package com.example.liftandpay_driver;
+package com.example.liftandpay_driver.uploadedRide;
 
 import android.os.Bundle;
 
@@ -10,6 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.liftandpay_driver.ApproveRequestAdapter;
+import com.example.liftandpay_driver.ApproveRequestModel;
+import com.example.liftandpay_driver.R;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.util.ArrayList;

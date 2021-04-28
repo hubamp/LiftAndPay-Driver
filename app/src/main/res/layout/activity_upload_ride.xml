@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UploadRideActivity">
+    tools:context=".uploadRide.UploadRideActivity">
 
     <RelativeLayout
         android:id="@+id/topViewId"
@@ -114,7 +114,7 @@
                     android:id="@+id/startingLocationId"
                     style="@style/TextInputText_UploadRide_style"
                     android:drawableEnd="@drawable/img_circle"
-                    android:hint="Starting Location  "
+                    android:hint="Starting Location"
                     />
 
 
@@ -140,7 +140,7 @@
                     android:id="@+id/endingLocationId"
                     style="@style/TextInputText_UploadRide_style"
                     android:drawableEnd="@drawable/img_circle"
-                    android:hint="Ending Location "
+                    android:hint="Ending Location"
                     />
 
         </LinearLayout>
@@ -190,10 +190,16 @@
                     android:text="Distance: "/>
 
                 <TextView
-                    android:id="@+id/distanceId"
+                    android:id="@+id/distanceUploadId"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text=" 15.1 km"/>
+                    android:text="N/A"/>
+
+                <ProgressBar
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:id="@+id/distanceProgress"
+                    android:visibility="gone"/>
             </LinearLayout>
 
             <LinearLayout
@@ -212,7 +218,13 @@
                     android:id="@+id/costId"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text=" Ghc 0.5 /km"/>
+                    android:text="GHC0.4/km/passenger"/>
+
+                <ProgressBar
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:id="@+id/costProgress"
+                    android:visibility="gone"/>
 
             </LinearLayout>
         </LinearLayout>

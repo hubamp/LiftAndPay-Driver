@@ -12,6 +12,8 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.liftandpay_driver.fastClass.SingleActionForAllClass;
+
 public class UploadDetailsActivity_1 extends AppCompatActivity {
   SingleActionForAllClass singleActionForAllClass = new SingleActionForAllClass();
   private View headerView;

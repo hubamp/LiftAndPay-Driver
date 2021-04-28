@@ -1,7 +1,6 @@
-package com.example.liftandpay_driver;
+package com.example.liftandpay_driver.uploadedRide;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 import android.Manifest;
@@ -14,23 +13,19 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.liftandpay_driver.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.gson.JsonObject;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
-import com.mapbox.api.directions.v5.DirectionsCriteria;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
-import com.mapbox.api.directions.v5.models.RouteOptions;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.location.LocationComponent;
-import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions;
-import com.mapbox.mapboxsdk.location.LocationComponentOptions;
 import com.mapbox.mapboxsdk.location.modes.CameraMode;
 import com.mapbox.mapboxsdk.location.modes.RenderMode;
 import com.mapbox.mapboxsdk.maps.MapView;
@@ -43,7 +38,6 @@ import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -300,64 +294,6 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
 
 
 
-
-
-
-
-    void getLocation() {
-        fusedLocationProviderClient = getFusedLocationProviderClient(UploadedRideMap.this);
-
-        if (ActivityCompat.checkSelfPermission(UploadedRideMap.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        fusedLocationProviderClient.getLastLocation()
-                .addOnSuccessListener(UploadedRideMap.this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        myLoc = new LatLng(location.getLatitude(), location.getLongitude());
-                        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(
-                                new CameraPosition.Builder()
-                                        .target(new LatLng(location.getLatitude(),
-                                                location.getLongitude()))
-                                        .zoom(17)
-                                        .build()), 4000);
-
-                        sharedPreferences.edit().putString("TheDriverLatitude", (myLoc.getLatitude()+"")).apply();
-                        sharedPreferences.edit().putString("TheDriverLongitude", (myLoc.getLatitude()+"")).apply();
-                        Toast.makeText(getApplicationContext(), myLoc.getLatitude()+"",Toast.LENGTH_LONG).show();
-                        Toast.makeText(getApplicationContext(), myLoc.getLongitude()+"",Toast.LENGTH_LONG).show();
-
-                        String theCurrentLat = sharedPreferences.getString("TheDriverLatitude","Null");
-                        String theCurrentLong = sharedPreferences.getString("TheDriverLongitude","Null");
-
-                        if(!theCurrentLat.equals("Null") && !theCurrentLong.equals("Null")) {
-
-                            double myLat = Double.parseDouble(theCurrentLat);
-                            double myLong = Double.parseDouble(theCurrentLong);
-                            LatLng points = new LatLng(myLat, myLong);
-                            LatLng pointd = new LatLng(5.58860529, -0.184086699);
-
-                            Point destinationPoint = Point.fromLngLat(pointd.getLongitude(), pointd.getLatitude());
-                            Point originPoint = Point.fromLngLat(points.getLongitude(), points.getLatitude());
-                            getRoute(originPoint,destinationPoint);
-                        }
-                        else
-                        {
-                            Toast.makeText(getApplicationContext(), "The Cordinates are null, Route could not render",Toast.LENGTH_LONG).show();
-                        }
-
-
-
-                    }
-                });
-    }
 
 
     // Add the mapView lifecycle to the activity's lifecycle methods

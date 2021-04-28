@@ -1,76 +1,64 @@
-package com.example.liftandpay_driver;
+package com.example.liftandpay_driver.uploadRide;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.example.liftandpay_driver.R;
 import com.example.liftandpay_driver.fastClass.CurrentLocationClass;
-import com.google.android.gms.common.api.Status;
+import com.example.liftandpay_driver.proceedAlert;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
-import com.google.android.material.textfield.MaterialAutoCompleteTextView;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.mapbox.api.directions.v5.models.DirectionsResponse;
+import com.mapbox.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.api.geocoding.v5.models.CarmenFeature;
-import com.mapbox.geojson.Feature;
-import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
-import com.mapbox.mapboxsdk.camera.CameraPosition;
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.plugins.places.autocomplete.PlaceAutocomplete;
-import com.mapbox.mapboxsdk.plugins.places.autocomplete.model.PlaceOptions;
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
-
-import org.jetbrains.annotations.NotNull;
+import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
+import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import timber.log.Timber;
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
@@ -80,6 +68,8 @@ public class UploadRideActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_AUTOCOMPLETE_STLOCATION = 1;
     private static final int REQUEST_CODE_AUTOCOMPLETE_ENDLOCATION = 2;
 
+    private DirectionsRoute route;
+
 
     //Declaration of progressbars
     private ProgressBar progressBar;
@@ -87,6 +77,8 @@ public class UploadRideActivity extends AppCompatActivity {
     private ProgressBar timeProgressBar;
     private ProgressBar startProgressBar;
     private ProgressBar endProgressBar;
+    private ProgressBar costProgressBar;
+    private ProgressBar distanceProgressBar;
 
     private ImageButton proceedBtn;
 
@@ -106,6 +98,11 @@ public class UploadRideActivity extends AppCompatActivity {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private SharedPreferences sharedPreferences;
     private Map<String, Object> ride;
+
+    String[] startInfo = new String[3];
+    String[] endInfo = new String[3];
+    Point point1;
+    Point point2;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -127,16 +124,17 @@ public class UploadRideActivity extends AppCompatActivity {
         proceedBtn = findViewById(R.id.btn_proceed_id);
         startProgressBar = findViewById(R.id.stProgressId);
         endProgressBar =findViewById(R.id.endProgressId);
-
-
+        viewMapBtn= findViewById(R.id.viewMapId);
+        costProgressBar = findViewById(R.id.costProgress);
+        distanceProgressBar = findViewById(R.id.distanceProgress);
 
         //SharedPreferences initialisation
         sharedPreferences = this.getSharedPreferences("FILENAME",MODE_PRIVATE);
 
-
+        //TextView initialisation
         startLocation = findViewById(R.id.startingLocationId);
         endingLocation = findViewById(R.id.endingLocationId);
-        distance = findViewById(R.id.distanceId);
+        distance = findViewById(R.id.distanceUploadId);
         cost = findViewById(R.id.costId);
         date = findViewById(R.id.dateText);
         time = findViewById(R.id.timeText);
@@ -165,6 +163,9 @@ public class UploadRideActivity extends AppCompatActivity {
                currentLocationClass.popSearchBasedOnCurrentLocation(UploadRideActivity.this,endProgressBar,2);
            }
        });
+
+
+
         ride = new HashMap<>();
       String startLocationText =  sharedPreferences.getString("TheRideStartingLocation","No place selected");
       String endingLocationText = sharedPreferences.getString("TheRideEndingLocation","No place selected");
@@ -328,10 +329,7 @@ public class UploadRideActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        String startInfo[] = new String[5];
-        double startInfo1;
 
-        String endInfo[] = new String[5];
         CarmenFeature selectedCarmenFeature = PlaceAutocomplete.getPlace(data);
 
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_AUTOCOMPLETE_STLOCATION) {
@@ -342,14 +340,18 @@ public class UploadRideActivity extends AppCompatActivity {
             if(startInfo[0].equals(endInfo[0])) Toast.makeText(this,"Starting Point Cannot the same as ending point", Toast.LENGTH_LONG).show();
             else {
                 startLocation.setText(selectedCarmenFeature.text());
-                startInfo[1] = Objects.requireNonNull(new LatLng(((Point) selectedCarmenFeature.geometry()).latitude(),
-                                ((Point) selectedCarmenFeature.geometry()).longitude()).toString());
-                startInfo[2] =  Objects.requireNonNull(new LatLng(((Point) selectedCarmenFeature.geometry()).latitude(),
-                        ((Point) selectedCarmenFeature.geometry()).latitude()).toString());
+                startInfo[1] = String.valueOf(new LatLng(((Point) Objects.requireNonNull(selectedCarmenFeature.geometry())).latitude(),
+                                ((Point) selectedCarmenFeature.geometry()).longitude()).getLongitude());
+                startInfo[2] = String.valueOf(new LatLng(((Point) selectedCarmenFeature.geometry()).latitude(),
+                        ((Point) selectedCarmenFeature.geometry()).longitude()).getLatitude());
 
-                Toast.makeText(this, Objects.requireNonNull(new LatLng(((Point) selectedCarmenFeature.geometry()).latitude(),
-                        ((Point) selectedCarmenFeature.geometry()).longitude()).toString()), Toast.LENGTH_LONG).show();
+                point1 = (Point) selectedCarmenFeature.geometry();
 
+                viewOnMap();
+
+             /*   if(point1 != null && point2!=null) {
+                    setRouteDistance(point1, point2);
+                }*/
             }
 
         }
@@ -361,28 +363,115 @@ public class UploadRideActivity extends AppCompatActivity {
             if(endInfo[0].equals(startInfo[0])) Toast.makeText(this,"Starting Point Cannot the same as ending point", Toast.LENGTH_LONG).show();
             else {
                 endingLocation.setText(selectedCarmenFeature.text());
-                endInfo[1] = Objects.requireNonNull(new LatLng(((Point) selectedCarmenFeature.geometry()).latitude(),
-                        ((Point) selectedCarmenFeature.geometry()).longitude()).toString());
-                endInfo[2] =  Objects.requireNonNull(new LatLng(((Point) selectedCarmenFeature.geometry()).latitude(),
-                        ((Point) selectedCarmenFeature.geometry()).latitude()).toString());
-
+                endInfo[1] = String.valueOf(new LatLng(((Point) selectedCarmenFeature.geometry()).latitude(),
+                        ((Point) selectedCarmenFeature.geometry()).longitude()).getLongitude());
+                endInfo[2] = String.valueOf(new LatLng(((Point) selectedCarmenFeature.geometry()).latitude(),
+                        ((Point) selectedCarmenFeature.geometry()).latitude()).getLatitude());
+                point2 = (Point) selectedCarmenFeature.geometry();
+                viewOnMap();
+             /*   if(point1 != null && point2!=null) {
+                    setRouteDistance(point1, point2);
+                }*/
             }
+
+
         }
+
+
+
 
 
     }
 
+    public void viewOnMap(){
+        viewMapBtn.setOnClickListener(new View.OnClickListener() {
 
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(UploadRideActivity.this,startInfo[1],Toast.LENGTH_LONG).show();
+
+                if (
+                        !endInfo[0].isEmpty() ||
+                                !endInfo[1].isEmpty() ||
+                                !endInfo[2].isEmpty() ||
+                                !startInfo[0].isEmpty() ||
+                                !startInfo[1].isEmpty() ||
+                                !startInfo[2].isEmpty()
+                )
+                {
+                    Intent intent = new Intent(UploadRideActivity.this, ViewMapActivity.class);
+                    intent.putExtra("StartingLatitude",startInfo[2] );
+                    intent.putExtra("StartingLongitude",startInfo[1]);
+                    intent.putExtra("StartingName",startLocation.getText().toString());
+                    intent.putExtra("StoppingLatitude", endInfo[2]);
+                    intent.putExtra("StoppingLongitude", endInfo[1]);
+                    intent.putExtra("StoppingName",endingLocation.getText().toString());
+                    startActivity(intent);
+                }
+                else
+                {
+                    Toast.makeText(UploadRideActivity.this,"Lacking Location Info, Cannot open map",Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    private void setRouteDistance(Point origin, Point destination) {
+//        distanceProgressBar.setVisibility(View.VISIBLE);
+//        costProgressBar.setVisibility(View.VISIBLE);
+//        distance.setVisibility(View.INVISIBLE);
+//        cost.setVisibility(View.INVISIBLE);
+
+        NavigationRoute.builder(UploadRideActivity.this)
+                .accessToken(Mapbox.getAccessToken())
+                .origin(origin)
+                .destination(destination)
+                .build()
+                .getRoute(new Callback<DirectionsResponse>() {
+                    @Override
+                    public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
+// You can get the generic HTTP info about the response
+                        Log.d("TAG", "Response code: " + response.code());
+                        if (response.body() == null) {
+                            Timber.e("No routes found, make sure you set the right user and access token.");
+                            return;
+                        } else if (response.body().routes().size() < 1) {
+                            Timber.e("No routes found");
+                            return;
+                        }
+
+//                        route = response.body().routes().get(0);
+//                        Toast.makeText(UploadRideActivity.this,"received",Toast.LENGTH_LONG).show();
+//                        double routeKilo = route.distance() / 1000;
+                        distanceProgressBar.setVisibility(View.INVISIBLE);
+                        costProgressBar.setVisibility(View.INVISIBLE);
+                        distance.setVisibility(View.VISIBLE);
+                        cost.setVisibility(View.VISIBLE);
+                        distance.setText("Received As well");
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<DirectionsResponse> call, Throwable t) {
+                        Timber.e(t.toString());
+//                        distanceProgressBar.setVisibility(View.GONE);
+//                        costProgressBar.setVisibility(View.GONE);
+//                        distance.setVisibility(View.VISIBLE);
+//                        cost.setVisibility(View.VISIBLE);
+
+                    }
+                });
+    }
     @Override
     protected void onStart() {
         super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
 
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        sharedPreferences.edit().clear().apply();
         sharedPreferences.edit().remove("TheDriverLatitude").apply();
         sharedPreferences.edit().remove("TheDriverLongitude").apply();
     }
@@ -391,7 +480,6 @@ public class UploadRideActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        sharedPreferences.edit().remove("TheDriverLatitude").apply();
-        sharedPreferences.edit().remove("TheDriverLongitude").apply();
+        
     }
 }

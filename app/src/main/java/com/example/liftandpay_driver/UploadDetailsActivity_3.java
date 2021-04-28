@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
+import com.example.liftandpay_driver.fastClass.SingleActionForAllClass;
+
 public class UploadDetailsActivity_3 extends AppCompatActivity {
 
     SingleActionForAllClass singleActionForAllClass = new SingleActionForAllClass();

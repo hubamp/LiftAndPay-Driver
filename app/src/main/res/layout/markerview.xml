@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="180dp"
+    android:background="@color/extraFadedBlue"
+   android:orientation="horizontal"
+    android:layout_height="50dp">
+    <Button
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:gravity="center"
+        android:layout_marginEnd="3dp"
+        android:backgroundTint="@color/white"
+        android:foreground="@drawable/img_circle"
+        />
+    <View
+        android:layout_width="15dp"
+        android:layout_height="50dp"
+        android:background="@color/primaryColors"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:layout_marginHorizontal="5dp"
+        android:background="@color/fadedBlue"
+        android:textColor="@color/primaryColors"
+        android:text="Starting Point"
+       android:id="@+id/locationNameId"/>
+
+</LinearLayout>

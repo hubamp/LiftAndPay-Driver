@@ -1,4 +1,4 @@
-package com.example.liftandpay_driver;
+package com.example.liftandpay_driver.fastClass;
 
 public class SingleActionForAllClass {
 

@@ -11,12 +11,10 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
 import com.example.liftandpay_driver.R;
-import com.example.liftandpay_driver.UploadRideActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -24,8 +22,6 @@ import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.plugins.places.autocomplete.PlaceAutocomplete;
 import com.mapbox.mapboxsdk.plugins.places.autocomplete.model.PlaceOptions;
-
-import java.lang.annotation.Retention;
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
@@ -40,7 +36,6 @@ public class CurrentLocationClass {
         REQUEST_CODE_AUTOCOMPLETE_END
     }
     public CurrentLocationClass(){
-
 
     }
 
@@ -137,6 +132,7 @@ public class CurrentLocationClass {
                                         .backgroundColor(Color.parseColor("#BDC3FA"))
                                         .proximity(loc)
                                         .limit(5)
+                                        .geocodingTypes("Locality")
                                         .geocodingTypes()
                                         .build(PlaceOptions.MODE_CARDS))
                                 .build(activity);

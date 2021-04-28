@@ -1,4 +1,4 @@
-package com.example.liftandpay_driver;
+package com.example.liftandpay_driver.uploadedRide;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,7 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.w3c.dom.Text;
+import com.example.liftandpay_driver.R;
 
 import java.util.ArrayList;
 

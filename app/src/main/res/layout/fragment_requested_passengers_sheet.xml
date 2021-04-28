@@ -6,7 +6,7 @@
     android:padding="3dp"
     android:orientation="vertical"
     android:background="@drawable/bottom_sheet_bkg"
-    tools:context=".RequestedPassengersSheet">
+    tools:context=".uploadedRide.RequestedPassengersSheet">
 
     <Button
         android:layout_width="wrap_content"
