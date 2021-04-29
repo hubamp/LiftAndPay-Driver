@@ -61,6 +61,7 @@ import retrofit2.Response;
 import timber.log.Timber;
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
+import static java.lang.String.format;
 
 public class UploadRideActivity extends AppCompatActivity {
     private View footerView;
@@ -101,8 +102,11 @@ public class UploadRideActivity extends AppCompatActivity {
 
     String[] startInfo = new String[3];
     String[] endInfo = new String[3];
-    Point point1;
-    Point point2;
+    private LatLng locationOne;
+    private LatLng locationTwo;
+    private Point pointOne;
+    private Point pointTwo;
+
 
     private FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -130,6 +134,16 @@ public class UploadRideActivity extends AppCompatActivity {
 
         //SharedPreferences initialisation
         sharedPreferences = this.getSharedPreferences("FILENAME",MODE_PRIVATE);
+
+
+        endInfo[0] ="";
+        endInfo[1] ="";
+        endInfo[2] ="";
+
+        startInfo[0] ="";
+        startInfo[1] ="";
+        startInfo[2] ="";
+
 
         //TextView initialisation
         startLocation = findViewById(R.id.startingLocationId);
@@ -345,7 +359,7 @@ public class UploadRideActivity extends AppCompatActivity {
                 startInfo[2] = String.valueOf(new LatLng(((Point) selectedCarmenFeature.geometry()).latitude(),
                         ((Point) selectedCarmenFeature.geometry()).longitude()).getLatitude());
 
-                point1 = (Point) selectedCarmenFeature.geometry();
+
 
                 viewOnMap();
 
@@ -367,20 +381,13 @@ public class UploadRideActivity extends AppCompatActivity {
                         ((Point) selectedCarmenFeature.geometry()).longitude()).getLongitude());
                 endInfo[2] = String.valueOf(new LatLng(((Point) selectedCarmenFeature.geometry()).latitude(),
                         ((Point) selectedCarmenFeature.geometry()).latitude()).getLatitude());
-                point2 = (Point) selectedCarmenFeature.geometry();
+
                 viewOnMap();
-             /*   if(point1 != null && point2!=null) {
-                    setRouteDistance(point1, point2);
-                }*/
             }
 
 
         }
-
-
-
-
-
+        checkConvert();
     }
 
     public void viewOnMap(){
@@ -391,11 +398,11 @@ public class UploadRideActivity extends AppCompatActivity {
                 Toast.makeText(UploadRideActivity.this,startInfo[1],Toast.LENGTH_LONG).show();
 
                 if (
-                        !endInfo[0].isEmpty() ||
-                                !endInfo[1].isEmpty() ||
-                                !endInfo[2].isEmpty() ||
-                                !startInfo[0].isEmpty() ||
-                                !startInfo[1].isEmpty() ||
+                        !endInfo[0].isEmpty() &&
+                                !endInfo[1].isEmpty() &&
+                                !endInfo[2].isEmpty() &&
+                                !startInfo[0].isEmpty() &&
+                                !startInfo[1].isEmpty() &&
                                 !startInfo[2].isEmpty()
                 )
                 {
@@ -416,11 +423,41 @@ public class UploadRideActivity extends AppCompatActivity {
         });
     }
 
+    private void checkConvert(){
+
+        if (
+                !endInfo[0].isEmpty() &&
+                        !endInfo[1].isEmpty() &&
+                        !endInfo[2].isEmpty() &&
+                        !startInfo[0].isEmpty() &&
+                        !startInfo[1].isEmpty() &&
+                        !startInfo[2].isEmpty()
+        ) {
+            Toast.makeText(UploadRideActivity.this,"I am available",Toast.LENGTH_LONG).show();
+            double sLat = Double.parseDouble(startInfo[2]);
+            double sLong = Double.parseDouble(startInfo[1]);
+            double eLat = Double.parseDouble(endInfo[2]);
+            double eLong = Double.parseDouble(endInfo[1]);
+
+            locationOne = new LatLng(sLat, sLong);
+            locationTwo = new LatLng(eLat, eLong);
+            pointOne = Point.fromLngLat(locationOne.getLongitude(), locationOne.getLatitude());
+            pointTwo = Point.fromLngLat(locationTwo.getLongitude(), locationTwo.getLatitude());
+
+
+            setRouteDistance(pointOne,pointTwo);
+        }
+        else
+        {
+            Toast.makeText(UploadRideActivity.this,"Not available",Toast.LENGTH_LONG).show();
+        }
+    }
+
     private void setRouteDistance(Point origin, Point destination) {
-//        distanceProgressBar.setVisibility(View.VISIBLE);
-//        costProgressBar.setVisibility(View.VISIBLE);
-//        distance.setVisibility(View.INVISIBLE);
-//        cost.setVisibility(View.INVISIBLE);
+        distanceProgressBar.setVisibility(View.VISIBLE);
+        costProgressBar.setVisibility(View.VISIBLE);
+        distance.setVisibility(View.GONE);
+        cost.setVisibility(View.GONE);
 
         NavigationRoute.builder(UploadRideActivity.this)
                 .accessToken(Mapbox.getAccessToken())
@@ -440,14 +477,23 @@ public class UploadRideActivity extends AppCompatActivity {
                             return;
                         }
 
-//                        route = response.body().routes().get(0);
-//                        Toast.makeText(UploadRideActivity.this,"received",Toast.LENGTH_LONG).show();
-//                        double routeKilo = route.distance() / 1000;
-                        distanceProgressBar.setVisibility(View.INVISIBLE);
-                        costProgressBar.setVisibility(View.INVISIBLE);
+                        route = response.body().routes().get(0);
+                        Toast.makeText(UploadRideActivity.this,"received",Toast.LENGTH_LONG).show();
+                        double routeKilo = route.distance() / 1000;
+                        routeKilo = truncate(routeKilo,3);
+                        double routeMoney = routeKilo * 0.21;
+                        routeMoney = truncate(routeMoney,2);
+
+                        String distanceKilo = String.valueOf(routeKilo) + "km";
+                        String costPerPassenger = "GHC" +String.valueOf(routeMoney) +"/passenger";
+
+
+                        distanceProgressBar.setVisibility(View.GONE);
+                        costProgressBar.setVisibility(View.GONE);
                         distance.setVisibility(View.VISIBLE);
                         cost.setVisibility(View.VISIBLE);
-                        distance.setText("Received As well");
+                        distance.setText(distanceKilo);
+                        cost.setText(costPerPassenger);
 
                     }
 
@@ -461,6 +507,14 @@ public class UploadRideActivity extends AppCompatActivity {
 
                     }
                 });
+    }
+
+    public double truncate(double originalValue,int numnerOfDecimalPlaces) {
+        if (numnerOfDecimalPlaces == 3) {
+            originalValue = Math.round(originalValue * 1000.0) / 1000.0;
+        } else if (numnerOfDecimalPlaces == 2)
+            originalValue =  Math.round(originalValue * 100.0) / 100.0;
+        return originalValue;
     }
     @Override
     protected void onStart() {
