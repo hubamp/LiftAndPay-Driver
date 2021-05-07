@@ -65,6 +65,8 @@ public class UploadedRidesAdapter extends RecyclerView.Adapter<UploadedRidesAdap
         holder.rTimeView.setText(uploadedRidesModel.getRIDETIME());
         holder.rDateView.setText(uploadedRidesModel.getRIDEDATE());
         holder.rJourney.setText(uploadedRidesModel.getJOURNEY());
+        String rNOP = String.valueOf(uploadedRidesModel.getNUMBEROFREQUESTS());
+        holder.rNumberOfPassengers.setText(rNOP);
     }
 
     @Override
@@ -80,6 +82,7 @@ public class UploadedRidesAdapter extends RecyclerView.Adapter<UploadedRidesAdap
         private ImageView addRideBtn;
         private RelativeLayout requestedPassengersBtn;
 
+        private TextView rNumberOfPassengers;
         private TextView rJourney;
         private TextView rDateView;
         private TextView rTimeView;
@@ -92,9 +95,11 @@ public class UploadedRidesAdapter extends RecyclerView.Adapter<UploadedRidesAdap
             linearLayout = itemView.findViewById(R.id.uploadedLinearLayoutId);
             requestedPassengersBtn = itemView.findViewById(R.id.requestedPassengerRelativeLayoutId);
 
+
             rJourney = itemView.findViewById(R.id.journeyId);
             rDateView = itemView.findViewById(R.id.dateModelId);
             rTimeView = itemView.findViewById(R.id.timeModelId);
+            rNumberOfPassengers = itemView.findViewById(R.id.numberOfRequestedPassengersId);
 
 
         }

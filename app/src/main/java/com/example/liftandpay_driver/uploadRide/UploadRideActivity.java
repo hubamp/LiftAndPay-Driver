@@ -92,7 +92,7 @@ public class UploadRideActivity extends AppCompatActivity {
     private TextView date;
     private TextView time;
 
-//    private TextInputEditText numberOfOccuppants;
+//  private TextInputEditText numberOfOccuppants;
     private Date dates;
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private final String theDriverId = mAuth.getUid();
@@ -339,13 +339,14 @@ public class UploadRideActivity extends AppCompatActivity {
 
 
 
-
+//Activities after Requesting A location from search
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         CarmenFeature selectedCarmenFeature = PlaceAutocomplete.getPlace(data);
 
+        //request from the starting Location
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_AUTOCOMPLETE_STLOCATION) {
             startInfo[0] =selectedCarmenFeature.text();
             endInfo[0] =   endingLocation.getText().toString();
@@ -359,16 +360,13 @@ public class UploadRideActivity extends AppCompatActivity {
                 startInfo[2] = String.valueOf(new LatLng(((Point) selectedCarmenFeature.geometry()).latitude(),
                         ((Point) selectedCarmenFeature.geometry()).longitude()).getLatitude());
 
-
-
                 viewOnMap();
 
-             /*   if(point1 != null && point2!=null) {
-                    setRouteDistance(point1, point2);
-                }*/
             }
 
         }
+
+        //Request from the destination location
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_AUTOCOMPLETE_ENDLOCATION) {
             endInfo[0] = selectedCarmenFeature.text();
             startInfo[0]= startLocation.getText().toString();
@@ -423,6 +421,7 @@ public class UploadRideActivity extends AppCompatActivity {
         });
     }
 
+    //
     private void checkConvert(){
 
         if (
@@ -453,6 +452,7 @@ public class UploadRideActivity extends AppCompatActivity {
         }
     }
 
+    //Distance and cost calculations
     private void setRouteDistance(Point origin, Point destination) {
         distanceProgressBar.setVisibility(View.VISIBLE);
         costProgressBar.setVisibility(View.VISIBLE);
@@ -481,7 +481,7 @@ public class UploadRideActivity extends AppCompatActivity {
                         Toast.makeText(UploadRideActivity.this,"received",Toast.LENGTH_LONG).show();
                         double routeKilo = route.distance() / 1000;
                         routeKilo = truncate(routeKilo,3);
-                        double routeMoney = routeKilo * 0.21;
+                        double routeMoney = routeKilo * 0.4;
                         routeMoney = truncate(routeMoney,2);
 
                         String distanceKilo = String.valueOf(routeKilo) + "km";

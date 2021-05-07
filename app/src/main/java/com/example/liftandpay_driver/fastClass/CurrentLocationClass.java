@@ -124,13 +124,15 @@ public class CurrentLocationClass {
                 .addOnSuccessListener((Activity) context, new OnSuccessListener<Location>() {
                     public void onSuccess(Location location) {
                         loc = Point.fromLngLat(location.getLongitude(),location.getLatitude());
+                        Toast.makeText(context,loc.toJson(),Toast.LENGTH_LONG).show();
+
 
                         Activity activity = (Activity) context;
                         Intent intent = new PlaceAutocomplete.IntentBuilder()
                                 .accessToken(Mapbox.getAccessToken() != null ? Mapbox.getAccessToken() :context.getString(R.string.mapbox_access_token))
                                 .placeOptions(PlaceOptions.builder()
                                         .backgroundColor(Color.parseColor("#BDC3FA"))
-                                        .proximity(loc)
+                                        .proximity(Point.fromJson(loc.toJson()))
                                         .limit(5)
                                         .geocodingTypes("Locality")
                                         .geocodingTypes()
