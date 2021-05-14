@@ -108,7 +108,6 @@ public class UploadedRidesActivity extends AppCompatActivity {
 
                                     numberOfBookedPassengers = queryDocumentSnapshots.size();
 
-                                    Toast.makeText(UploadedRidesActivity.this, "size retrieved" + numberOfBookedPassengers, Toast.LENGTH_LONG).show();
                                     if (numberOfBookedPassengers > 0) {
 
 
