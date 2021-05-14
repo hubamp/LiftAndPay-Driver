@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".uploadRide.UploadRideActivity">
+    tools:context=".driverProfile.ProfileActivity2">
 
     <RelativeLayout
         android:id="@+id/topViewId"
@@ -24,13 +24,12 @@
             />
 
         <ImageButton
-            android:id="@+id/backButton"
+            android:id="@+id/backButton_P1"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:src="@drawable/btn_back"
             android:background="@drawable/ripplebtn"
             android:layout_centerVertical="true"
-            android:focusableInTouchMode="true"
             android:focusable="true"/>
 
         <TextView
@@ -119,6 +118,27 @@
                     android:text="History"
                     android:layout_gravity="center_vertical"
                    />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/fadedBlue"
+                android:contentDescription="TODO" />
+
+            <LinearLayout
+                android:id="@+id/messageViewId"
+                style="@style/ProfileMenuLayout_Style">
+
+                <ImageView
+                    style="@style/ProfileMenuImage_Style"
+                    android:src="@drawable/img_message"/>
+
+                <TextView
+                    style="@style/ProfileMenuText_Style"
+                    android:text="Messages"
+                    android:layout_gravity="center_vertical"
+                    />
             </LinearLayout>
 
             <ImageView

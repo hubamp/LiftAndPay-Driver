@@ -20,6 +20,8 @@ import com.example.liftandpay_driver.driverProfile.ProfileActivity;
 import com.example.liftandpay_driver.fastClass.StringFunction;
 import com.example.liftandpay_driver.uploadRide.UploadRideActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -96,60 +98,66 @@ public class UploadedRidesActivity extends AppCompatActivity {
                         uploadedRidesModels.clear();
 
                         for (DocumentSnapshot document : value.getDocuments()) {
-                            uploadedRidesModels.clear();
 
 
-                           CollectionReference bookedByCollection =  pendingRides.document(document.getId()).collection("Booked By");
+                            CollectionReference bookedByCollection = pendingRides.document(document.getId()).collection("Booked By");
 
-                           bookedByCollection.get().getResult().size();
+                            bookedByCollection.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                @Override
+                                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
 
+                                    numberOfBookedPassengers = queryDocumentSnapshots.size();
 
-                           bookedByCollection.addSnapshotListener(new EventListener<QuerySnapshot>() {
-                               @Override
-                               public void onEvent(@Nullable QuerySnapshot tvalue, @Nullable FirebaseFirestoreException error) {
-
-
-                                       if (tvalue.getDocuments().size() >0) {
-
-                                           numberOfBookedPassengers =   tvalue.getDocuments().size();
-                                           Toast.makeText(UploadedRidesActivity.this, "doc:"+numberOfBookedPassengers, Toast.LENGTH_LONG).show();
-
-                                            uploadedRidesModel = new uploadedRidesModel(
-                                                   Objects.requireNonNull(Objects.requireNonNull(document.getData()).get("startLocation")).toString() +
-                                                           " - " + Objects.requireNonNull(document.getData().get("endLocation")).toString(),
-                                                   Objects.requireNonNull(document.getData().get("Ride Date")).toString(),
-                                                   Objects.requireNonNull(document.getData().get("Ride Time")).toString(),
-                                                   numberOfBookedPassengers
-                                           );
+                                    Toast.makeText(UploadedRidesActivity.this, "size retrieved" + numberOfBookedPassengers, Toast.LENGTH_LONG).show();
+                                    if (numberOfBookedPassengers > 0) {
 
 
-                                       }
-                                       else
-                                       {
-                                           numberOfBookedPassengers  =0 ;
+                                        uploadedRidesModel = new uploadedRidesModel(
+                                                Objects.requireNonNull(Objects.requireNonNull(document.getData()).get("startLocation")).toString() +
+                                                        " - " + Objects.requireNonNull(document.getData().get("endLocation")).toString(),
+                                                Objects.requireNonNull(document.getData().get("Ride Date")).toString(),
+                                                Objects.requireNonNull(document.getData().get("Ride Time")).toString(),
+                                                numberOfBookedPassengers
+                                        );
 
-                                           uploadedRidesModel = new uploadedRidesModel(
-                                                   Objects.requireNonNull(Objects.requireNonNull(document.getData()).get("startLocation")).toString() +
-                                                           " - " + Objects.requireNonNull(document.getData().get("endLocation")).toString(),
-                                                   Objects.requireNonNull(document.getData().get("Ride Date")).toString(),
-                                                   Objects.requireNonNull(document.getData().get("Ride Time")).toString(),
-                                                   numberOfBookedPassengers
-                                           );
-                                           Toast.makeText(UploadedRidesActivity.this, "docerror:"+numberOfBookedPassengers, Toast.LENGTH_LONG).show();
-                                       }
 
-                                   uploadedRidesModels.add(uploadedRidesModel);
-                                       recyclerView.setLayoutManager(new LinearLayoutManager(UploadedRidesActivity.this,LinearLayoutManager.VERTICAL,false));
-                                       recyclerView.setAdapter(new UploadedRidesAdapter(UploadedRidesActivity.this, uploadedRidesModels));
-                               }
-                           });
+                                    } else {
+                                        numberOfBookedPassengers = 0;
+
+                                        uploadedRidesModel = new uploadedRidesModel(
+                                                Objects.requireNonNull(Objects.requireNonNull(document.getData()).get("startLocation")).toString() +
+                                                        " - " + Objects.requireNonNull(document.getData().get("endLocation")).toString(),
+                                                Objects.requireNonNull(document.getData().get("Ride Date")).toString(),
+                                                Objects.requireNonNull(document.getData().get("Ride Time")).toString(),
+                                                numberOfBookedPassengers
+                                        );
+
+                                    }
+                                    uploadedRidesModels.add(uploadedRidesModel);
+                                    recyclerView.setLayoutManager(new LinearLayoutManager(UploadedRidesActivity.this, LinearLayoutManager.VERTICAL, false));
+                                    recyclerView.setAdapter(new UploadedRidesAdapter(UploadedRidesActivity.this, uploadedRidesModels));
+
+                                }
+                            })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+
+                                            numberOfBookedPassengers = 0;
+
+                                            uploadedRidesModels.add(uploadedRidesModel);
+                                            recyclerView.setLayoutManager(new LinearLayoutManager(UploadedRidesActivity.this, LinearLayoutManager.VERTICAL, false));
+                                            recyclerView.setAdapter(new UploadedRidesAdapter(UploadedRidesActivity.this, uploadedRidesModels));
+
+
+                                        }
+                                    });
+
 
 
 
 
                         }
-
-
 
                     }
                 });
