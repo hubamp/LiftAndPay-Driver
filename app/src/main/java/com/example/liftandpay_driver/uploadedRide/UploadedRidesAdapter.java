@@ -17,6 +17,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.liftandpay_driver.R;
+import com.example.liftandpay_driver.uploadedRide.RequestedPassenger.RequestedPassengersSheet;
 
 import java.util.ArrayList;
 
@@ -33,7 +34,7 @@ public class UploadedRidesAdapter extends RecyclerView.Adapter<UploadedRidesAdap
     @NonNull
     @Override
     public UploadedRidesAdapter.uploadedViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.uploaded_rides_model,parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.model_uploaded_rides,parent, false);
 
         return new uploadedViewHolder(view);
     }
@@ -57,6 +58,7 @@ public class UploadedRidesAdapter extends RecyclerView.Adapter<UploadedRidesAdap
             public void onClick(View v) {
                 RequestedPassengersSheet requestedPassengersSheet = new RequestedPassengersSheet();
                 FragmentManager manager = ((AppCompatActivity)context).getSupportFragmentManager();
+                requestedPassengersSheet.setNumberOfRequests(Integer.parseInt(holder.rNumberOfPassengers.getText().toString()));
                 requestedPassengersSheet.show(manager,null);
             }
         });

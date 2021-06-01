@@ -16,7 +16,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LiftAndPayDriver">
-        <activity android:name=".chats.ChatList"></activity>
+        <activity android:name=".pAPickUpLocation.ViewPickUpLocation"></activity>
+        <activity android:name=".uploadedRide.RequestedPassenger.RequestedPassengerProfile" />
+        <activity android:name=".chats.ChatList" />
         <activity android:name=".chats.ChatActivity" />
         <activity android:name=".uploadRide.ViewMapActivity" />
         <activity android:name=".driverProfile.ProfileActivity2" />

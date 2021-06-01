@@ -1,10 +1,12 @@
-package com.example.liftandpay_driver.uploadedRide;
+package com.example.liftandpay_driver.pAPickUpLocation;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.FragmentActivity;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
@@ -12,21 +14,26 @@ import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.liftandpay_driver.R;
+import com.example.liftandpay_driver.chats.ChatActivity;
+import com.example.liftandpay_driver.uploadedRide.UploadedRideMap;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
+import com.mapbox.geojson.Feature;
+import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.location.LocationComponent;
 import com.mapbox.mapboxsdk.location.modes.CameraMode;
 import com.mapbox.mapboxsdk.location.modes.RenderMode;
@@ -36,11 +43,8 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
-import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
-import com.mapbox.services.android.navigation.ui.v5.NavigationLauncherOptions;
 import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
-
 
 import java.util.List;
 
@@ -55,12 +59,13 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconIgnorePlacem
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
 
-public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallback, PermissionsListener {
+public class ViewPickUpLocation extends AppCompatActivity implements OnMapReadyCallback {
 
-    private TextView startBtn;
 
     private MapView mapView;
     private MapboxMap mapboxMap;
+
+    private FloatingActionButton chatFab;
 
     private final String geojsonSourceLayerId = "geojsonSourceLayerId";
     private final String symbolIconId = "symbolIconId";
@@ -72,7 +77,7 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationComponent locationComponent;
     private PermissionsManager permissionsManager;
-    private SharedPreferences sharedPreferences;
+
 
 
     private DirectionsRoute currentRoute;
@@ -83,26 +88,30 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Mapbox.getInstance(UploadedRideMap.this, getString(R.string.mapbox_access_token));
+        Mapbox.getInstance(ViewPickUpLocation.this, getString(R.string.mapbox_access_token));
 
-        setContentView(R.layout.activity_uploaded_ride_map);
+        setContentView(R.layout.activity_view_pick_up_location);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 
+        chatFab = findViewById(R.id.chatFabId);
 
-        startBtn = findViewById(R.id.startBtn);
+        chatFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ViewPickUpLocation.this, ChatActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
-        mapView.getMapAsync(UploadedRideMap.this);
-
+        mapView.getMapAsync(ViewPickUpLocation.this);
 
     }
 
     @Override
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
-
-        sharedPreferences =  getApplicationContext().getSharedPreferences("RIDEFILE",MODE_PRIVATE);
-        sharedPreferences.edit().putString("TheOrderId","hELLO").apply();
 
         this.mapboxMap = mapboxMap;
         locationComponent = mapboxMap.getLocationComponent();
@@ -112,36 +121,18 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
             public void onStyleLoaded(@NonNull Style style) {
                 // Add the symbol layer icon to map for future use
                 style.addImage(symbolIconId, BitmapFactory.decodeResource(
-                        UploadedRideMap .this.getResources(), R.drawable.mapbox_logo_icon));
-                // Create an empty GeoJSON source using the empty feature collection
+                        ViewPickUpLocation .this.getResources(), R.drawable.mapbox_logo_icon));
                 setUpSource(style);
-                // Set up a new symbol layer for displaying the searched location's feature coordinates
                 setupLayer(style);
-                enableLocationComponent(style);
                 addDestinationIconSymbolLayer(style);
-
-                startBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        boolean simulateRoute = true;
-                        NavigationLauncherOptions options = NavigationLauncherOptions.builder()
-                                .directionsRoute(currentRoute)
-                                .shouldSimulateRoute(simulateRoute)
-                                .build();
-// Call this method with Context from within an Activity
-                        NavigationLauncher.startNavigation(UploadedRideMap.this, options);
-                    }
-                });
-
-
+                passengerPickUpLocMarker(Point.fromLngLat(5.58860529, -0.184086699));
             }
         });
 
 
+        fusedLocationProviderClient = getFusedLocationProviderClient(ViewPickUpLocation.this);
 
-        fusedLocationProviderClient = getFusedLocationProviderClient(UploadedRideMap.this);
-
-        if (ActivityCompat.checkSelfPermission(UploadedRideMap.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(ViewPickUpLocation.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -152,42 +143,37 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
             return;
         }
         fusedLocationProviderClient.getLastLocation()
-                .addOnSuccessListener(UploadedRideMap.this, new OnSuccessListener<Location>() {
+                .addOnSuccessListener(ViewPickUpLocation.this, new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
                         myLoc = new LatLng(location.getLatitude(), location.getLongitude());
-                        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(
-                                new CameraPosition.Builder()
-                                        .target(new LatLng(location.getLatitude(),
-                                                location.getLongitude()))
-                                        .zoom(17)
-                                        .build()), 4000);
 
-                        sharedPreferences.edit().putString("TheDriverLatitude", (myLoc.getLatitude()+"")).apply();
-                        sharedPreferences.edit().putString("TheDriverLongitude", (myLoc.getLongitude()+"")).apply();
-                        Toast.makeText(getApplicationContext(), myLoc.getLatitude()+"",Toast.LENGTH_LONG).show();
-                        Toast.makeText(getApplicationContext(), myLoc.getLongitude()+"",Toast.LENGTH_LONG).show();
 
-                        String theCurrentLat = sharedPreferences.getString("TheDriverLatitude","Null");
-                        String theCurrentLong = sharedPreferences.getString("TheDriverLongitude","Null");
+                        if(!myLoc.equals("Null")) {
 
-                        if(!theCurrentLat.equals("Null") && !theCurrentLong.equals("Null")) {
-
-                            double myLat = Double.parseDouble(theCurrentLat);
-                            double myLong = Double.parseDouble(theCurrentLong);
+                            double myLat = myLoc.getLatitude();
+                            double myLong = myLoc.getLongitude();
                             LatLng points = new LatLng( myLat, myLong);
                             LatLng pointd = new LatLng(5.58860529, -0.184086699);
+
+                            LatLngBounds latLngBounds = new LatLngBounds.Builder()
+                                    .include(points)
+                                    .include(pointd)
+                                    .build();
+
+                            mapboxMap.moveCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 150));
+
 
                             Point destinationPoint = Point.fromLngLat(pointd.getLongitude(), pointd.getLatitude());
                             Point originPoint = Point.fromLngLat(points.getLongitude(), points.getLatitude());
                             getRoute(originPoint,destinationPoint);
+                            passengerPickUpLocMarker(originPoint);
+
                         }
                         else
                         {
                             Toast.makeText(getApplicationContext(), "The Cordinates are null, Route could not render",Toast.LENGTH_LONG).show();
                         }
-
-
 
                     }
                 });
@@ -199,48 +185,11 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
 
 
 
-    @SuppressLint("WrongConstant")
-    @SuppressWarnings( {"MissingPermission"})
-    private void enableLocationComponent(@NonNull Style loadedMapStyle) {
-// Check if permissions are enabled and if not request
-        if (PermissionsManager.areLocationPermissionsGranted(this)) {
-// Activate the MapboxMap LocationComponent to show user location
-// Adding in LocationComponentOptions is also an optional parameter
-
-            locationComponent.activateLocationComponent(this, loadedMapStyle);
-            locationComponent.setLocationComponentEnabled(true);
-            locationComponent.setRenderMode(RenderMode.GPS);
-
-
-// Set the component's camera mode
-            locationComponent.setCameraMode(CameraMode.TRACKING_GPS);
-            locationComponent.tiltWhileTracking(45);
-        } else {
-            permissionsManager = new PermissionsManager(this);
-            permissionsManager.requestLocationPermissions(this);
-        }
-
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-    @Override
-    public void onExplanationNeeded(List<String> permissionsToExplain) {
-        Toast.makeText(this, "R.string.user_location_permission_explanation" , Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void onPermissionResult(boolean granted) {
-        if (granted) {
-            enableLocationComponent(mapboxMap.getStyle());
-        } else {
-            Toast.makeText(this, "R.string.user_location_permission_not_granted", Toast.LENGTH_LONG).show();
-            finish();
-        }
-    }
 
     private void setUpSource(@NonNull Style loadedMapStyle) {
         loadedMapStyle.addSource(new GeoJsonSource(geojsonSourceLayerId));
@@ -269,6 +218,19 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
     }
 
 
+    private void passengerPickUpLocMarker(Point point) {
+        if (mapboxMap.getStyle() != null) {
+            GeoJsonSource sanciangkoFlood1 = mapboxMap.getStyle().getSourceAs("destination-source-id");
+            if (sanciangkoFlood1 != null) {
+                sanciangkoFlood1.setGeoJson(FeatureCollection.fromFeature(
+                        Feature.fromGeometry(Point.fromLngLat(point.longitude(), point.latitude()))
+                ));
+
+            }
+        }
+    }
+
+
     private void getRoute(Point origin, Point destination) {
         NavigationRoute.builder(this)
                 .accessToken(Mapbox.getAccessToken())
@@ -276,35 +238,35 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                 .destination(destination)
                 .build()
                 .getRoute(new Callback<DirectionsResponse>() {
-                              @Override
-                              public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
+                    @Override
+                    public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
 // You can get the generic HTTP info about the response
-                                  Log.d("TAG", "Response code: " + response.code());
-                                  if (response.body() == null) {
-                                      Timber.e("No routes found, make sure you set the right user and access token.");
-                                      return;
-                                  } else if (response.body().routes().size() < 1) {
-                                      Timber.e("No routes found");
-                                      return;
-                                  }
+                        Log.d("TAG", "Response code: " + response.code());
+                        if (response.body() == null) {
+                            Timber.e("No routes found, make sure you set the right user and access token.");
+                            return;
+                        } else if (response.body().routes().size() < 1) {
+                            Timber.e("No routes found");
+                            return;
+                        }
 
-                                  currentRoute = response.body().routes().get(0);
+                        currentRoute = response.body().routes().get(0);
 
 // Draw the route on the map
-                                  if (navigationMapRoute != null) {
-                                      navigationMapRoute.removeRoute();
-                                  } else {
-                                      navigationMapRoute = new NavigationMapRoute(null, mapView, mapboxMap, R.style.NavigationMapRoute);
-                                  }
-                                  navigationMapRoute.addRoute(currentRoute);
-                              }
+                        if (navigationMapRoute != null) {
+                            navigationMapRoute.removeRoute();
+                        } else {
+                            navigationMapRoute = new NavigationMapRoute(null, mapView, mapboxMap, R.style.NavigationMapRoute);
+                        }
+                        navigationMapRoute.addRoute(currentRoute);
+                    }
 
-                              @Override
-                              public void onFailure(Call<DirectionsResponse> call, Throwable t) {
-                                  Timber.e(t.toString());
+                    @Override
+                    public void onFailure(Call<DirectionsResponse> call, Throwable t) {
+                        Timber.e(t.toString());
 
-                              }
-                          });
+                    }
+                });
     }
 
 
@@ -329,7 +291,7 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
     protected void onStop() {
         super.onStop();
         mapView.onStop();
-        sharedPreferences.edit().clear().apply();
+
     }
 
     @Override
@@ -348,7 +310,6 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
     protected void onDestroy() {
         super.onDestroy();
         mapView.onDestroy();
-        sharedPreferences.edit().clear().apply();
 
     }
 

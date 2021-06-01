@@ -160,8 +160,6 @@ public class UploadRideActivity extends AppCompatActivity {
         proceedBtn.setAnimation(animation);
 
         //Searching Location
-
-
        CurrentLocationClass currentLocationClass = new CurrentLocationClass();
 
        startLocation.setOnClickListener(new View.OnClickListener() {

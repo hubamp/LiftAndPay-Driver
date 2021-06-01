@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -41,7 +42,7 @@ public class UploadedRidesActivity extends AppCompatActivity {
 
     private ArrayList<uploadedRidesModel> uploadedRidesModels = new ArrayList<>();
     private RecyclerView recyclerView;
-    private ImageButton uploadBtn;
+    private TextView uploadBtn;
     private RelativeLayout mainLayout;
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -63,6 +64,7 @@ public class UploadedRidesActivity extends AppCompatActivity {
        menuBtn = findViewById(R.id.menu_spinner);
 
 
+
        uploadBtn.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
@@ -78,7 +80,6 @@ public class UploadedRidesActivity extends AppCompatActivity {
                startActivity(intent);
            }
        });
-
 
 
 
@@ -98,18 +99,13 @@ public class UploadedRidesActivity extends AppCompatActivity {
                         uploadedRidesModels.clear();
 
                         for (DocumentSnapshot document : value.getDocuments()) {
-
-
                             CollectionReference bookedByCollection = pendingRides.document(document.getId()).collection("Booked By");
-
                             bookedByCollection.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                                 @Override
                                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-
                                     numberOfBookedPassengers = queryDocumentSnapshots.size();
 
                                     if (numberOfBookedPassengers > 0) {
-
 
                                         uploadedRidesModel = new uploadedRidesModel(
                                                 Objects.requireNonNull(Objects.requireNonNull(document.getData()).get("startLocation")).toString() +
@@ -118,7 +114,6 @@ public class UploadedRidesActivity extends AppCompatActivity {
                                                 Objects.requireNonNull(document.getData().get("Ride Time")).toString(),
                                                 numberOfBookedPassengers
                                         );
-
 
                                     } else {
                                         numberOfBookedPassengers = 0;
@@ -148,12 +143,8 @@ public class UploadedRidesActivity extends AppCompatActivity {
                                             recyclerView.setLayoutManager(new LinearLayoutManager(UploadedRidesActivity.this, LinearLayoutManager.VERTICAL, false));
                                             recyclerView.setAdapter(new UploadedRidesAdapter(UploadedRidesActivity.this, uploadedRidesModels));
 
-
                                         }
                                     });
-
-
-
 
 
                         }
