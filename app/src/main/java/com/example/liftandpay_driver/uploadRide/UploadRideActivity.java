@@ -178,7 +178,7 @@ public class UploadRideActivity extends AppCompatActivity {
 
 
 
-        ride = new HashMap<>();
+      ride = new HashMap<>();
       String startLocationText =  sharedPreferences.getString("TheRideStartingLocation","No place selected");
       String endingLocationText = sharedPreferences.getString("TheRideEndingLocation","No place selected");
       String distanceText = sharedPreferences.getString("TheRideDistance","");
@@ -277,6 +277,10 @@ public class UploadRideActivity extends AppCompatActivity {
                 ride.put("Ride Cost" , cost.getText().toString());
                 ride.put("Ride Date" , date.getText().toString());
                 ride.put("Ride Time" , time.getText().toString());
+                ride.put("startLon" , locationOne.getLongitude());
+                ride.put("startLat" , locationOne.getLatitude());
+                ride.put("endLon" , locationTwo.getLongitude());
+                ride.put("endLat" , locationTwo.getLatitude());
 
                 CollectionReference pendingRidesDb = FirebaseFirestore.getInstance().collection("Driver").document(theDriverId).collection("Pending Rides");
 
@@ -309,33 +313,12 @@ public class UploadRideActivity extends AppCompatActivity {
                         });
             }
         });
-
-
-
     }
-
-
-
-
 
     public void openDialog() {
         proceedAlert proceedAlert = new proceedAlert();
         proceedAlert.show(getSupportFragmentManager(), "example dialog");
     }
-
-
-
-    private void saveToShared()
-    {
-        String startLocationText =  sharedPreferences.getString("TheRideStartingLocation","No place selected");
-        String endingLocationText = sharedPreferences.getString("TheRideEndingLocation","No place selected");
-        String distanceText = sharedPreferences.getString("TheRideDistance","");
-        String costText =   sharedPreferences.getString("TheRideCost","");
-        String dateText =  sharedPreferences.getString("TheRideDate","Not Selected");
-        String timeText =  sharedPreferences.getString("TheRideTime","Not Selected");
-    }
-
-
 
 //Activities after Requesting A location from search
     @Override
@@ -430,7 +413,6 @@ public class UploadRideActivity extends AppCompatActivity {
                         !startInfo[1].isEmpty() &&
                         !startInfo[2].isEmpty()
         ) {
-            Toast.makeText(UploadRideActivity.this,"I am available",Toast.LENGTH_LONG).show();
             double sLat = Double.parseDouble(startInfo[2]);
             double sLong = Double.parseDouble(startInfo[1]);
             double eLat = Double.parseDouble(endInfo[2]);
@@ -441,12 +423,11 @@ public class UploadRideActivity extends AppCompatActivity {
             pointOne = Point.fromLngLat(locationOne.getLongitude(), locationOne.getLatitude());
             pointTwo = Point.fromLngLat(locationTwo.getLongitude(), locationTwo.getLatitude());
 
-
             setRouteDistance(pointOne,pointTwo);
         }
         else
         {
-            Toast.makeText(UploadRideActivity.this,"Not available",Toast.LENGTH_LONG).show();
+            Toast.makeText(UploadRideActivity.this,"Location not retrieved, Search again.",Toast.LENGTH_LONG).show();
         }
     }
 
@@ -498,10 +479,10 @@ public class UploadRideActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(Call<DirectionsResponse> call, Throwable t) {
                         Timber.e(t.toString());
-//                        distanceProgressBar.setVisibility(View.GONE);
-//                        costProgressBar.setVisibility(View.GONE);
-//                        distance.setVisibility(View.VISIBLE);
-//                        cost.setVisibility(View.VISIBLE);
+                        distanceProgressBar.setVisibility(View.GONE);
+                        costProgressBar.setVisibility(View.GONE);
+                        distance.setVisibility(View.VISIBLE);
+                        cost.setVisibility(View.VISIBLE);
 
                     }
                 });

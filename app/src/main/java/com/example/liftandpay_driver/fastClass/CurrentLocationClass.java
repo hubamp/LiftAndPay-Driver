@@ -78,7 +78,7 @@ public class CurrentLocationClass {
                                         .placeOptions(PlaceOptions.builder()
                                                 .backgroundColor(Color.parseColor("#BDC3FA"))
                                                 .proximity(loc)
-                                                .limit(5)
+                                                .limit(10)
                                                 .geocodingTypes()
                                                 .build(PlaceOptions.MODE_CARDS))
                                         .build(activity);

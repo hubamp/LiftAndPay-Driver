@@ -1,4 +1,4 @@
-package com.example.liftandpay_driver.driverProfile;
+package com.example.liftandpay_driver.menu;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,7 +6,7 @@ import android.os.Bundle;
 
 import com.example.liftandpay_driver.R;
 
-public class ProfileActivity2 extends AppCompatActivity {
+public class ProfileActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

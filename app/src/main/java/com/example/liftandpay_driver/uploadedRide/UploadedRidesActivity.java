@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,13 +16,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.liftandpay_driver.PhoneAuthenticationActivity;
 import com.example.liftandpay_driver.R;
-import com.example.liftandpay_driver.driverProfile.ProfileActivity;
-import com.example.liftandpay_driver.fastClass.StringFunction;
+import com.example.liftandpay_driver.menu.MenuListActivity;
 import com.example.liftandpay_driver.uploadRide.UploadRideActivity;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -76,7 +72,7 @@ public class UploadedRidesActivity extends AppCompatActivity {
        menuBtn.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
-               Intent intent = new Intent(UploadedRidesActivity.this, ProfileActivity.class);
+               Intent intent = new Intent(UploadedRidesActivity.this, MenuListActivity.class);
                startActivity(intent);
            }
        });
