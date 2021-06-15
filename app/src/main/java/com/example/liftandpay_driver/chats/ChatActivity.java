@@ -57,6 +57,8 @@ public class ChatActivity extends AppCompatActivity {
     private final String theDriverId = mAuth.getUid();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    private messageModel messageModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,26 +127,28 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
 
+                messageModels.clear();
+
                 assert value != null;
                 for (DocumentSnapshot ds : value.getDocuments()) {
 
                     String mode  = ds.getString("ChatMode");
                     Toast.makeText(ChatActivity.this,mode,Toast.LENGTH_SHORT).show();
 
+                    assert mode != null;
                     if (mode.equals("1")) {
-                        messageModel messageModel = new messageModel(ds.getString("Message"), 1);
-                        messageModels.add(0, messageModel);
-                        recyclerView.setAdapter(new messageAdapter(messageModels));
+                        messageModel = new messageModel(ds.getString("Message"), 2);
                     }
                     if (mode.equals("2")) {
-                            messageModel messageModel = new messageModel(ds.getString("Message"), 2);
-                            messageModels.add(0, messageModel);
-                            recyclerView.setAdapter(new messageAdapter(messageModels));
+                        messageModel = new messageModel(ds.getString("Message"), 1);
                         }
                     if (!mode.equals("2") && !mode.equals("1")) Snackbar.make(ChatActivity.this, recyclerView, "Some messages are missing", 6000).show();
 
+                    messageModels.add(0, messageModel);
 
                 }
+                recyclerView.setAdapter(new messageAdapter(messageModels));
+
             }
         });
 

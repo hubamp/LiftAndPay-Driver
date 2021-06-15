@@ -32,6 +32,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -102,10 +103,11 @@ public class UploadRideActivity extends AppCompatActivity {
 
     String[] startInfo = new String[3];
     String[] endInfo = new String[3];
-    private LatLng locationOne;
-    private LatLng locationTwo;
+
     private Point pointOne;
     private Point pointTwo;
+
+    private double sLat,sLong,eLat,eLong;
 
 
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -269,6 +271,8 @@ public class UploadRideActivity extends AppCompatActivity {
                 sharedPreferences.edit().putString("TheRideDate", Objects.requireNonNull(date.getText()).toString()).apply();
                 sharedPreferences.edit().putString("TheRideTime", Objects.requireNonNull(time.getText()).toString()).apply();
 
+                String phoneNumber = Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber();
+
                 ride = new HashMap<>();
 
                 ride.put("startLocation", startLocation.getText().toString());
@@ -277,10 +281,12 @@ public class UploadRideActivity extends AppCompatActivity {
                 ride.put("Ride Cost" , cost.getText().toString());
                 ride.put("Ride Date" , date.getText().toString());
                 ride.put("Ride Time" , time.getText().toString());
-                ride.put("startLon" , locationOne.getLongitude());
-                ride.put("startLat" , locationOne.getLatitude());
-                ride.put("endLon" , locationTwo.getLongitude());
-                ride.put("endLat" , locationTwo.getLatitude());
+                ride.put("startLon" , sLong);
+                ride.put("startLat" , sLat);
+                ride.put("endLon" , eLong);
+                ride.put("endLat" , eLat);
+                ride.put("phone number",phoneNumber);
+                ride.put("myId", mAuth.getUid());
 
                 CollectionReference pendingRidesDb = FirebaseFirestore.getInstance().collection("Driver").document(theDriverId).collection("Pending Rides");
 
@@ -301,7 +307,11 @@ public class UploadRideActivity extends AppCompatActivity {
                                                 }
                                             });
 
-                                        Toast.makeText(UploadRideActivity.this, "Uploaded successfully",Toast.LENGTH_LONG).show();
+
+                                Snackbar.make(UploadRideActivity.this,time,"Uploaded successfully",5000)
+                                        .setTextColor(Color.WHITE)
+                                        .setBackgroundTint(getResources().getColor(R.color.mapbox_plugins_green)).show();
+
                                         openDialog();
                                     }
                                 })
@@ -324,6 +334,7 @@ public class UploadRideActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
 
         CarmenFeature selectedCarmenFeature = PlaceAutocomplete.getPlace(data);
 
@@ -405,23 +416,24 @@ public class UploadRideActivity extends AppCompatActivity {
     //
     private void checkConvert(){
 
-        if (
+        if
+        (
                 !endInfo[0].isEmpty() &&
                         !endInfo[1].isEmpty() &&
                         !endInfo[2].isEmpty() &&
                         !startInfo[0].isEmpty() &&
                         !startInfo[1].isEmpty() &&
                         !startInfo[2].isEmpty()
-        ) {
-            double sLat = Double.parseDouble(startInfo[2]);
-            double sLong = Double.parseDouble(startInfo[1]);
-            double eLat = Double.parseDouble(endInfo[2]);
-            double eLong = Double.parseDouble(endInfo[1]);
+        )
+        {
+            sLat = Double.parseDouble(startInfo[2]);
+            sLong = Double.parseDouble(startInfo[1]);
+            eLat = Double.parseDouble(endInfo[2]);
+            eLong = Double.parseDouble(endInfo[1]);
 
-            locationOne = new LatLng(sLat, sLong);
-            locationTwo = new LatLng(eLat, eLong);
-            pointOne = Point.fromLngLat(locationOne.getLongitude(), locationOne.getLatitude());
-            pointTwo = Point.fromLngLat(locationTwo.getLongitude(), locationTwo.getLatitude());
+
+            pointOne = Point.fromLngLat(sLong, sLat);
+            pointTwo = Point.fromLngLat(eLong, eLat);
 
             setRouteDistance(pointOne,pointTwo);
         }
@@ -465,7 +477,6 @@ public class UploadRideActivity extends AppCompatActivity {
 
                         String distanceKilo = String.valueOf(routeKilo) + "km";
                         String costPerPassenger = "GHC" +String.valueOf(routeMoney) +"/passenger";
-
 
                         distanceProgressBar.setVisibility(View.GONE);
                         costProgressBar.setVisibility(View.GONE);

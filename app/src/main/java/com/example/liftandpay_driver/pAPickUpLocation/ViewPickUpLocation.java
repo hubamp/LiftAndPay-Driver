@@ -163,10 +163,10 @@ public class ViewPickUpLocation extends AppCompatActivity implements OnMapReadyC
 
                             mapboxMap.moveCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 150));
 
-
                             Point destinationPoint = Point.fromLngLat(pointd.getLongitude(), pointd.getLatitude());
                             Point originPoint = Point.fromLngLat(points.getLongitude(), points.getLatitude());
                             getRoute(originPoint,destinationPoint);
+                            passengerPickUpLocMarker(originPoint);
                             passengerPickUpLocMarker(originPoint);
 
                         }
@@ -187,6 +187,7 @@ public class ViewPickUpLocation extends AppCompatActivity implements OnMapReadyC
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 

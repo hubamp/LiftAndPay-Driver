@@ -12,12 +12,10 @@ public class proceedAlert extends AppCompatDialogFragment {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle("YOUR RIDE HAS BEEN UPLOADED")
-                    .setMessage("You will be alerted as soon as a passenger requests to join.")
+            builder .setMessage("You will be alerted as soon as a passenger requests to join.")
                     .setPositiveButton("Thank you!!", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            Toast.makeText( getContext(), "You are welcome",Toast.LENGTH_LONG).show();
                             getActivity().finish();
                         }
                     });

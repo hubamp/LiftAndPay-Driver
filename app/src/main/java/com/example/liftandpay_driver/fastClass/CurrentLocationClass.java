@@ -71,6 +71,7 @@ public class CurrentLocationClass {
                         .addOnSuccessListener((Activity) context, new OnSuccessListener<Location>() {
                             public void onSuccess(Location location) {
                                 loc = Point.fromLngLat(location.getLongitude(),location.getLatitude());
+                                Toast.makeText(context,loc.toString(),Toast.LENGTH_SHORT).show();
 
                                 Activity activity = (Activity) context;
                                 Intent intent = new PlaceAutocomplete.IntentBuilder()

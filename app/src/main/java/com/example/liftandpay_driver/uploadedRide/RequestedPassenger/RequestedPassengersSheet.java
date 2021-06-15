@@ -24,6 +24,8 @@ public class RequestedPassengersSheet extends BottomSheetDialogFragment {
 private RecyclerView recyclerView;
 private ArrayList<ApproveRequestModel> approveRequestModels = new ArrayList<>();
 private ApproveRequestModel approveRequestModel;
+private String name;
+private String number;
 
 //Variables
     private int numberOfRequests;
@@ -54,8 +56,23 @@ private ApproveRequestModel approveRequestModel;
     public int getNumberOfRequests() {
         return numberOfRequests;
     }
-
     public void setNumberOfRequests(int numberOfRequests) {
         this.numberOfRequests = numberOfRequests;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
     }
 }
