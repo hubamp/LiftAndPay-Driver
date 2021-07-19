@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -33,9 +34,11 @@ import com.google.android.libraries.places.api.Places;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
@@ -47,6 +50,8 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.plugins.places.autocomplete.PlaceAutocomplete;
 import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -60,9 +65,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import timber.log.Timber;
-
-import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
-import static java.lang.String.format;
 
 public class UploadRideActivity extends AppCompatActivity {
     private View footerView;
@@ -92,14 +94,18 @@ public class UploadRideActivity extends AppCompatActivity {
     private TextView cost;
     private TextView date;
     private TextView time;
+    private TextInputEditText numberOfOccuppants;
 
-//  private TextInputEditText numberOfOccuppants;
+    //private TextInputEditText numberOfOccuppants;
     private Date dates;
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private final String theDriverId = mAuth.getUid();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private SharedPreferences sharedPreferences;
     private Map<String, Object> ride;
+
+    //ImageView
+    private ImageView backBtn;
 
     String[] startInfo = new String[3];
     String[] endInfo = new String[3];
@@ -108,6 +114,8 @@ public class UploadRideActivity extends AppCompatActivity {
     private Point pointTwo;
 
     private double sLat,sLong,eLat,eLong;
+
+    private static String myName;
 
 
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -134,9 +142,23 @@ public class UploadRideActivity extends AppCompatActivity {
         costProgressBar = findViewById(R.id.costProgress);
         distanceProgressBar = findViewById(R.id.distanceProgress);
 
+        db.collection("Driver").document(mAuth.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
+                myName = task.getResult().getString("Name");
+            }
+        });
+
+
         //SharedPreferences initialisation
         sharedPreferences = this.getSharedPreferences("FILENAME",MODE_PRIVATE);
 
+        backBtn =  findViewById(R.id.btn_backward_id);
+
+        backBtn.setOnClickListener(view ->{
+            finish();
+            }
+        );
 
         endInfo[0] ="";
         endInfo[1] ="";
@@ -146,7 +168,6 @@ public class UploadRideActivity extends AppCompatActivity {
         startInfo[1] ="";
         startInfo[2] ="";
 
-
         //TextView initialisation
         startLocation = findViewById(R.id.startingLocationId);
         endingLocation = findViewById(R.id.endingLocationId);
@@ -154,7 +175,7 @@ public class UploadRideActivity extends AppCompatActivity {
         cost = findViewById(R.id.costId);
         date = findViewById(R.id.dateText);
         time = findViewById(R.id.timeText);
-        //numberOfOccuppants = findViewById(R.id.numberOfOccupantsId);
+        numberOfOccuppants = findViewById(R.id.numberOfOccupantsId);
 
         Places.initialize(getApplicationContext(), "AIzaSyAnvGY2L3NUvvuMMrg1wbYK3x74Zo8NQQA");
 
@@ -187,7 +208,7 @@ public class UploadRideActivity extends AppCompatActivity {
       String costText =   sharedPreferences.getString("TheRideCost","");
       String dateText =  sharedPreferences.getString("TheRideDate","Not Selected");
       String timeText =  sharedPreferences.getString("TheRideTime","Not Selected");
-//      int occupantsNumber =  sharedPreferences.getInt("TheRideNumberOfOccupants",1);
+//      int occupantsNumber =  sharedPreferences.getInt("TheRideNumberOfOccupants",0);
 
 
       if(
@@ -206,7 +227,6 @@ public class UploadRideActivity extends AppCompatActivity {
           time.setText(timeText);
 //          numberOfOccuppants.setText((CharSequence) numberOfOccuppants);
       }
-
 
         MaterialDatePicker.Builder<Long> dateBulder = MaterialDatePicker.Builder.datePicker();
         MaterialDatePicker<Long> materialDatePicker = dateBulder.build();
@@ -256,71 +276,80 @@ public class UploadRideActivity extends AppCompatActivity {
         });
 
 
-
-
         proceedBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 progressBar.setVisibility(View.VISIBLE);
                 proceedBtn.setVisibility(View.INVISIBLE);
 
-                sharedPreferences.edit().putString("TheRideStartingLocation", Objects.requireNonNull(startLocation.getText()).toString()).apply();
-                sharedPreferences.edit().putString("TheRideEndingLocation", Objects.requireNonNull(endingLocation.getText()).toString()).apply();
-                sharedPreferences.edit().putString("TheRideDistance", Objects.requireNonNull(distance.getText()).toString()).apply();
-                sharedPreferences.edit().putString("TheRideCost", Objects.requireNonNull(cost.getText()).toString()).apply();
-                sharedPreferences.edit().putString("TheRideDate", Objects.requireNonNull(date.getText()).toString()).apply();
-                sharedPreferences.edit().putString("TheRideTime", Objects.requireNonNull(time.getText()).toString()).apply();
+
 
                 String phoneNumber = Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber();
 
                 ride = new HashMap<>();
 
-                ride.put("startLocation", startLocation.getText().toString());
-                ride.put("endLocation" , endingLocation.getText().toString());
-                ride.put("Ride Distance" , distanceText);
-                ride.put("Ride Cost" , cost.getText().toString());
-                ride.put("Ride Date" , date.getText().toString());
-                ride.put("Ride Time" , time.getText().toString());
-                ride.put("startLon" , sLong);
-                ride.put("startLat" , sLat);
-                ride.put("endLon" , eLong);
-                ride.put("endLat" , eLat);
-                ride.put("phone number",phoneNumber);
-                ride.put("myId", mAuth.getUid());
+                if (
+                        startLocation.getText().toString().equals(null)
+                        || endingLocation.getText().toString().equals(null)
+                        || distanceText.equals(null)
+                        || cost.getText().toString().equals(null)
+                        || date.getText().toString().equals(null)
+                        || time.getText().toString().equals(null)
+                        || (phoneNumber != null ? phoneNumber.equals(null) : false)
+                        || mAuth.getUid().equals(null)
+                )
+                {
+                    Toast.makeText(UploadRideActivity.this,"he",Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    ride.put("startLocation", startLocation.getText().toString());
+                    ride.put("endLocation", endingLocation.getText().toString());
+                    ride.put("Ride Distance", distanceText);
+                    ride.put("Ride Cost", cost.getText().toString());
+                    ride.put("Ride Date", date.getText().toString());
+                    ride.put("Ride Time", time.getText().toString());
+                    ride.put("startLon", sLong);
+                    ride.put("startLat", sLat);
+                    ride.put("endLon", eLong);
+                    ride.put("endLat", eLat);
+                    ride.put("phone number", phoneNumber);
+                    ride.put("driverName",myName);
+                    ride.put("myId", mAuth.getUid());
+                    ride.put("Number Of Occupants", Integer.parseInt(numberOfOccuppants.getText().toString()));
 
-                CollectionReference pendingRidesDb = FirebaseFirestore.getInstance().collection("Driver").document(theDriverId).collection("Pending Rides");
 
+                    db.collection("Driver").document(theDriverId).collection("Pending Rides").get()
+                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
-                db.collection("Driver").document(theDriverId).collection("Pending Rides").get()
-                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    String size = "" + task.getResult().size();
 
-                                String size = ""+ task.getResult().size();
-
-                        db.collection("Driver").document(theDriverId).collection("Pending Rides").document(theDriverId+" "+ size).set(ride)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                                   task.getResult().size();
-                                                   db.collection("Rides").document(theDriverId + " "+size).set(ride);
+                                    db.collection("Driver").document(theDriverId).collection("Pending Rides").document(theDriverId + " " + size).set(ride)
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    task.getResult().size();
+                                                    db.collection("Rides").document(theDriverId + " " + size).set(ride);
                                                 }
                                             });
 
 
-                                Snackbar.make(UploadRideActivity.this,time,"Uploaded successfully",5000)
-                                        .setTextColor(Color.WHITE)
-                                        .setBackgroundTint(getResources().getColor(R.color.mapbox_plugins_green)).show();
+                                    Snackbar.make(UploadRideActivity.this, time, "Uploaded successfully", 5000)
+                                            .setTextColor(Color.WHITE)
+                                            .setBackgroundTint(getResources().getColor(R.color.success)).show();
 
-                                        openDialog();
-                                    }
-                                })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(UploadRideActivity.this, "Could not upload. Restart app and Try again",Toast.LENGTH_LONG).show();
-                            }
-                        });
+                                    openDialog();
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(UploadRideActivity.this, "Could not upload. Restart app and Try again", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                }
             }
         });
     }
@@ -335,11 +364,9 @@ public class UploadRideActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-
-        CarmenFeature selectedCarmenFeature = PlaceAutocomplete.getPlace(data);
-
         //request from the starting Location
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_AUTOCOMPLETE_STLOCATION) {
+            CarmenFeature selectedCarmenFeature = PlaceAutocomplete.getPlace(data);
             startInfo[0] =selectedCarmenFeature.text();
             endInfo[0] =   endingLocation.getText().toString();
 
@@ -360,6 +387,7 @@ public class UploadRideActivity extends AppCompatActivity {
 
         //Request from the destination location
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_AUTOCOMPLETE_ENDLOCATION) {
+            CarmenFeature selectedCarmenFeature = PlaceAutocomplete.getPlace(data);
             endInfo[0] = selectedCarmenFeature.text();
             startInfo[0]= startLocation.getText().toString();
 
@@ -374,8 +402,6 @@ public class UploadRideActivity extends AppCompatActivity {
 
                 viewOnMap();
             }
-
-
         }
         checkConvert();
     }
@@ -405,10 +431,7 @@ public class UploadRideActivity extends AppCompatActivity {
                     intent.putExtra("StoppingName",endingLocation.getText().toString());
                     startActivity(intent);
                 }
-                else
-                {
-                    Toast.makeText(UploadRideActivity.this,"Lacking Location Info, Cannot open map",Toast.LENGTH_LONG).show();
-                }
+
             }
         });
     }
@@ -430,7 +453,6 @@ public class UploadRideActivity extends AppCompatActivity {
             sLong = Double.parseDouble(startInfo[1]);
             eLat = Double.parseDouble(endInfo[2]);
             eLong = Double.parseDouble(endInfo[1]);
-
 
             pointOne = Point.fromLngLat(sLong, sLat);
             pointTwo = Point.fromLngLat(eLong, eLat);
@@ -494,7 +516,6 @@ public class UploadRideActivity extends AppCompatActivity {
                         costProgressBar.setVisibility(View.GONE);
                         distance.setVisibility(View.VISIBLE);
                         cost.setVisibility(View.VISIBLE);
-
                     }
                 });
     }

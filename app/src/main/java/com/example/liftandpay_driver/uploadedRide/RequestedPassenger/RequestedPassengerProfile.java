@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -26,6 +27,9 @@ public class RequestedPassengerProfile extends AppCompatActivity {
 
     private TextView chatbtn;
     private TextView next;
+    private String thePassengerId;
+
+    private SharedPreferences sharedPreferences;
 
 
     @Override
@@ -33,13 +37,19 @@ public class RequestedPassengerProfile extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_requested_passenger_profile);
 
+
+        sharedPreferences = getSharedPreferences("PASSENGER_REQUESTFILE",MODE_PRIVATE);
         chatbtn = findViewById(R.id.pAChatbtn_id);
         next = findViewById(R.id.pANxtBtnId);
+
+        //was taken from ApproveRequestAdapter.java
+        thePassengerId = sharedPreferences.getString("ThePassengersId",null);
 
         chatbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(RequestedPassengerProfile.this, ChatActivity.class);
+                intent.putExtra("passengerId",thePassengerId);
                 startActivity(intent);
             }
         });
@@ -64,4 +74,13 @@ public class RequestedPassengerProfile extends AppCompatActivity {
         recyclerView.setAdapter(new reviewAdapter(reviewModels));
 
     }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        sharedPreferences.edit().clear().apply();
+    }
+
+
 }

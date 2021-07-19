@@ -23,8 +23,10 @@ import android.widget.Toast;
 import com.example.liftandpay_driver.R;
 import com.example.liftandpay_driver.chats.model_ChatActivity.messageAdapter;
 import com.example.liftandpay_driver.chats.model_ChatActivity.messageModel;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -34,15 +36,19 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class ChatActivity extends AppCompatActivity {
-    private String driverId, thePassengerId;
+    private String thePassengerId;
 
     private  RecyclerView recyclerView;
     private ArrayList<messageModel> messageModels;
@@ -50,6 +56,9 @@ public class ChatActivity extends AppCompatActivity {
     private EditText typedMessage;
 
     private HashMap<String, Object> chat = new HashMap<>();
+    private HashMap<String, Object> driverDetail = new HashMap<>();
+    int vtype;
+
 
 
 
@@ -80,8 +89,6 @@ public class ChatActivity extends AppCompatActivity {
             finish();
         }
 
-        Toast.makeText(ChatActivity.this,thePassengerId,Toast.LENGTH_SHORT).show();
-
         CollectionReference chatCollection =  db.collection("Chat").document(theDriverId).collection("Passengers").document(thePassengerId).collection("messages");
 
         sendBtn.setOnClickListener(new View.OnClickListener() {
@@ -107,7 +114,13 @@ public class ChatActivity extends AppCompatActivity {
                                   .addOnSuccessListener(new OnSuccessListener<Void>() {
                                       @Override
                                       public void onSuccess(Void aVoid) {
-                                          Toast.makeText(ChatActivity.this,"Added Successfully",Toast.LENGTH_LONG).show();
+                                          driverDetail.put("Name", Objects.requireNonNull(mAuth.getCurrentUser()).getDisplayName());
+                                          db.collection("Chat").document(theDriverId).set(driverDetail).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                              @Override
+                                              public void onComplete(@NonNull @NotNull Task<Void> task) {
+
+                                              }
+                                          });
                                       }
                                   })
                                   .addOnFailureListener(new OnFailureListener() {
@@ -123,7 +136,8 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-        chatCollection.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        chatCollection
+                .orderBy("Time", Query.Direction.ASCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
 
@@ -133,24 +147,44 @@ public class ChatActivity extends AppCompatActivity {
                 for (DocumentSnapshot ds : value.getDocuments()) {
 
                     String mode  = ds.getString("ChatMode");
-                    Toast.makeText(ChatActivity.this,mode,Toast.LENGTH_SHORT).show();
 
                     assert mode != null;
                     if (mode.equals("1")) {
+                        vtype = 2;
                         messageModel = new messageModel(ds.getString("Message"), 2);
                     }
                     if (mode.equals("2")) {
+                        vtype = 1;
                         messageModel = new messageModel(ds.getString("Message"), 1);
                         }
                     if (!mode.equals("2") && !mode.equals("1")) Snackbar.make(ChatActivity.this, recyclerView, "Some messages are missing", 6000).show();
 
                     messageModels.add(0, messageModel);
-
+//                    Toast.makeText(ChatActivity.this,""+vtype,Toast.LENGTH_LONG).show();
                 }
-                recyclerView.setAdapter(new messageAdapter(messageModels));
+                recyclerView.setAdapter(new messageAdapter(messageModels,vtype));
 
             }
         });
 
+        /*for(int i =0; i<15; i++){
+            if ((i%2 )== 0) {
+                vtype = 2;
+                messageModel = new messageModel("Even", 2);
+                messageModels.add(0, messageModel);
+            }
+            else
+            if((i%2 )== 1)  {
+                vtype = 1;
+                messageModel = new messageModel("Odd", 1);
+                messageModels.add(0, messageModel);
+            }
+
+        }
+        messageAdapter messageAdapter = new messageAdapter(messageModels,vtype);
+        recyclerView.setAdapter(messageAdapter);*/
+
     }
-}
+
+
+    }

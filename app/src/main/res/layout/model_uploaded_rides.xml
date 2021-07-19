@@ -10,11 +10,13 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/fadedBlue"
         android:orientation="horizontal">
 
     <LinearLayout
         android:id="@+id/uploadedLinearLayoutId"
         android:layout_width="290sp"
+        android:foreground="@color/transparentColor"
         android:layout_height="wrap_content"
         android:clickable="true"
         android:focusable="true"
@@ -87,6 +89,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clickable="true"
+        android:foreground="@color/transparentColor"
         android:background="@drawable/ripple"
         android:focusable="true">
 

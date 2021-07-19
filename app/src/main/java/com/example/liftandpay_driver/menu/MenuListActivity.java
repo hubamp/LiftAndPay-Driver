@@ -8,10 +8,10 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
+import com.example.liftandpay_driver.SignUp.PhoneAuthenticationActivity;
 import com.example.liftandpay_driver.R;
-import com.example.liftandpay_driver.chats.ChatActivity;
 import com.example.liftandpay_driver.chats.ChatList;
-import com.example.liftandpay_driver.uploadedRide.UploadedRidesActivity;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class MenuListActivity extends AppCompatActivity {
 
@@ -19,7 +19,7 @@ public class MenuListActivity extends AppCompatActivity {
 
     //individual menu declaration
     private LinearLayout profileView;
-    private LinearLayout messageView;
+    private LinearLayout messageView,logout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +30,8 @@ public class MenuListActivity extends AppCompatActivity {
         backBtn = findViewById(R.id.backButton_P1);
         profileView = findViewById(R.id.profileViewId);
         messageView = findViewById(R.id.messageViewId);
+        logout = findViewById(R.id.logoutId);
+
 
 
         profileView.setOnClickListener(new View.OnClickListener() {
@@ -51,10 +53,15 @@ public class MenuListActivity extends AppCompatActivity {
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MenuListActivity.this, UploadedRidesActivity.class);
-                startActivity(intent);
                 finish();
             }
+        });
+
+        logout.setOnLongClickListener(view->{
+            FirebaseAuth.getInstance().signOut();
+            Intent intent = new Intent(MenuListActivity.this, PhoneAuthenticationActivity.class);
+            startActivity(intent);
+            return true;
         });
     }
 }

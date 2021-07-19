@@ -41,19 +41,15 @@ public class ChatList extends AppCompatActivity {
         recyclerView = findViewById(R.id.chatListRecycler);
 
 
-
-
-
-
         db.collection("Chat").document(mUid).collection("Passengers").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull @NotNull Task<QuerySnapshot> task) {
 
-                Toast.makeText(ChatList.this, "For here"+ task.getResult().getDocuments().size(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(ChatList.this, "For here"+ task.getResult().getDocuments().size(), Toast.LENGTH_SHORT).show();
 
 
                 for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                    Toast.makeText(ChatList.this, documentSnapshot.getId(), Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(ChatList.this, documentSnapshot.getId(), Toast.LENGTH_SHORT).show();
 
                     if (task.isSuccessful()) {
 

@@ -1,42 +1,37 @@
 package com.example.liftandpay_driver.pAPickUpLocation;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
-import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.example.liftandpay_driver.R;
 import com.example.liftandpay_driver.chats.ChatActivity;
-import com.example.liftandpay_driver.uploadedRide.UploadedRideMap;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.mapbox.android.core.permissions.PermissionsListener;
-import com.mapbox.android.core.permissions.PermissionsManager;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
-import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
-import com.mapbox.mapboxsdk.location.LocationComponent;
-import com.mapbox.mapboxsdk.location.modes.CameraMode;
-import com.mapbox.mapboxsdk.location.modes.RenderMode;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
@@ -46,7 +41,7 @@ import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 
-import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -69,20 +64,24 @@ public class ViewPickUpLocation extends AppCompatActivity implements OnMapReadyC
 
     private final String geojsonSourceLayerId = "geojsonSourceLayerId";
     private final String symbolIconId = "symbolIconId";
-    private final String mapBoxStyleUrl ="mapbox://styles/hubert-brako/cknk4g1t6031l17to153efhbs";
+    private final String mapBoxStyleUrl = "mapbox://styles/hubert-brako/cknk4g1t6031l17to153efhbs";
 
-
-    private LatLng myLoc;
-
-    private FusedLocationProviderClient fusedLocationProviderClient;
-    private LocationComponent locationComponent;
-    private PermissionsManager permissionsManager;
-
-
-
+    private AlertDialog routDialog;
     private DirectionsRoute currentRoute;
     private static final String TAG = "DirectionsActivity";
     private NavigationMapRoute navigationMapRoute;
+
+    private SharedPreferences passengerRequests_sharedPreference, activeRide_sharedPreference;
+
+    private String thePassengerId,thePassengerName;
+
+    private AlertDialog.Builder routingDialog;
+
+    private final FirebaseFirestore db =FirebaseFirestore.getInstance();
+    private final String mUid = FirebaseAuth.getInstance().getUid();
+
+
+    private TextView approveBtn,declinedBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,18 +90,115 @@ public class ViewPickUpLocation extends AppCompatActivity implements OnMapReadyC
         Mapbox.getInstance(ViewPickUpLocation.this, getString(R.string.mapbox_access_token));
 
         setContentView(R.layout.activity_view_pick_up_location);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+
+        //This sharedpreference is from ApproveRequestAdapter.java
+        passengerRequests_sharedPreference = getSharedPreferences("PASSENGER_REQUESTFILE", MODE_PRIVATE);
+
+        //This sharedpreference is from UploadedRidesAdapter.java
+        activeRide_sharedPreference = getSharedPreferences("ACTIVE_RIDEFILE", MODE_PRIVATE);
 
         chatFab = findViewById(R.id.chatFabId);
+        approveBtn = findViewById(R.id.pANxtBtnId);
+        declinedBtn = findViewById(R.id.pADeclinedBtnId);
+
+        thePassengerId = passengerRequests_sharedPreference.getString("ThePassengersId", null);
+        thePassengerName = passengerRequests_sharedPreference.getString("ThePassengersName", null);
 
         chatFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ViewPickUpLocation.this, ChatActivity.class);
+                intent.putExtra("passengerId", thePassengerId);
                 startActivity(intent);
             }
         });
 
+
+        approveBtn.setOnClickListener(View->{
+            AlertDialog.Builder builder
+                    = new AlertDialog
+                    .Builder(ViewPickUpLocation.this);
+
+            // Set the message show for the Alert time
+            builder.setMessage("Do you want to Approve "+thePassengerName+" for this ride?");
+            builder.setTitle("Approve");
+            builder.setCancelable(true);
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            }).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                    db.collection("Rides")
+                            .document(activeRide_sharedPreference
+                                    .getString("TheRideId",null))
+                            .collection("Booked By").document(thePassengerId)
+                            .update("Status","Approved")
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull @NotNull Task<Void> task) {
+                            dialog.dismiss();
+                            Snackbar.make(chatFab,"Approved",3000).setBackgroundTint( ContextCompat.getColor(ViewPickUpLocation.this, R.color.mapbox_plugins_green)).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull @NotNull Exception e) {
+                            dialog.dismiss();
+                            Snackbar.make(chatFab,"Approval Incomplete",3000).setBackgroundTint( ContextCompat.getColor(ViewPickUpLocation.this, R.color.mapbox_navigation_route_layer_congestion_red)).show();
+
+                        }
+                    });
+                }
+            });
+            builder.create().show();
+        });
+
+        declinedBtn.setOnClickListener(View->{
+            AlertDialog.Builder builder
+                    = new AlertDialog
+                    .Builder(ViewPickUpLocation.this);
+
+            // Set the message show for the Alert time
+            builder.setMessage("Do you want to Decline "+thePassengerName+"'s request?");
+            builder.setTitle("Decline");
+            builder.setCancelable(true);
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            }).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                    db.collection("Rides")
+                            .document(activeRide_sharedPreference
+                                    .getString("TheRideId",null))
+                            .collection("Booked By").document(thePassengerId)
+                            .update("Status","Declined")
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull @NotNull Task<Void> task) {
+                            dialog.dismiss();
+                            Snackbar.make(chatFab,"Declined",3000).setBackgroundTint( ContextCompat.getColor(ViewPickUpLocation.this, R.color.primaryColors)).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull @NotNull Exception e) {
+                            dialog.dismiss();
+                            Snackbar.make(chatFab,"Approval Incomplete",3000).setBackgroundTint( ContextCompat.getColor(ViewPickUpLocation.this, R.color.failure)).show();
+
+                        }
+                    });
+                }
+            });
+            builder.create().show();
+        });
 
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
@@ -114,81 +210,55 @@ public class ViewPickUpLocation extends AppCompatActivity implements OnMapReadyC
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
 
         this.mapboxMap = mapboxMap;
-        locationComponent = mapboxMap.getLocationComponent();
+
 
         mapboxMap.setStyle(new Style.Builder().fromUri(mapBoxStyleUrl), new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
                 // Add the symbol layer icon to map for future use
                 style.addImage(symbolIconId, BitmapFactory.decodeResource(
-                        ViewPickUpLocation .this.getResources(), R.drawable.mapbox_logo_icon));
+                        ViewPickUpLocation.this.getResources(), R.drawable.mapbox_logo_icon));
                 setUpSource(style);
                 setupLayer(style);
                 addDestinationIconSymbolLayer(style);
-                passengerPickUpLocMarker(Point.fromLngLat(5.58860529, -0.184086699));
+
+                double pickupLat = Double.parseDouble(passengerRequests_sharedPreference.getString("ThePickupLatitude", null));
+                double pickupLon = Double.parseDouble(passengerRequests_sharedPreference.getString("ThePickupLongitude", null));
+
+                passengerPickUpLocMarker(Point.fromLngLat(pickupLon, pickupLat));
             }
         });
 
 
-        fusedLocationProviderClient = getFusedLocationProviderClient(ViewPickUpLocation.this);
+        double stLat = Double.parseDouble(activeRide_sharedPreference.getString("TheStLat","0"));
+        double stLon = Double.parseDouble(activeRide_sharedPreference.getString("TheStLon","0"));
+        double endLat = Double.parseDouble(activeRide_sharedPreference.getString("TheEndLat","0"));
+        double endLon = Double.parseDouble(activeRide_sharedPreference.getString("TheEndLon","0"));
 
-        if (ActivityCompat.checkSelfPermission(ViewPickUpLocation.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
+        if (stLat !=0 && stLon!= 0 && endLat != 0 && endLon != 0 ) {
+            LatLng points = new LatLng(stLat, stLon);
+            LatLng pointd = new LatLng(endLat, endLon);
+
+            LatLngBounds latLngBounds = new LatLngBounds.Builder()
+                    .include(points)
+                    .include(pointd)
+                    .build();
+
+            mapboxMap.moveCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 150));
+
+          routingDialog =   new AlertDialog.Builder(ViewPickUpLocation.this).setMessage("Routing ...");
+          routingDialog.setCancelable(false);
+         routDialog = routingDialog.show();
+        getRoute(Point.fromLngLat(stLon, stLat), Point.fromLngLat(endLon, endLat));
+                        /*    passengerPickUpLocMarker(originPoint);
+                            passengerPickUpLocMarker(originPoint);*/
         }
-        fusedLocationProviderClient.getLastLocation()
-                .addOnSuccessListener(ViewPickUpLocation.this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        myLoc = new LatLng(location.getLatitude(), location.getLongitude());
+        else
+        {
+            Snackbar.make(chatFab,"stLat: "+stLat +"\nstLon: "+stLon+"\neLat: "+endLat+"\nelon: "+ endLon ,3000).setBackgroundTint( ContextCompat.getColor(ViewPickUpLocation.this, R.color.mapbox_navigation_route_layer_congestion_red)
+            ).show();
+        }
 
-
-                        if(!myLoc.equals("Null")) {
-
-                            double myLat = myLoc.getLatitude();
-                            double myLong = myLoc.getLongitude();
-                            LatLng points = new LatLng( myLat, myLong);
-                            LatLng pointd = new LatLng(5.58860529, -0.184086699);
-
-                            LatLngBounds latLngBounds = new LatLngBounds.Builder()
-                                    .include(points)
-                                    .include(pointd)
-                                    .build();
-
-                            mapboxMap.moveCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 150));
-
-                            Point destinationPoint = Point.fromLngLat(pointd.getLongitude(), pointd.getLatitude());
-                            Point originPoint = Point.fromLngLat(points.getLongitude(), points.getLatitude());
-                            getRoute(originPoint,destinationPoint);
-                            passengerPickUpLocMarker(originPoint);
-                            passengerPickUpLocMarker(originPoint);
-
-                        }
-                        else
-                        {
-                            Toast.makeText(getApplicationContext(), "The Cordinates are null, Route could not render",Toast.LENGTH_LONG).show();
-                        }
-
-                    }
-                });
-
-
-
-    }
-
-
-
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
 
@@ -258,8 +328,9 @@ public class ViewPickUpLocation extends AppCompatActivity implements OnMapReadyC
                             navigationMapRoute.removeRoute();
                         } else {
                             navigationMapRoute = new NavigationMapRoute(null, mapView, mapboxMap, R.style.NavigationMapRoute);
+                            navigationMapRoute.addRoute(currentRoute);
                         }
-                        navigationMapRoute.addRoute(currentRoute);
+                        routDialog.dismiss();
                     }
 
                     @Override
@@ -269,10 +340,6 @@ public class ViewPickUpLocation extends AppCompatActivity implements OnMapReadyC
                     }
                 });
     }
-
-
-
-
 
 
     // Add the mapView lifecycle to the activity's lifecycle methods

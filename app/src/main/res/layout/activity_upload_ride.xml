@@ -21,14 +21,15 @@
         android:elevation="50dp"
         />
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/btn_back"
-        android:clickable="true"
-        android:layout_centerVertical="true"
-        android:focusableInTouchMode="true"
-        android:focusable="true"/>
+        <ImageView
+            android:id="@+id/btn_backward_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/btn_back"
+            android:background="@drawable/ripple"
+            android:clickable="true"
+            android:layout_centerVertical="true"
+            android:focusable="true"/>
 
         <TextView
             android:layout_width="wrap_content"

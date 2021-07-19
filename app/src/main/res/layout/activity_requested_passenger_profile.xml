@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,6 +8,12 @@
     tools:context=".uploadedRide.RequestedPassenger.RequestedPassengerProfile">
 
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_above="@id/pAprofileFooter"
+        >
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -18,195 +24,171 @@
         android:background="@color/primaryColors"
         android:textColor="@color/white"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:padding="15dp"
-        android:orientation="vertical">
-
-    <ImageView
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:src="@drawable/btn_profile"
-        android:background="@color/extraFadedBlue"
-        android:layout_margin="10dp"/>
-
-    <TextView
+    <ScrollView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Student"
-        android:textSize="25sp"
-        android:textColor="@color/primaryColors"
-        android:textStyle="bold"
-        />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hubert Brako Amponsah"
-        android:textSize="20sp"
-        android:textStyle="italic"/>
-
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            >
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/img_star_fullyfilled"/>
+            android:orientation="vertical">
 
-            <ImageView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:src="@drawable/img_star_fullyfilled"/>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/img_star_fullyfilled"/>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/img_star_partiallyfilled"/>
+                android:gravity="center_horizontal"
+                android:padding="15dp"
+                android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=" (3.4/4)"/>
+                <ImageView
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:src="@drawable/btn_profile"
+                    android:background="@color/extraFadedBlue"
+                    android:layout_margin="10dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Student"
+                    android:textSize="25sp"
+                    android:textColor="@color/primaryColors"
+                    android:textStyle="bold"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hubert Brako Amponsah"
+                    android:textSize="20sp"
+                    android:textStyle="italic"/>
+
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    >
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/img_star_fullyfilled"/>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/img_star_fullyfilled"/>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/img_star_fullyfilled"/>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/img_star_partiallyfilled"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" (3.4/4)"/>
+                </LinearLayout>
+
+
+                    <TextView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:id="@+id/pAChatbtn_id"
+                        android:layout_marginTop="25dp"
+                        android:foreground="@drawable/img_message"
+                        android:foregroundTint="@color/primaryColors"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CHAT"
+                    android:textColor="@color/primaryColors"
+                    android:paddingBottom="5dp"/>
+
+
+            </LinearLayout>
+
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/fadedBlue"
+                    android:textAlignment="textStart"
+                    android:paddingStart="15dp"
+                    android:padding="4dp"
+                    android:text="Reviews"
+                    android:gravity="center"
+                    tools:ignore="RtlCompat,RtlSymmetry" />
+
+            <View
+                android:id="@+id/reviewTopicId"
+                android:layout_marginTop="4dp"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/white"/>
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/reviewRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:listitem="@layout/model_passenger_review" />
+
+
         </LinearLayout>
 
+    </ScrollView>
 
     </LinearLayout>
-
-
     <LinearLayout
+        android:id="@+id/pAprofileFooter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:gravity="center"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="50dp"
-            android:background="@color/fadedBlue"
-            android:text="Reviews"
-            android:gravity="center"
-            />
-
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="@color/fadedBlue"/>
-
-        <TextView
-            android:id="@+id/pAChatbtn_id"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="50dp"
-            android:text="Chat with"
-            android:textColor="@color/primaryColors"
-            android:gravity="center"
-            android:foreground="@drawable/img_bck_rectangle"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="@drawable/ripple"
-            android:textAlignment="center"/>
-
-    </LinearLayout>
-    <View
-        android:id="@+id/reviewTopicId"
-        android:layout_marginTop="4dp"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/white"/>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:layout_gravity="bottom"
+        android:layout_alignParentBottom="true"
+        android:gravity="end"
+        android:background="@color/white"
         >
 
 
-      <!--  <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/reviewTopicId"
-            android:orientation="vertical">
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
+            android:layout_margin="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:backgroundTint="@color/extraFadedRed"
+            android:text="Decline Request"
             android:textColor="@color/black"
-            android:background="@color/extraFadedBlue"
-            android:padding="6dp"
-            android:textSize="20sp"
-            android:text="Reviews"/>
+            android:paddingVertical="10dp"
+            android:background="@drawable/ripple"/>
 
 
-        </LinearLayout>
--->
-
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/reviewRecycler"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:listitem="@layout/model_passenger_review" />
-
-        <LinearLayout
-            android:id="@+id/pAprofileFooter"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/pANxtBtnId"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_alignParentBottom="true"
-            android:gravity="end"
-            android:background="@color/white"
-            >
+            android:layout_margin="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:backgroundTint="@color/primaryColors"
+            android:text="Next"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:paddingVertical="10dp"
+            android:background="@drawable/ripple"/>
 
 
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:backgroundTint="@color/extraFadedBlue"
-                android:text="Decline Request"
-                android:paddingVertical="10dp"
-                android:background="@drawable/ripple"/>
+    </LinearLayout>
 
 
-            <TextView
-                android:id="@+id/pANxtBtnId"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:backgroundTint="@color/primaryColors"
-                android:text="Next"
-                android:textColor="@color/white"
-                android:gravity="center"
-                android:paddingVertical="10dp"
-                android:background="@drawable/ripple"/>
-
-
-        </LinearLayout>
-
-
-
-    </RelativeLayout>
-
-
-</LinearLayout>
+</RelativeLayout>

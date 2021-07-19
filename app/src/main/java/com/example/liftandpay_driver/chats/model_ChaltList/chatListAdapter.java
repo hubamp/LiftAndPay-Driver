@@ -52,7 +52,7 @@ public class chatListAdapter extends RecyclerView.Adapter<chatListAdapter.chatVi
             @Override
             public void onClick(View v) {
                 String passengerId = chatListModels.get(position).getPassengerId();
-                Toast.makeText(context,passengerId,Toast.LENGTH_SHORT).show();
+//                Toast.makeText(context,passengerId,Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(context, ChatActivity.class);
                 intent.putExtra("passengerId",passengerId);
                 context.startActivity(intent);

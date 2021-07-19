@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#083D56F5"
-    tools:context=".PhoneAuthenticationActivity">
+    tools:context=".SignUp.PhoneAuthenticationActivity">
 
     <View
         android:layout_width="match_parent"
@@ -41,7 +41,7 @@
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
                 android:inputType="phone"
-                android:maxLength="4"
+                android:maxLength="3"
                 android:hint="+233"/>
 
             <EditText
@@ -55,6 +55,12 @@
                 android:hint="Number"/>
 
         </LinearLayout>
+        <ProgressBar
+            android:id="@+id/verifyProgressId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            />
 
     <Button
         android:id="@+id/verifyPhoneNumberBtnId"
@@ -63,17 +69,12 @@
         android:text="verify"/>
 
     <TextView
+        android:id="@+id/infoText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Make sure you have enough SMS credit"
         android:textColor="@color/primaryColors"/>
 
-    <ProgressBar
-        android:id="@+id/verifyProgressId"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        />
 
     </LinearLayout>
 

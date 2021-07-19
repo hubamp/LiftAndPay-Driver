@@ -56,18 +56,21 @@
                     android:paddingStart="7dp"
                     android:gravity="center"
                     android:textColor="@color/primaryColors"
-                    android:foreground="@color/extraFadedBlue"
                     android:background="@drawable/ripple"
+                    android:backgroundTint="@color/extraFadedBlue"
                     android:text="START RIDE"/>
 
 
 
-                <ImageView
+                <ProgressBar
+                    android:id="@+id/startedProgress"
+                    android:visibility="invisible"
                     style="@style/smallIconBtnStyle"
-                    android:src="@drawable/btn_refresh"
-                    android:contentDescription="RELOAD" />
+                    android:indeterminateTint="@color/primaryColors"
+                     />
 
                 <ImageView
+                    android:id="@+id/deleteBtn"
                     style="@style/smallIconBtnStyle"
                     android:foreground="@drawable/btn_delete"
                     android:layout_marginEnd="2dp"

@@ -4,6 +4,9 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -56,30 +59,17 @@ public class chatNotification extends Worker {
     @NotNull
     @Override
     public Result doWork() {
-
-//        CollectionReference pendingRides = db.collection("Drivers").document(theDriverId).collection("Pending Rides");
+//      CollectionReference pendingRides = db.collection("Drivers").document(theDriverId).collection("Pending Rides");
         CollectionReference myRides = db.collection("Rides");
-
-
 
         myRides.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable @org.jetbrains.annotations.Nullable QuerySnapshot value, @Nullable @org.jetbrains.annotations.Nullable FirebaseFirestoreException error) {
 
-                i++;
-                Toast.makeText(getApplicationContext(),"The driver Id" + i,Toast.LENGTH_SHORT).show();
-//              buildNotification("Someone has booked your ride", "Tessan to Madina");
             }
         });
-       /* pendingRides.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable @org.jetbrains.annotations.Nullable QuerySnapshot value, @Nullable @org.jetbrains.annotations.Nullable FirebaseFirestoreException error) {
+        buildNotification("Someone has booked your ride", "Tesano to Madina");
 
-
-                buildNotification("New Passenger booked", "Hubert Amponsah");
-            }
-        });
-       */
         return Result.success();
     }
 
@@ -100,7 +90,6 @@ public class chatNotification extends Worker {
         }
     }
 
-
     private void buildNotification(String title, String contentText){
         createNotificationChannel();
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "100")
@@ -111,7 +100,6 @@ public class chatNotification extends Worker {
                         .bigText(contentText))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
         builder.build();
-
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
         notificationManager.notify(0, builder.build());

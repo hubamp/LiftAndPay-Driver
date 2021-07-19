@@ -65,7 +65,7 @@ public class UploadedRidesAdapter extends RecyclerView.Adapter<UploadedRidesAdap
 
         uploadedRidesModel uploadedRidesModel = uploadedRidesModels.get(position);
 
-        pAImageRef = store.getReference().child("Passenger");
+//        pAImageRef = store.getReference().child("Passenger");
 
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("UseCompatLoadingForDrawables")

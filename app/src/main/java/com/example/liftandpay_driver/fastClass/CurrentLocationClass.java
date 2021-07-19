@@ -23,6 +23,8 @@ import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.plugins.places.autocomplete.PlaceAutocomplete;
 import com.mapbox.mapboxsdk.plugins.places.autocomplete.model.PlaceOptions;
 
+import java.util.Locale;
+
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
 public class CurrentLocationClass {
@@ -31,20 +33,16 @@ public class CurrentLocationClass {
     private Point loc;
     private View view;
 
-    public enum request{
-        REQUEST_CODE_AUTOCOMPLETE_START  ,
-        REQUEST_CODE_AUTOCOMPLETE_END
-    }
     public CurrentLocationClass(){
 
     }
 
 
 
-    public void popSearchBasedOnCurrentLocation(Context context1){
-        this.context = context1;
+    public static void popSearchBasedOnCurrentLocation(Context context){
 
-                fusedLocationProviderClient = getFusedLocationProviderClient(context);
+
+               FusedLocationProviderClient fusedLocationProviderClient = getFusedLocationProviderClient(context);
 
                 if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     // TODO: Consider calling
@@ -70,7 +68,7 @@ public class CurrentLocationClass {
                         })
                         .addOnSuccessListener((Activity) context, new OnSuccessListener<Location>() {
                             public void onSuccess(Location location) {
-                                loc = Point.fromLngLat(location.getLongitude(),location.getLatitude());
+                               Point loc = Point.fromLngLat(location.getLongitude(),location.getLatitude());
                                 Toast.makeText(context,loc.toString(),Toast.LENGTH_SHORT).show();
 
                                 Activity activity = (Activity) context;
@@ -80,38 +78,40 @@ public class CurrentLocationClass {
                                                 .backgroundColor(Color.parseColor("#BDC3FA"))
                                                 .proximity(loc)
                                                 .limit(10)
+                                                .country("ISO 3166-2")
                                                 .geocodingTypes()
-                                                .build(PlaceOptions.MODE_CARDS))
+                                                .build(PlaceOptions.MODE_FULLSCREEN))
                                         .build(activity);
                                 activity.startActivityForResult(intent, -1);
                             }
 
                         });
 
-
-
-
             }
 
     public void popSearchBasedOnCurrentLocation(Context context1, ProgressBar progressBar, int requestCode){
 
         this.context = context1;
-
-
         progressBar.setVisibility(View.VISIBLE);
 
         fusedLocationProviderClient = getFusedLocationProviderClient(context);
 
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
+//             TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
+//               public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//                                                      int[] grantResults)
+//             to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-            return;
+
         }
+        else
+        {
+            Toast.makeText(context1, "Location not enabled",Toast.LENGTH_LONG).show();
+            progressBar.setVisibility(View.INVISIBLE);
+        }
+
 
 
         fusedLocationProviderClient.getLastLocation()
@@ -125,18 +125,19 @@ public class CurrentLocationClass {
                 .addOnSuccessListener((Activity) context, new OnSuccessListener<Location>() {
                     public void onSuccess(Location location) {
                         loc = Point.fromLngLat(location.getLongitude(),location.getLatitude());
-                        Toast.makeText(context,loc.toJson(),Toast.LENGTH_LONG).show();
-
+                        Point southWest = Point.fromLngLat(location.getLongitude()-0.2,location.getLatitude()-0.2);
+                        Point northEast = Point.fromLngLat(location.getLongitude()+0.2,location.getLatitude()+0.2);
+//                        Toast.makeText(context,""+loc,Toast.LENGTH_LONG).show();
 
                         Activity activity = (Activity) context;
                         Intent intent = new PlaceAutocomplete.IntentBuilder()
                                 .accessToken(Mapbox.getAccessToken() != null ? Mapbox.getAccessToken() :context.getString(R.string.mapbox_access_token))
                                 .placeOptions(PlaceOptions.builder()
                                         .backgroundColor(Color.parseColor("#BDC3FA"))
-                                        .proximity(Point.fromJson(loc.toJson()))
+//                                        .proximity(loc)
                                         .limit(5)
-                                        .geocodingTypes("Locality")
-                                        .geocodingTypes()
+                                        .bbox(southWest,northEast)
+//                                        .geocodingTypes(com.mapbox.api.geocoding.v5.GeocodingCriteria.TYPE_POI)
                                         .build(PlaceOptions.MODE_CARDS))
                                 .build(activity);
                         activity.startActivityForResult(intent,requestCode);

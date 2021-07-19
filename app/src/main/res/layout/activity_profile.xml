@@ -233,6 +233,7 @@
     </ScrollView>
 
     <LinearLayout
+        android:id="@+id/logoutId"
         android:layout_alignParentBottom="true"
         style="@style/ProfileMenuLayout_Style">
 

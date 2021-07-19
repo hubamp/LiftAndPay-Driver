@@ -8,6 +8,15 @@
     android:orientation="vertical"
     tools:context=".uploadedRide.UploadedRidesActivity">
 
+    <TextView
+        android:id="@+id/noUplaodTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:textColor="@color/fadedBlue"
+        android:text="You have not uploaded any ride yet."/>
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -18,15 +27,11 @@
         <TextView
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
+            android:layout_height="match_parent"
+            android:textSize="20sp"
             android:background="@color/primaryColors"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:scrollHorizontally="true"
             android:gravity="center"
-            android:padding="12dp"
             android:textColor="@color/white"
-            android:lines="1"
             android:text="YOUR RIDES"/>
 
         <ImageButton
@@ -37,11 +42,10 @@
             android:clickable="true"
             android:focusable="true"
             android:src="@drawable/btn_menu"
-            android:tint="@color/white"
             android:backgroundTint="@color/primaryColors"
             android:layout_margin="5dp"
             android:background="@drawable/ripplebtn"
-            />
+            app:tint="@color/white" />
 
 
     </LinearLayout>
@@ -53,7 +57,8 @@
         android:layout_above="@+id/uploadedRideFooter"
         android:layout_below="@id/topViewId"
         android:layout_marginBottom="-3dp"
-        tools:listitem="@layout/model_uploaded_rides" />
+        tools:listitem="@layout/model_uploaded_rides"
+     />
 
     <LinearLayout
         android:id="@+id/uploadedRideFooter"
