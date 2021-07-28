@@ -29,6 +29,8 @@ public class ChatList extends AppCompatActivity {
     private ArrayList<chatListModel> chatListModels = new ArrayList<>();
     private chatListModel chatListModel;
     private RecyclerView recyclerView;
+    static String theName;
+
 
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -53,7 +55,15 @@ public class ChatList extends AppCompatActivity {
 
                     if (task.isSuccessful()) {
 
-                        chatListModel = new chatListModel("Hubert", "online", "hello how are you", documentSnapshot.getId());
+                        db.collection("Passengers").document(documentSnapshot.getId()).get()
+                                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
+                                        theName = task.getResult().getString("Name");
+                                    }
+                                });
+
+                        chatListModel = new chatListModel(theName, "online", "hello how are you", documentSnapshot.getId());
                         chatListModels.add(chatListModel);
 
                         recyclerView.setLayoutManager(new LinearLayoutManager(ChatList.this, LinearLayoutManager.VERTICAL, false));

@@ -15,15 +15,16 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-    <ImageView
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:src="@color/fadedBlue"
-        android:layout_margin="2dp"
-        android:background="@drawable/btn_profile"/>
 
+        <ImageView
+            android:id="@+id/pAImage"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_margin="2dp"
+            android:background="@drawable/btn_profile"
+            android:src="@color/fadedBlue" />
 
-    <LinearLayout
+        <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"

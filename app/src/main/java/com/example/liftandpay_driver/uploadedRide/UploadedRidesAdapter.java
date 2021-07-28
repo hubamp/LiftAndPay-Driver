@@ -64,8 +64,11 @@ public class UploadedRidesAdapter extends RecyclerView.Adapter<UploadedRidesAdap
     public void onBindViewHolder(@NonNull UploadedRidesAdapter.uploadedViewHolder holder, int position) {
 
         uploadedRidesModel uploadedRidesModel = uploadedRidesModels.get(position);
-
-//        pAImageRef = store.getReference().child("Passenger");
+        holder.rTimeView.setText(uploadedRidesModel.getRIDETIME());
+        holder.rDateView.setText(uploadedRidesModel.getRIDEDATE());
+        holder.rJourney.setText(uploadedRidesModel.getJOURNEY());
+        String rNOP = String.valueOf(uploadedRidesModel.getNUMBEROFREQUESTS());
+        holder.rNumberOfPassengers.setText(rNOP);
 
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("UseCompatLoadingForDrawables")
@@ -158,11 +161,7 @@ public class UploadedRidesAdapter extends RecyclerView.Adapter<UploadedRidesAdap
             }
         });
 
-        holder.rTimeView.setText(uploadedRidesModel.getRIDETIME());
-        holder.rDateView.setText(uploadedRidesModel.getRIDEDATE());
-        holder.rJourney.setText(uploadedRidesModel.getJOURNEY());
-        String rNOP = String.valueOf(uploadedRidesModel.getNUMBEROFREQUESTS());
-        holder.rNumberOfPassengers.setText(rNOP);
+
 
     }
 

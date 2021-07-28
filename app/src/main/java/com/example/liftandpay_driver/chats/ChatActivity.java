@@ -18,6 +18,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.liftandpay_driver.R;
@@ -38,6 +40,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -48,19 +51,19 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class ChatActivity extends AppCompatActivity {
-    private String thePassengerId;
+    private String thePassengerId, thePassengerName, thePassengerProfile;
 
     private  RecyclerView recyclerView;
     private ArrayList<messageModel> messageModels;
     private ImageButton sendBtn;
     private EditText typedMessage;
 
+    private ImageView pAProfile;
+    private TextView pAName;
+
     private HashMap<String, Object> chat = new HashMap<>();
     private HashMap<String, Object> driverDetail = new HashMap<>();
     int vtype;
-
-
-
 
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private final String theDriverId = mAuth.getUid();
@@ -73,11 +76,17 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        SharedPreferences sharedPreferences = this.getSharedPreferences("PASS",MODE_PRIVATE);
-
         thePassengerId = getIntent().getStringExtra("passengerId");
+        thePassengerName = getIntent().getStringExtra("passengerName");
+        thePassengerProfile = getIntent().getStringExtra("passengerProfile");
         sendBtn = findViewById(R.id.sendBtn);
         typedMessage = findViewById(R.id.typedMessage);
+        pAProfile = findViewById(R.id.pAImage);
+        pAName = findViewById(R.id.pAName);
+
+        pAName.setText(thePassengerName);
+        if (thePassengerProfile != null)
+            Picasso.get().load(thePassengerProfile).into(pAProfile);
 
         recyclerView = findViewById(R.id.chatRecyler);
         recyclerView.setLayoutManager(new LinearLayoutManager(ChatActivity.this,LinearLayoutManager.VERTICAL,true));

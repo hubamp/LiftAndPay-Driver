@@ -19,6 +19,8 @@ import com.example.liftandpay_driver.R;
 import com.example.liftandpay_driver.chats.ChatActivity;
 import com.example.liftandpay_driver.chats.ChatList;
 import com.example.liftandpay_driver.uploadedRide.UploadedRidesAdapter;
+import com.google.firebase.storage.FirebaseStorage;
+import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -30,6 +32,7 @@ public class chatListAdapter extends RecyclerView.Adapter<chatListAdapter.chatVi
 
     Context context;
     ArrayList<chatListModel> chatListModels;
+    FirebaseStorage storage = FirebaseStorage.getInstance();
 
 
     public chatListAdapter(Context context, ArrayList<chatListModel> chatListModels) {
@@ -48,13 +51,19 @@ public class chatListAdapter extends RecyclerView.Adapter<chatListAdapter.chatVi
     @Override
     public void onBindViewHolder(@NonNull @NotNull chatViewHolder holder, int position) {
 
+        holder.name.setText(chatListModels.get(position).getNameOfPassenger());
         holder.layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String passengerId = chatListModels.get(position).getPassengerId();
+                String passengerName = chatListModels.get(position).getNameOfPassenger();
+                String passengerProfile =  storage.getReference().child("Passenger").child(passengerId).child("profile.png").getDownloadUrl().getResult().toString();
+
 //                Toast.makeText(context,passengerId,Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(context, ChatActivity.class);
                 intent.putExtra("passengerId",passengerId);
+                intent.putExtra("passengerName",passengerName);
+                intent.putExtra("passengerProfile",passengerProfile);
                 context.startActivity(intent);
             }
         });
