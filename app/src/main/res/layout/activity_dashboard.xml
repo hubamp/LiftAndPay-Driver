@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Dashboard">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/primaryColors"
+        android:id="@+id/dashboardbar"
+        android:orientation="horizontal"
+        android:elevation="30dp"
+        >
+        <TextView
+           android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:text="Dashboard"
+            android:layout_width="0dp"/>
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/btn_profile"
+            android:layout_marginEnd="15dp"
+            android:layout_gravity="end"
+            app:tint="@color/white" />
+    </LinearLayout>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/dashboardbar"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/pendingRideTextId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:textStyle="bold"
+        android:text="Board"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:id="@+id/currentRideLayoutId"
+        android:visibility="visible"
+        android:background="@color/white"
+        >
+
+        <!--        The first view to be displayed-->
+        <RelativeLayout
+            android:id="@+id/noRideLayoutId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            >
+
+
+           <LinearLayout
+               android:id="@+id/mainRideUpload"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:gravity="center"
+               android:layout_marginTop="15dp"
+               android:orientation="vertical"
+               android:paddingHorizontal="60dp"
+               android:clickable="true"
+               android:focusable="true"
+               android:elevation="1dp"
+               android:foreground="@drawable/img_bck_rectangle"
+               android:background="@drawable/ripple"
+               android:layout_centerInParent="true"
+               android:paddingVertical="20dp"
+               >
+               <TextView
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:textAlignment="center"
+                   android:text="No Ride Yet Tap To Upload one"/>
+
+               <ImageView
+                   android:layout_width="130dp"
+                   android:layout_height="100dp"
+                   android:src="@drawable/img_rideupload"/>
+           </LinearLayout>
+
+        </RelativeLayout>
+
+<!--        The second view to be displayed-->
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/rideavailablelayout"
+            android:visibility="visible"
+            >
+            <ImageView
+                android:id="@+id/allUploadedRideBtn"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/btn_back"
+                android:padding="5dp"
+                android:background="@drawable/ic_circle"
+                android:layout_marginStart="-20dp"
+                android:backgroundTint="@color/success"
+                android:layout_toEndOf="@id/mainRideUpload001"
+                android:elevation="100dp"
+                app:tint="@color/white" />
+
+
+            <LinearLayout
+                android:id="@+id/mainRideUpload001"
+                android:layout_width="280dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginTop="15dp"
+                android:orientation="vertical"
+                android:paddingHorizontal="0dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="@color/white"
+                android:layout_centerInParent="true"
+                android:paddingVertical="8dp"
+                tools:targetApi="p">
+
+                <!-- The Top part-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="@drawable/ripple"
+                    android:padding="2dp"
+                    android:orientation="horizontal">
+
+                    <!-- The detail list-->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:divider="@drawable/btn_edit"
+                        android:orientation="vertical"
+                        >
+
+                        <TextView
+                            android:id="@+id/locationNameId"
+                            android:layout_width="wrap_content"
+                            android:marqueeRepeatLimit="2"
+                            android:maxWidth="150dp"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/primaryColors"
+                            android:layout_height="wrap_content"
+                            android:text="Origin - Destination"/>
+
+                        <TextView
+                            android:id="@+id/dateTimeId"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="13sp"
+                            android:text="Date - Time"/>
+
+                        <TextView
+                            android:id="@+id/distanceCostId"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="13sp"
+                            android:text="Distance - Cost"/>
+
+                        <TextView
+                            android:id="@+id/numberOfOccupantsId"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="13sp"
+                            android:text="Number of Occupants: 5"/>
+
+                        <Button
+                            android:id="@+id/checkRide"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="13sp"
+                            android:text="VIEW ON MAP"/>
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/fadedBlue"
+                        android:layout_marginHorizontal="8dp"/>
+
+                    <!-- The Requests panel-->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="@drawable/ripple"
+                        android:padding="8dp"
+
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/numberOfRequestedPassengersId"
+                            android:layout_width="85dp"
+                            android:layout_height="85dp"
+                            android:textSize="50sp"
+                            android:gravity="center"
+                            android:text="/"
+                            android:background="@drawable/img_circle"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Requests"
+                            android:layout_gravity="center"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!--The bottom divider-->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/fadedBlue"/>
+
+                <!--The bottom part-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:padding="2dp"
+                    android:gravity="center"
+                    android:background="@color/extraFadedBlue"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="@drawable/ripple"
+                        android:backgroundTint="@color/transparentColor"
+                        android:foreground="@drawable/btn_edit"/>
+
+                    <TextView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="@drawable/ripple"
+                        android:foregroundTint="@color/primaryColors"
+                        android:backgroundTint="@color/transparentColor"
+                        android:foreground="@drawable/btn_delete"/>
+                </LinearLayout>
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+
+    <!-- The Grid Layout begins here-->
+<GridLayout
+    android:layout_below="@id/currentRideLayoutId"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="30dp"
+    android:columnCount="2"
+    >
+
+    <LinearLayout
+        android:layout_rowWeight="1"
+        android:orientation="vertical"
+        android:clickable="true"
+        android:focusable="true"
+        android:backgroundTint="@color/white"
+        android:layout_margin="15dp"
+        android:background="@drawable/ripple"
+        android:padding="5dp"
+        android:elevation="3dp">
+
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="100dp"
+            android:padding="18dp"
+            android:src="@drawable/img_time"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ride History"
+            android:layout_gravity="center"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_rowWeight="1"
+        android:orientation="vertical"
+        android:clickable="true"
+        android:focusable="true"
+        android:backgroundTint="@color/white"
+        android:layout_margin="15dp"
+        android:background="@drawable/ripple"
+        android:padding="5dp"
+        android:elevation="3dp">
+
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="100dp"
+            android:padding="18dp"
+            android:src="@drawable/btn_profile"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Profile"
+            android:layout_gravity="center"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_rowWeight="1"
+        android:orientation="vertical"
+        android:clickable="true"
+        android:focusable="true"
+        android:backgroundTint="@color/white"
+        android:layout_margin="15dp"
+        android:background="@drawable/ripple"
+        android:padding="5dp"
+        android:elevation="3dp">
+
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="100dp"
+            android:padding="18dp"
+            android:src="@drawable/img_message"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Messages"
+            android:layout_gravity="center"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_rowWeight="1"
+        android:orientation="vertical"
+        android:clickable="true"
+        android:focusable="true"
+        android:backgroundTint="@color/white"
+        android:layout_margin="15dp"
+        android:background="@drawable/ripple"
+        android:padding="5dp"
+        android:elevation="3dp">
+
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="100dp"
+            android:padding="18dp"
+            android:src="@drawable/img_money"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Account"
+            android:layout_gravity="center"/>
+
+    </LinearLayout>
+
+
+</GridLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

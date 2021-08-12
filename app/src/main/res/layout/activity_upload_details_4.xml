@@ -7,120 +7,120 @@
     android:backgroundTint="@color/mainBackgroundColor"
     tools:context=".UploadDetailsActivity_4">
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:background="@drawable/img_backgroundview003"/>
     <LinearLayout
-        android:id="@+id/headerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:layout_alignParentTop="true"
-        android:orientation="horizontal"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/headerView"
-        android:layout_above="@id/footerView"
-        android:paddingHorizontal="20dp"
+        android:layout_margin="20dp"
         android:orientation="vertical">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:text="Car Details"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Fill in the details to add info about the car"/>
-
-        <TextView
-            style="@style/txt_CarDetails_style"/>
-
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scrollbars="horizontal">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingVertical="5dp"
-                android:orientation="vertical">
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginVertical="3dp"
-                    >
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/primaryColors"
-                        android:text="Car image upload"/>
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/img_camera"
-                        android:layout_alignParentEnd="true"/>
-                </RelativeLayout>
-
-
-
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_height="150dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    app:rippleColor="@color/fadedBlue"
-                    android:layout_width="match_parent"
-                    android:background="@drawable/img_bck_rectangle"
-                    >
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/img_upload_field"/>
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/img_bck_rectangle"/>
-
-                </com.google.android.material.card.MaterialCardView>
-
-                <RelativeLayout
-
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginVertical="15dp"
-                    android:paddingVertical="5dp"
-                    android:orientation="horizontal">
-                    <TextView
-                        style="@style/txt_CarDetails_style"
-                        android:text="Photos"
-                        android:paddingVertical="3dp"
-                        android:layout_marginTop="25dp"
-                        android:textSize="20sp"/>
-
-                </RelativeLayout>
-
-            </LinearLayout>
-        </ScrollView>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="150dp">
-
-
-
-        </RelativeLayout>
+            android:textColor="@color/white"
+            android:text="Give information about your car"/>
 
     </LinearLayout>
 
 
 
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="130dp"
+        android:padding="11dp"
 
-    <LinearLayout
-        android:id="@+id/footerView"
+        android:background="@color/white"
+        android:elevation="12dp"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="110dp"
+            android:layout_height="110dp"
+            android:layout_gravity="center"
+            android:tint="@color/white"
+            android:focusable="true"
+            android:clickable="true"
+            android:background="@drawable/img_car_front"
+            />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:orientation="vertical">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Car Model"/>
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Number Plate"/>
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="bottom"
+                android:hint="Number Of Seats"/>
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="bottom"
+                android:hint="Color"/>
+
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+
+    <RelativeLayout
+        android:id="@+id/uploadedRideFooter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_alignParentBottom="true"
-        android:orientation="horizontal"/>
+        android:gravity="end"
+        android:background="@color/fadedBlue"
+        >
+
+        <TextView
+            android:id="@+id/btn_proceed_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:tooltipText="Approve the passenger's request"
+            android:backgroundTint="@color/primaryColors"
+            android:text="Next"
+            android:drawableEnd="@drawable/btn_forward"
+            android:drawableTint="@color/white"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:paddingVertical="10dp"
+            android:paddingHorizontal="10dp"
+            android:background="@drawable/ripple"/>
+
+
+    </RelativeLayout>
+
 
 
 

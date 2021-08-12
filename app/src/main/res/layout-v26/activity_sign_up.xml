@@ -94,10 +94,12 @@ tools:context=".SignUp.SignUp001">
 </LinearLayout>
 
 <View
+    android:backgroundTint="@color/extraFadedBlue"
+    android:backgroundTintMode="multiply"
     android:layout_width="match_parent"
-    android:layout_height="80dp"
-    android:background="@drawable/wave_view"
-    android:layout_alignParentBottom="true"
+    android:layout_height="200dp"
+    android:background="@drawable/img_backgroundview002"
+    android:layout_above="@id/RideFooter"
     />
 
 <LinearLayout

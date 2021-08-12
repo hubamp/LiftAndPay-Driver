@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.liftandpay_driver.Dashboard;
 import com.example.liftandpay_driver.R;
 import com.example.liftandpay_driver.uploadedRide.UploadedRidesActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -163,7 +164,7 @@ public class PhoneAuthenticationActivity extends AppCompatActivity {
 
         if(currentUser != null)
         {
-            Intent intent = new Intent(PhoneAuthenticationActivity.this , UploadedRidesActivity.class);
+            Intent intent = new Intent(PhoneAuthenticationActivity.this , Dashboard.class);
             startActivity(intent);
             finish();
         }

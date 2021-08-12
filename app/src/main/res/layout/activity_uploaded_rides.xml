@@ -67,7 +67,7 @@
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         android:gravity="end"
-        android:background="@color/extraFadedBlue"
+        android:background="@color/fadedBlue"
         >
 
 

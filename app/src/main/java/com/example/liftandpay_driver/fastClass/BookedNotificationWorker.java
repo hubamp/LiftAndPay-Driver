@@ -87,7 +87,7 @@ public class BookedNotificationWorker extends Worker {
                                         if (sharedPreferences.getInt("TheTotalNumberOfPassengers", -1) < totalNumberOfBookedPassengers) {
                                             for (DocumentChange documentChange : docChange) {
                                                 Log.e("Previous : Current", "" + sharedPreferences.getInt("TheTotalNumberOfPassengers", -1) + " : " + totalNumberOfBookedPassengers);
-                                                buildNotification(documentChange.getDocument().getString("Name") + " booked your ride", "Pick me at " + "Achimota Overhead", docChange.size());
+                                                buildNotification(documentChange.getDocument().getString("Name") + " booked your ride", "Pick me at " + documentChange.getDocument().getString("Location Desc"), docChange.size());
                                             }
                                         }
 

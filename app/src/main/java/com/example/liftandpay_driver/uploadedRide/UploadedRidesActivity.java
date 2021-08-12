@@ -13,6 +13,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -23,6 +24,7 @@ import androidx.work.WorkManager;
 
 import com.example.liftandpay_driver.SignUp.PhoneAuthenticationActivity;
 import com.example.liftandpay_driver.R;
+import com.example.liftandpay_driver.UploadDetailsActivity_2;
 import com.example.liftandpay_driver.fastClass.BookedNotificationWorker;
 import com.example.liftandpay_driver.fastClass.NewChatNotificationWorker;
 import com.example.liftandpay_driver.fastClass.NewMessageNotificationWorker;
@@ -30,6 +32,7 @@ import com.example.liftandpay_driver.fastClass.StringFunction;
 import com.example.liftandpay_driver.menu.MenuListActivity;
 import com.example.liftandpay_driver.threads.chatNotification;
 import com.example.liftandpay_driver.uploadRide.UploadRideActivity;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -41,7 +44,10 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -91,7 +97,7 @@ public class UploadedRidesActivity extends AppCompatActivity {
         uploadBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(UploadedRidesActivity.this, UploadRideActivity.class);
+                Intent intent = new Intent(UploadedRidesActivity.this, UploadDetailsActivity_2.class);
                 startActivity(intent);
             }
         });
@@ -102,7 +108,6 @@ public class UploadedRidesActivity extends AppCompatActivity {
                 Intent intent = new Intent(UploadedRidesActivity.this, MenuListActivity.class);
                 startActivity(intent);
                 overridePendingTransition(0, 0);
-
 
             }
         });
@@ -257,10 +262,9 @@ public class UploadedRidesActivity extends AppCompatActivity {
     static void startNotificationWorker(Context context) {
         OneTimeWorkRequest bookedNotificationWorker = new OneTimeWorkRequest.Builder(BookedNotificationWorker.class).build();
         OneTimeWorkRequest chatNotificationWorker = new OneTimeWorkRequest.Builder(NewChatNotificationWorker.class).build();
-        OneTimeWorkRequest messageNotificationWorker = new OneTimeWorkRequest.Builder(NewMessageNotificationWorker.class).build();
         WorkManager.getInstance(context).enqueue(bookedNotificationWorker);
         WorkManager.getInstance(context).enqueue(chatNotificationWorker);
-//        WorkManager.getInstance(context).enqueue(messageNotificationWorker);
+
     }
 
 }

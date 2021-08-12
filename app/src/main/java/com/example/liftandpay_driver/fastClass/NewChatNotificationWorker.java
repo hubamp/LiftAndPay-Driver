@@ -67,7 +67,7 @@ public class NewChatNotificationWorker extends Worker {
                            switch (documentChange.getType()) {
                                case MODIFIED:
                                    if(Objects.requireNonNull(documentChange.getDocument().get("ChatMode")).toString().equals("2"))
-                                   buildNotification(documentChange.getDocument().getId(), documentChange.getDocument().getString("Message"), 200);
+                                   buildNotification(documentChange.getDocument().getId(), documentChange.getDocument().getString("Message"), documentChange.getNewIndex());
 
                                case ADDED:
                                    int newDocumentSize = value.getDocuments().size();
@@ -85,6 +85,11 @@ public class NewChatNotificationWorker extends Worker {
                                    }
                                        oldDocumentSize =sharedPreferences.getInt("TheTotalNumberOfChats",-1);
                                        Log.e("New Total old 01", ""+oldDocumentSize);
+
+                               case REMOVED:
+                                   newDocumentSize = value.getDocuments().size();
+                                   sharedPreferences.edit().putInt("TheTotalNumberOfChats", newDocumentSize).apply();
+
 
 
                            }
@@ -131,5 +136,6 @@ public class NewChatNotificationWorker extends Worker {
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
         notificationManager.notify(chanDesc, builder.build());
+
     }
 }

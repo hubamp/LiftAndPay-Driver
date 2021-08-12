@@ -32,7 +32,7 @@ public class SplashScreen extends AppCompatActivity {
 
             public void run() {
                 // close this activity
-                Intent i = new Intent(SplashScreen.this, UploadedRidesActivity.class);
+                Intent i = new Intent(SplashScreen.this, Dashboard.class);
                 startActivity(i);
                 finish();
 
