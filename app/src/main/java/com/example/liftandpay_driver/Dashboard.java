@@ -148,7 +148,7 @@ public class Dashboard extends AppCompatActivity {
                                                 no_Requests.setText(""+value003.size());
 
                                                 for (DocumentChange changes : value003.getDocumentChanges()){
-                                                    if (changes.getType() == DocumentChange.Type.ADDED){
+                                                    if (changes.getType() == DocumentChange.Type.MODIFIED){
                                                         no_Requests.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(Dashboard.this, R.color.success)));
                                                     }
                                                 }
