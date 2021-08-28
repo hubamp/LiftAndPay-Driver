@@ -17,8 +17,8 @@ public class StringFunction {
     }
 
 
-    public String splitStringWithAndGet(String sepratedBy, int returnIndex) {
-            String[] arrOfStr = theString.split(sepratedBy);
+    public String splitStringWithAndGet(String separatedBy, int returnIndex) {
+            String[] arrOfStr = theString.split(separatedBy);
             if (returnIndex < arrOfStr.length)
             {
                 return arrOfStr[returnIndex];

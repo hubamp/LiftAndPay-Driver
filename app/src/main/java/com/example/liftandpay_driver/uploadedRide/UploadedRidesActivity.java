@@ -71,6 +71,8 @@ public class UploadedRidesActivity extends AppCompatActivity {
 
     private SharedPreferences backgroundSharedPrefs;
 
+    private TextView backBtn;
+
     private final static List<DocumentSnapshot> documentSnapshotList = new ArrayList<>();
 
 
@@ -84,6 +86,7 @@ public class UploadedRidesActivity extends AppCompatActivity {
         mainLayout = findViewById(R.id.mainLayout);
         menuBtn = findViewById(R.id.menu_spinner);
         noUploadTxt = findViewById(R.id.noUplaodTxt);
+        backBtn = findViewById(R.id.backButton);
 
 
         backgroundSharedPrefs = getApplicationContext().getSharedPreferences("BACKGROUNDFILE", MODE_PRIVATE);
@@ -94,10 +97,17 @@ public class UploadedRidesActivity extends AppCompatActivity {
         WorkManager.getInstance(getApplicationContext()).enqueue(periodicWorkRequest);
 
 
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         uploadBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(UploadedRidesActivity.this, UploadDetailsActivity_2.class);
+                Intent intent = new Intent(UploadedRidesActivity.this, UploadRideActivity.class);
                 startActivity(intent);
             }
         });

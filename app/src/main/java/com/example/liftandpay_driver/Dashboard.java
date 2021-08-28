@@ -1,25 +1,39 @@
 package com.example.liftandpay_driver;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.example.liftandpay_driver.chats.ChatList;
 import com.example.liftandpay_driver.menu.MenuListActivity;
+import com.example.liftandpay_driver.menu.ProfileActivity;
 import com.example.liftandpay_driver.uploadRide.UploadRideActivity;
+import com.example.liftandpay_driver.uploadedRide.RequestedPassenger.RequestedPassengersSheet;
+import com.example.liftandpay_driver.uploadedRide.UploadedRideMap;
 import com.example.liftandpay_driver.uploadedRide.UploadedRidesActivity;
 import com.google.android.gms.maps.model.Dash;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -27,8 +41,11 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 public class Dashboard extends AppCompatActivity {
 
@@ -41,9 +58,20 @@ public class Dashboard extends AppCompatActivity {
     private String mUid = FirebaseAuth.getInstance().getUid();
     private TextView pendingRideText;
 
-    private TextView journeyName, dateTime, distanceCost, no_Seats,no_Requests;
+    private String lastAvailableRideId;
+
+
+    private TextView deleteBtn, editBtn;
+
+    private TextView journeyName, dateTime, distanceCost, no_Seats, no_Requests;
 
     private ListenerRegistration lastRideListener;
+
+    private LinearLayout rideHistoryBtn, profileBtn, messageBtn, accountsBtn;
+    private LinearLayout requestedPassengerLayout;
+    private Button checkRideBtn;
+    private SharedPreferences sharedPreferences;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,18 +85,59 @@ public class Dashboard extends AppCompatActivity {
         rideAvailableLayout = findViewById(R.id.rideavailablelayout);
         rideUploadLayout = findViewById(R.id.mainRideUpload);
         pendingRideText = findViewById(R.id.pendingRideTextId);
+        deleteBtn = findViewById(R.id.deleteBtn);
+        editBtn = findViewById(R.id.editBtn);
 
-        journeyName =findViewById(R.id.locationNameId);
+        journeyName = findViewById(R.id.locationNameId);
         dateTime = findViewById(R.id.dateTimeId);
         distanceCost = findViewById(R.id.distanceCostId);
         no_Seats = findViewById(R.id.numberOfOccupantsId);
         no_Requests = findViewById(R.id.numberOfRequestedPassengersId);
 
-        rideUploadLayout.setOnClickListener(View->{
+        rideHistoryBtn = findViewById(R.id.rideHistoryBtn);
+        profileBtn = findViewById(R.id.profileBtn);
+        messageBtn = findViewById(R.id.messageBtn);
+        accountsBtn = findViewById(R.id.accountBtn);
+        checkRideBtn = findViewById(R.id.checkRide);
+
+        requestedPassengerLayout = findViewById(R.id.requestedPassengers);
+
+
+
+        rideUploadLayout.setOnClickListener(View -> {
             Intent intent = new Intent(Dashboard.this, UploadRideActivity.class);
             startActivity(intent);
         });
 
+        rideHistoryBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // codes go here
+            }
+        });
+
+        profileBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Dashboard.this, ProfileActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        messageBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Dashboard.this, ChatList.class);
+                startActivity(intent);
+            }
+        });
+
+        accountsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
         sendToUploadedRide.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,84 +162,139 @@ public class Dashboard extends AppCompatActivity {
                     Log.e("available000", "Does not exist");
                 } else {
 
-                    ArrayList<String> availableRideIds = new ArrayList<>((Collection<? extends String>) value.get("AvailableRideIds"));
-                    if (availableRideIds.isEmpty()) {
-                        parentLayout.setVisibility(View.VISIBLE);
-                        noRideLayout.setVisibility(View.VISIBLE);
-                        rideAvailableLayout.setVisibility(View.INVISIBLE);
-                        pendingRideText.setText("Pending Ride");
-                        Log.e("available001", "Exists but empty");
+                    if (value.contains("AvailableRideIds")) {
 
-                    } else {
-                        parentLayout.setVisibility(View.VISIBLE);
-                        noRideLayout.setVisibility(View.INVISIBLE);
-                        rideAvailableLayout.setVisibility(View.VISIBLE);
-                        pendingRideText.setText("Pending Ride");
-                        Log.e("available002", "Exists with item");
+                        Log.e("available002", "Contains the ride");
 
-                        String lastAvailableRideId = availableRideIds.get(availableRideIds.size() - 1).trim();
+                        ArrayList<String> availableRideIds = new ArrayList<>((Collection<? extends String>) value.get("AvailableRideIds"));
+                        if (availableRideIds.isEmpty()) {
+                            parentLayout.setVisibility(View.VISIBLE);
+                            noRideLayout.setVisibility(View.VISIBLE);
+                            rideAvailableLayout.setVisibility(View.INVISIBLE);
+                            pendingRideText.setText("Pending Ride");
+                            Log.e("available001", "Exists but empty");
 
-                        //Listen to last ride from ride
-                        lastRideListener = db.collection("Rides").document(lastAvailableRideId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                            @Override
-                            public void onEvent(@Nullable @org.jetbrains.annotations.Nullable DocumentSnapshot value002, @Nullable @org.jetbrains.annotations.Nullable FirebaseFirestoreException error) {
+                        } else {
+                            parentLayout.setVisibility(View.VISIBLE);
+                            noRideLayout.setVisibility(View.INVISIBLE);
+                            rideAvailableLayout.setVisibility(View.VISIBLE);
+                            pendingRideText.setText("Pending Ride");
+                            Log.e("available002", "Exists with item");
 
-                                Log.e("Last Ride",value002.getReference().getPath());
+                            lastAvailableRideId = availableRideIds.get(availableRideIds.size() - 1).trim();
 
 
-                                if (value002.exists()) {
-                                    Log.e("lastRide","Ride exists");
-                                    String cost = value002.getString("Ride Cost");
-                                    String dateTimes = value002.getString("Ride Date") + " "+ value002.getString("Ride Time");
-                                    String journey = value002.getString("startLocation")+" to "+value002.getString("endLocation");
-                                    double endLon = value002.getDouble("endLon");
-                                    double endLat = value002.getDouble("endLat");
-                                    double stLat = value002.getDouble("startLat");
-                                    double stLon = value002.getDouble("startLon");
+                            //Setting up the deleteBtn
+                            deleteBtn.setOnClickListener(view -> {
+                                AlertDialog.Builder builder
+                                        = new AlertDialog
+                                        .Builder(Dashboard.this);
 
-                                    distanceCost.setText(cost);
-                                    dateTime.setText(dateTimes);
-                                    journeyName.setText(journey);
+                                // Set the message show for the Alert time
+                                builder.setMessage("Do you want to delete this ride?");
+                                builder.setTitle("Delete");
+                                builder.setCancelable(true);
+                                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                }).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        deleteTheRide(lastAvailableRideId);
+                                        dialog.dismiss();
+                                    }
+                                });
+                                builder.create().show();
+                            });
 
-                                    //Listen to requested passengers
-                                    value002.getReference().collection("Booked By").addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                        @Override
-                                        public void onEvent(@Nullable @org.jetbrains.annotations.Nullable QuerySnapshot value003, @Nullable @org.jetbrains.annotations.Nullable FirebaseFirestoreException error) {
-                                            assert value003 != null;
-                                            if (value003.isEmpty())
-                                            {
-                                                Log.e("Request","Empty");
-                                                no_Requests.setText("0");
+                            //Listen to last ride from ride
+                            lastRideListener = db.collection("Rides").document(lastAvailableRideId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                @Override
+                                public void onEvent(@Nullable @org.jetbrains.annotations.Nullable DocumentSnapshot value002, @Nullable @org.jetbrains.annotations.Nullable FirebaseFirestoreException error) {
+
+                                    Log.e("Last Ride", value002.getReference().getPath());
+
+
+                                    if (value002.exists()) {
+                                        Log.e("lastRide", "Ride exists");
+                                        String cost = value002.getString("Ride Cost");
+                                        String dateTimes = value002.getString("Ride Date") + " " + value002.getString("Ride Time");
+                                        String journey = value002.getString("startLocation") +"\n"+ "to" +"\n"+ value002.getString("endLocation");
+                                        double endLon = value002.getDouble("endLon");
+                                        double endLat = value002.getDouble("endLat");
+                                        double stLat = value002.getDouble("startLat");
+                                        double stLon = value002.getDouble("startLon");
+
+                                        distanceCost.setText(cost);
+                                        dateTime.setText(dateTimes);
+                                        journeyName.setText(journey);
+
+                                        //View check map
+                                        checkRideBtn.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                Intent intent = new Intent(Dashboard.this, UploadedRideMap.class);
+
+                                                sharedPreferences = getSharedPreferences("ACTIVE_RIDEFILE", MODE_PRIVATE);
+                                                sharedPreferences.edit().putString("TheEndLat", ""+endLat).apply();
+                                                sharedPreferences.edit().putString("TheEndLon", ""+endLon).apply();
+                                                sharedPreferences.edit().putString("TheStLat", ""+stLat).apply();
+                                                sharedPreferences.edit().putString("TheStLon", ""+stLon).apply();
+                                                sharedPreferences.edit().putString("TheRideId", ""+lastAvailableRideId).apply();
+
+
+                                                startActivity(intent);
                                             }
-                                            else
-                                            {
-                                                Log.e("Request","Not Empty");
-                                                no_Requests.setText(""+value003.size());
+                                        });
 
-                                                for (DocumentChange changes : value003.getDocumentChanges()){
-                                                    if (changes.getType() == DocumentChange.Type.MODIFIED){
-                                                        no_Requests.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(Dashboard.this, R.color.success)));
+
+                                        //Listen to requested passengers
+                                        value002.getReference().collection("Booked By").addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                            @Override
+                                            public void onEvent(@Nullable @org.jetbrains.annotations.Nullable QuerySnapshot value003, @Nullable @org.jetbrains.annotations.Nullable FirebaseFirestoreException error) {
+                                                assert value003 != null;
+                                                if (value003.isEmpty()) {
+                                                    Log.e("Request", "Empty");
+                                                    no_Requests.setText("0");
+                                                } else {
+                                                    Log.e("Request", "Not Empty");
+                                                    no_Requests.setText("" + value003.size());
+
+                                                    for (DocumentChange changes : value003.getDocumentChanges()) {
+                                                        if (changes.getType() == DocumentChange.Type.MODIFIED) {
+                                                            no_Requests.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(Dashboard.this, R.color.success)));
+                                                        }
                                                     }
+
+                                                    //Setting up click function for the Requested Passengers
+                                                    requestedPassengerLayout.setOnClickListener(view->{
+                                                        RequestedPassengersSheet requestedPassengersSheet = new RequestedPassengersSheet();
+                                                        FragmentManager manager = getSupportFragmentManager();
+                                                        requestedPassengersSheet.setNumberOfRequests(Integer.parseInt(no_Requests.getText().toString()));
+                                                        requestedPassengersSheet.setTheRequestedId(lastAvailableRideId);
+
+
+                                                        requestedPassengersSheet.show(manager, null);
+                                                    });
                                                 }
                                             }
-                                        }
-                                    });
+                                        });
 
 
-
+                                    } else {
+                                        Log.e("lastRide", "does not exists");
+                                    }
 
                                 }
+                            });
 
-                                else
-                                {
-                                    Log.e("lastRide","does not exists");
-                                }
-
-                            }
-                        });
+                        }
+                    } else {
+                        Log.e("available002", "does not contains the ride");
 
                     }
-
 
                 }
             }
@@ -178,4 +302,43 @@ public class Dashboard extends AppCompatActivity {
 
 
     }
+
+    private void deleteTheRide(String theRideId) {
+
+        db.collection("Driver").document(mUid).collection("Rides").document("Pending").get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
+
+                Log.e("Delete Ride", "Request Completed");
+                if (task.isSuccessful()) {
+                    Log.e("Delete Ride", "Request Successful");
+
+                    DocumentReference rideIdRef = db.collection("Rides").document(theRideId);
+
+                    if (task.getResult().contains("AvailableRideIds")) {
+
+                        rideIdRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task001) {
+
+                                if (task001.isSuccessful()) {
+                                    ArrayList<String> availableRideIds = new ArrayList<>((Collection<? extends String>) task.getResult().get("AvailableRideIds"));
+                                    availableRideIds.remove(theRideId);
+                                    task.getResult().getReference().update("AvailableRideIds", availableRideIds);
+
+                                    db.collection("Rides").document(theRideId).delete();
+
+                                    Log.e("Delete Ride", "Deleted Successfully");
+                                }
+                            }
+                        });
+
+                    }
+
+                }
+            }
+        });
+    }
+
+
 }

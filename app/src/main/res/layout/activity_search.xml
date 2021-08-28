@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".search.SearchActivity">
+
+    <SearchView
+        android:id="@+id/searchbarId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:queryHint="Search location here"
+        android:searchHintIcon="@drawable/btn_back"
+        android:closeIcon="@drawable/btn_back"
+        android:searchIcon="@drawable/img_circle"
+        android:commitIcon="@drawable/btn_back"/>
+
+    <!--Divider-->
+    <View
+        android:layout_below="@id/searchbarId"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/fadedBlue"/>
+    <!--Divider-->
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewId"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/searchbarId"
+        android:layout_above="@id/licenseText"/>
+
+    <LinearLayout
+        android:layout_above="@id/licenseText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/infoText"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:textColor="@color/primaryColors"
+            android:visibility="gone"
+            android:text="Information on your search"/>
+
+        <ProgressBar
+            android:id="@+id/progress"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:visibility="gone"
+            android:indeterminateTint="@color/primaryColors"
+            />
+
+
+    </LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/licenseText"
+        android:layout_alignParentBottom="true"
+        android:textAlignment="center"
+        android:text="openstreetMap , nominatim.com"/>
+
+</RelativeLayout>

@@ -38,7 +38,7 @@ public class CurrentLocationClass {
     }
 
 
-
+/*
     public static void popSearchBasedOnCurrentLocation(Context context){
 
 
@@ -89,7 +89,7 @@ public class CurrentLocationClass {
 
             }
 
-    public void popSearchBasedOnCurrentLocation(Context context1, ProgressBar progressBar, int requestCode){
+   public void popSearchBasedOnCurrentLocation(Context context1, ProgressBar progressBar, int requestCode){
 
         this.context = context1;
         progressBar.setVisibility(View.VISIBLE);
@@ -124,9 +124,10 @@ public class CurrentLocationClass {
                 })
                 .addOnSuccessListener((Activity) context, new OnSuccessListener<Location>() {
                     public void onSuccess(Location location) {
+                        double offsetNumber = 0.2;
                         loc = Point.fromLngLat(location.getLongitude(),location.getLatitude());
-                        Point southWest = Point.fromLngLat(location.getLongitude()-0.2,location.getLatitude()-0.2);
-                        Point northEast = Point.fromLngLat(location.getLongitude()+0.2,location.getLatitude()+0.2);
+                        Point southWest = Point.fromLngLat(location.getLongitude()-offsetNumber,location.getLatitude()-offsetNumber);
+                        Point northEast = Point.fromLngLat(location.getLongitude()+offsetNumber,location.getLatitude()+offsetNumber);
 //                        Toast.makeText(context,""+loc,Toast.LENGTH_LONG).show();
 
                         Activity activity = (Activity) context;
@@ -137,8 +138,8 @@ public class CurrentLocationClass {
 //                                        .proximity(loc)
                                         .limit(5)
                                         .bbox(southWest,northEast)
-//                                        .geocodingTypes(com.mapbox.api.geocoding.v5.GeocodingCriteria.TYPE_POI)
-                                        .build(PlaceOptions.MODE_CARDS))
+                                        .geocodingTypes(com.mapbox.api.geocoding.v5.GeocodingCriteria.TYPE_POI)
+                                        .build(PlaceOptions.MODE_FULLSCREEN))
                                 .build(activity);
                         activity.startActivityForResult(intent,requestCode);
                         progressBar.setVisibility(View.INVISIBLE);
@@ -146,7 +147,7 @@ public class CurrentLocationClass {
                     }
 
                 });
-    }
+    }*/
 
 
 }

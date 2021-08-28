@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.example.liftandpay_driver.R;
 import com.example.liftandpay_driver.fastClass.CurrentLocationClass;
 import com.example.liftandpay_driver.proceedAlert;
+import com.example.liftandpay_driver.search.SearchActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -106,7 +107,7 @@ public class UploadRideActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private Map<String, Object> ride;
 
-    private int lastNumber;
+    private String lastNumber;
 
     //ImageView
     private ImageView backBtn;
@@ -192,14 +193,16 @@ public class UploadRideActivity extends AppCompatActivity {
         startLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                currentLocationClass.popSearchBasedOnCurrentLocation(UploadRideActivity.this, startProgressBar, 1);
+                Intent i = new Intent(UploadRideActivity.this, SearchActivity.class);
+                startActivityIfNeeded(i, REQUEST_CODE_AUTOCOMPLETE_STLOCATION);
             }
         });
 
         endingLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                currentLocationClass.popSearchBasedOnCurrentLocation(UploadRideActivity.this, endProgressBar, 2);
+                Intent i = new Intent(UploadRideActivity.this, SearchActivity.class);
+                startActivityIfNeeded(i, REQUEST_CODE_AUTOCOMPLETE_ENDLOCATION);
             }
         });
 
@@ -320,11 +323,18 @@ public class UploadRideActivity extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
 
+                                    if (!task.getResult().exists()) {
+                                        ArrayList<String> availableRideIds = new ArrayList<>();
+                                        Map<String, Object> data = new HashMap<>();
+                                        data.put("LastNumber", "0");
+                                        data.put("AvailableRideIds", availableRideIds);
+                                        task.getResult().getReference().set(data);
+                                    }
                                     if (task.isSuccessful()) {
                                         Log.e("Task001", "Successful");
 
-                                        lastNumber = Integer.parseInt(task.getResult().getString("LastNumber"));
-                                        lastNumber++;
+                                        lastNumber = (task.getResult().getString("LastNumber"));
+                                        lastNumber = String.valueOf(Integer.parseInt(lastNumber) + 1);
 
                                         task.getResult().getReference().update("LastNumber", lastNumber);
                                         ArrayList<String> availableRideIds = new ArrayList<>((Collection<? extends String>) task.getResult().get("AvailableRideIds"));
@@ -338,20 +348,20 @@ public class UploadRideActivity extends AppCompatActivity {
                                                 if (task002.isSuccessful()) {
                                                     Log.e("Task002", "Successful");
 
-                                                    db.collection("Driver").document(theDriverId).collection("Pending Rides").document(theDriverId + " " + lastNumber).set(ride)
-                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                @Override
-                                                                public void onSuccess(Void aVoid) {
-                                                                    int size = (int) task.getResult().get("LastNumber");
-                                                                    db.collection("Rides").document(theDriverId + " " + size).set(ride);
 
-                                                                    Snackbar.make(UploadRideActivity.this, time, "Uploaded successfully", 5000)
-                                                                            .setTextColor(Color.WHITE)
-                                                                            .setBackgroundTint(getResources().getColor(R.color.success)).show();
+                                                    String size = String.valueOf(Integer.parseInt(task.getResult().getString("LastNumber")) + 1);
+                                                    db.collection("Rides").document(theDriverId + " " + size).set(ride).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull @NotNull Task<Void> task003) {
+                                                            if (task003.isSuccessful()) {
+                                                                Snackbar.make(UploadRideActivity.this, time, "Uploaded successfully", 5000)
+                                                                        .setTextColor(Color.WHITE)
+                                                                        .setBackgroundTint(getResources().getColor(R.color.success)).show();
 
-                                                                    openDialog();
-                                                                }
-                                                            });
+                                                                openDialog();
+                                                            }
+                                                        }
+                                                    });
 
 
                                                 }
@@ -364,8 +374,8 @@ public class UploadRideActivity extends AppCompatActivity {
 
 
                                 }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
+                            }).
+                            addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
                                     Toast.makeText(UploadRideActivity.this, "Could not upload. Restart app and Try again", Toast.LENGTH_LONG).show();
@@ -388,47 +398,87 @@ public class UploadRideActivity extends AppCompatActivity {
 
         //request from the starting Location
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_AUTOCOMPLETE_STLOCATION) {
-            CarmenFeature selectedCarmenFeature = PlaceAutocomplete.getPlace(data);
-            startInfo[0] = selectedCarmenFeature.text();
-            endInfo[0] = endingLocation.getText().toString();
 
-            //Compare the two locations if they are equal.
-            if (startInfo[0].equals(endInfo[0]))
-                Toast.makeText(this, "Starting Point Cannot the same as ending point", Toast.LENGTH_LONG).show();
-            else {
-                startLocation.setText(selectedCarmenFeature.text());
-                startInfo[1] = String.valueOf(new LatLng(((Point) Objects.requireNonNull(selectedCarmenFeature.geometry())).latitude(),
-                        ((Point) selectedCarmenFeature.geometry()).longitude()).getLongitude());
-                startInfo[2] = String.valueOf(new LatLng(((Point) selectedCarmenFeature.geometry()).latitude(),
-                        ((Point) selectedCarmenFeature.geometry()).longitude()).getLatitude());
+            Log.e("onActivity001", "started");
 
-                viewOnMap();
+
+            Log.e("onActivity001", "Result is ok");
+
+
+            if (data != null) {
+
+                Log.e("onActivity001", "Data not null");
+
+                if (data.hasExtra(new SearchActivity().theNameID))
+                    Log.e("onActivity001", "has Name");
+                if (data.hasExtra(new SearchActivity().theLatID))
+                    Log.e("onActivity001", "has Latitude");
+                if (data.hasExtra(new SearchActivity().theLonID))
+                    Log.e("onActivity001", "has Longitude");
+                String datas = data.getExtras().getString("theLocationName") + " " + data.getExtras().getDouble("theLat", 0.0) + " " + data.getExtras().getDouble("theLon", 0.0);
+                Log.e("onActivity001-Data", datas);
+
+                startLocation.setText(data.getExtras().getString("theLocationName"));
+
+                Log.e("Result", data.getExtras().getString(new SearchActivity().theNameID));
+                startInfo[0] = data.getExtras().getString("theLocationName");
+                startInfo[1] = String.valueOf(data.getExtras().getDouble("theLon", 0.0));
+                startInfo[2] = String.valueOf(data.getExtras().getDouble("theLat", 0.0));
+
+                Log.i("onActivity001", "Lon :"+endInfo[1]);
+                Log.i("onActivity001", "Lat :"+endInfo[2]);
+
+
+            } else {
+                Log.e("onActivity001", "doesn't contain");
 
             }
 
+            viewOnMap();
+
         }
+
 
         //Request from the destination location
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_AUTOCOMPLETE_ENDLOCATION) {
-            CarmenFeature selectedCarmenFeature = PlaceAutocomplete.getPlace(data);
-            endInfo[0] = selectedCarmenFeature.text();
-            startInfo[0] = startLocation.getText().toString();
+            Log.e("onActivity002", "started");
 
-            //Compare the two locations if they are equal.
-            if (endInfo[0].equals(startInfo[0]))
-                Toast.makeText(this, "Starting Point Cannot the same as ending point", Toast.LENGTH_LONG).show();
-            else {
-                endingLocation.setText(selectedCarmenFeature.text());
-                endInfo[1] = String.valueOf(new LatLng(((Point) selectedCarmenFeature.geometry()).latitude(),
-                        ((Point) selectedCarmenFeature.geometry()).longitude()).getLongitude());
-                endInfo[2] = String.valueOf(new LatLng(((Point) selectedCarmenFeature.geometry()).latitude(),
-                        ((Point) selectedCarmenFeature.geometry()).latitude()).getLatitude());
+            Log.e("onActivity002", "Result is ok");
 
-                viewOnMap();
+            if (data != null) {
+
+                Log.e("onActivity002", "Data not null");
+
+                if (data.hasExtra(new SearchActivity().theNameID))
+                    Log.e("onActivity002", "has Name");
+                if (data.hasExtra(new SearchActivity().theLatID))
+                    Log.e("onActivity002", "has Latitude");
+                if (data.hasExtra(new SearchActivity().theLonID))
+                    Log.e("onActivity002", "has Longitude");
+                String datas = data.getExtras().getString("theLocationName") + " " + data.getExtras().getDouble("theLat", 0.0) + " " + data.getExtras().getDouble("theLon", 0.0);
+                Log.e("onActivity002-Data", datas);
+
+                endingLocation.setText(data.getExtras().getString("theLocationName"));
+
+                endInfo[0] = data.getExtras().getString("theLocationName");
+                endInfo[1] = String.valueOf(data.getExtras().getDouble("theLon", 0.0));
+                endInfo[2] = String.valueOf(data.getExtras().getDouble("theLat", 0.0));
+
+                Log.i("onActivity002", "Lon :"+endInfo[1]);
+                Log.i("onActivity002", "Lat :"+endInfo[2]);
+
+
+            } else {
+                Log.e("onActivity002", "doesn't contain");
+
             }
+
+            viewOnMap();
         }
+
         checkConvert();
     }
+
 
     public void viewOnMap() {
         viewMapBtn.setOnClickListener(new View.OnClickListener() {
@@ -471,6 +521,8 @@ public class UploadRideActivity extends AppCompatActivity {
                         !startInfo[1].isEmpty() &&
                         !startInfo[2].isEmpty()
         ) {
+
+            Log.e("Conversion", "All ride details are available");
             sLat = Double.parseDouble(startInfo[2]);
             sLong = Double.parseDouble(startInfo[1]);
             eLat = Double.parseDouble(endInfo[2]);
@@ -480,9 +532,9 @@ public class UploadRideActivity extends AppCompatActivity {
             pointTwo = Point.fromLngLat(eLong, eLat);
 
             setRouteDistance(pointOne, pointTwo);
-        } else {
-            Toast.makeText(UploadRideActivity.this, "Location not retrieved, Search again.", Toast.LENGTH_LONG).show();
         }
+        else  Log.e("Conversion", "Some ride details are not available");
+
     }
 
     //Distance and cost calculations
@@ -503,10 +555,10 @@ public class UploadRideActivity extends AppCompatActivity {
 // You can get the generic HTTP info about the response
                         Log.d("TAG", "Response code: " + response.code());
                         if (response.body() == null) {
-                            Timber.e("No routes found, make sure you set the right user and access token.");
+                            Log.e("Routing","No routes found, make sure you set the right user and access token.");
                             return;
                         } else if (response.body().routes().size() < 1) {
-                            Timber.e("No routes found");
+                            Log.e("Routing","No routes found");
                             return;
                         }
 
@@ -531,19 +583,21 @@ public class UploadRideActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call<DirectionsResponse> call, Throwable t) {
-                        Timber.e(t.toString());
+
+                        Log.e("Routing",t.toString());
                         distanceProgressBar.setVisibility(View.GONE);
                         costProgressBar.setVisibility(View.GONE);
                         distance.setVisibility(View.VISIBLE);
                         cost.setVisibility(View.VISIBLE);
+
                     }
                 });
     }
 
-    public double truncate(double originalValue, int numnerOfDecimalPlaces) {
-        if (numnerOfDecimalPlaces == 3) {
+    public double truncate(double originalValue, int numberOfDecimalPlaces) {
+        if (numberOfDecimalPlaces == 3) {
             originalValue = Math.round(originalValue * 1000.0) / 1000.0;
-        } else if (numnerOfDecimalPlaces == 2)
+        } else if (numberOfDecimalPlaces == 2)
             originalValue = Math.round(originalValue * 100.0) / 100.0;
         return originalValue;
     }
