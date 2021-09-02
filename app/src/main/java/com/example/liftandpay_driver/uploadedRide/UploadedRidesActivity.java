@@ -93,8 +93,6 @@ public class UploadedRidesActivity extends AppCompatActivity {
 
         Log.e("starting Passengers: ", "" + backgroundSharedPrefs.getInt("TheTotalNumberOfPassengers", -1) + "");
 
-        OneTimeWorkRequest periodicWorkRequest = new OneTimeWorkRequest.Builder(chatNotification.class).build();
-        WorkManager.getInstance(getApplicationContext()).enqueue(periodicWorkRequest);
 
 
         backBtn.setOnClickListener(new View.OnClickListener() {
@@ -122,7 +120,6 @@ public class UploadedRidesActivity extends AppCompatActivity {
             }
         });
 
-        startNotificationWorker(UploadedRidesActivity.this);
 
 
         CollectionReference rideCollection = db.collection("Rides");
@@ -269,12 +266,5 @@ public class UploadedRidesActivity extends AppCompatActivity {
     }
 
 
-    static void startNotificationWorker(Context context) {
-        OneTimeWorkRequest bookedNotificationWorker = new OneTimeWorkRequest.Builder(BookedNotificationWorker.class).build();
-        OneTimeWorkRequest chatNotificationWorker = new OneTimeWorkRequest.Builder(NewChatNotificationWorker.class).build();
-        WorkManager.getInstance(context).enqueue(bookedNotificationWorker);
-        WorkManager.getInstance(context).enqueue(chatNotificationWorker);
-
-    }
 
 }

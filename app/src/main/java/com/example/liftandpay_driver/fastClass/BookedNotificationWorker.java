@@ -72,6 +72,7 @@ public class BookedNotificationWorker extends Worker {
                                     public void onEvent(@Nullable @org.jetbrains.annotations.Nullable QuerySnapshot value, @Nullable @org.jetbrains.annotations.Nullable FirebaseFirestoreException error) {
                                         totalNumberOfBookedPassengers = totalNumberOfBookedPassengers + value.size();
 
+
                                         docChange = value.getDocumentChanges();
                                         Log.e("Previous : Current001", "" + sharedPreferences.getInt("TheTotalNumberOfPassengers", -1) + " : " + totalNumberOfBookedPassengers);
 
@@ -86,8 +87,11 @@ public class BookedNotificationWorker extends Worker {
 
                                         if (sharedPreferences.getInt("TheTotalNumberOfPassengers", -1) < totalNumberOfBookedPassengers) {
                                             for (DocumentChange documentChange : docChange) {
-                                                Log.e("Previous : Current", "" + sharedPreferences.getInt("TheTotalNumberOfPassengers", -1) + " : " + totalNumberOfBookedPassengers);
-                                                buildNotification(documentChange.getDocument().getString("Name") + " booked your ride", "Pick me at " + documentChange.getDocument().getString("Location Desc"), docChange.size());
+
+                                                if (documentChange.getType()!= DocumentChange.Type.MODIFIED) {
+                                                    Log.e("Previous : Current", "" + sharedPreferences.getInt("TheTotalNumberOfPassengers", -1) + " : " + totalNumberOfBookedPassengers);
+                                                    buildNotification(documentChange.getDocument().getString("Name") + " booked your ride", "Pick me at " + documentChange.getDocument().getString("Location Desc"), docChange.size());
+                                                }
                                             }
                                         }
 

@@ -6,7 +6,10 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,8 +24,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.liftandpay_driver.chats.ChatList;
+import com.example.liftandpay_driver.fastClass.BookedNotificationWorker;
+import com.example.liftandpay_driver.fastClass.NewChatNotificationWorker;
 import com.example.liftandpay_driver.menu.MenuListActivity;
 import com.example.liftandpay_driver.menu.ProfileActivity;
+import com.example.liftandpay_driver.threads.chatNotification;
 import com.example.liftandpay_driver.uploadRide.UploadRideActivity;
 import com.example.liftandpay_driver.uploadedRide.RequestedPassenger.RequestedPassengersSheet;
 import com.example.liftandpay_driver.uploadedRide.UploadedRideMap;
@@ -70,7 +76,7 @@ public class Dashboard extends AppCompatActivity {
     private LinearLayout rideHistoryBtn, profileBtn, messageBtn, accountsBtn;
     private LinearLayout requestedPassengerLayout;
     private Button checkRideBtn;
-    private SharedPreferences sharedPreferences;
+    private SharedPreferences sharedPreferences, activeRidesShared;
 
 
     @Override
@@ -102,6 +108,10 @@ public class Dashboard extends AppCompatActivity {
 
         requestedPassengerLayout = findViewById(R.id.requestedPassengers);
 
+
+        OneTimeWorkRequest periodicWorkRequest = new OneTimeWorkRequest.Builder(chatNotification.class).build();
+        WorkManager.getInstance(getApplicationContext()).enqueue(periodicWorkRequest);
+        startNotificationWorker(Dashboard.this);
 
 
         rideUploadLayout.setOnClickListener(View -> {
@@ -221,7 +231,7 @@ public class Dashboard extends AppCompatActivity {
                                         Log.e("lastRide", "Ride exists");
                                         String cost = value002.getString("Ride Cost");
                                         String dateTimes = value002.getString("Ride Date") + " " + value002.getString("Ride Time");
-                                        String journey = value002.getString("startLocation") +"\n"+ "to" +"\n"+ value002.getString("endLocation");
+                                        String journey = value002.getString("startLocation") + "\n" + "to" + "\n" + value002.getString("endLocation");
                                         double endLon = value002.getDouble("endLon");
                                         double endLat = value002.getDouble("endLat");
                                         double stLat = value002.getDouble("startLat");
@@ -238,11 +248,11 @@ public class Dashboard extends AppCompatActivity {
                                                 Intent intent = new Intent(Dashboard.this, UploadedRideMap.class);
 
                                                 sharedPreferences = getSharedPreferences("ACTIVE_RIDEFILE", MODE_PRIVATE);
-                                                sharedPreferences.edit().putString("TheEndLat", ""+endLat).apply();
-                                                sharedPreferences.edit().putString("TheEndLon", ""+endLon).apply();
-                                                sharedPreferences.edit().putString("TheStLat", ""+stLat).apply();
-                                                sharedPreferences.edit().putString("TheStLon", ""+stLon).apply();
-                                                sharedPreferences.edit().putString("TheRideId", ""+lastAvailableRideId).apply();
+                                                sharedPreferences.edit().putString("TheEndLat", "" + endLat).apply();
+                                                sharedPreferences.edit().putString("TheEndLon", "" + endLon).apply();
+                                                sharedPreferences.edit().putString("TheStLat", "" + stLat).apply();
+                                                sharedPreferences.edit().putString("TheStLon", "" + stLon).apply();
+                                                sharedPreferences.edit().putString("TheRideId", "" + lastAvailableRideId).apply();
 
 
                                                 startActivity(intent);
@@ -269,17 +279,24 @@ public class Dashboard extends AppCompatActivity {
                                                     }
 
                                                     //Setting up click function for the Requested Passengers
-                                                    requestedPassengerLayout.setOnClickListener(view->{
+                                                    requestedPassengerLayout.setOnClickListener(view -> {
                                                         RequestedPassengersSheet requestedPassengersSheet = new RequestedPassengersSheet();
                                                         FragmentManager manager = getSupportFragmentManager();
+
                                                         requestedPassengersSheet.setNumberOfRequests(Integer.parseInt(no_Requests.getText().toString()));
                                                         requestedPassengersSheet.setTheRequestedId(lastAvailableRideId);
-
+                                                        activeRidesShared = getSharedPreferences("ACTIVE_RIDEFILE",MODE_PRIVATE);
+                                                        activeRidesShared.edit().putString("TheEndLat", String.valueOf(endLat)).apply();
+                                                        activeRidesShared.edit().putString("TheEndLon", String.valueOf(endLon)).apply();
+                                                        activeRidesShared.edit().putString("TheStLat", String.valueOf(stLat)).apply();
+                                                        activeRidesShared.edit().putString("TheStLon", String.valueOf(stLon)).apply();
+                                                        activeRidesShared.edit().putString("TheRideId",lastAvailableRideId).apply();
 
                                                         requestedPassengersSheet.show(manager, null);
                                                     });
                                                 }
                                             }
+
                                         });
 
 
@@ -302,6 +319,8 @@ public class Dashboard extends AppCompatActivity {
 
 
     }
+
+
 
     private void deleteTheRide(String theRideId) {
 
@@ -338,6 +357,15 @@ public class Dashboard extends AppCompatActivity {
                 }
             }
         });
+    }
+
+
+    static void startNotificationWorker(Context context) {
+        OneTimeWorkRequest bookedNotificationWorker = new OneTimeWorkRequest.Builder(BookedNotificationWorker.class).build();
+        OneTimeWorkRequest chatNotificationWorker = new OneTimeWorkRequest.Builder(NewChatNotificationWorker.class).build();
+        WorkManager.getInstance(context).enqueue(bookedNotificationWorker);
+        WorkManager.getInstance(context).enqueue(chatNotificationWorker);
+
     }
 
 

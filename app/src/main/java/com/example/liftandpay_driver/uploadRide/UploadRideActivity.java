@@ -4,7 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -23,13 +25,10 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.liftandpay_driver.R;
-import com.example.liftandpay_driver.fastClass.CurrentLocationClass;
-import com.example.liftandpay_driver.proceedAlert;
 import com.example.liftandpay_driver.search.SearchActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.material.datepicker.MaterialDatePicker;
@@ -37,19 +36,12 @@ import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClic
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
-import com.mapbox.api.geocoding.v5.models.CarmenFeature;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
-import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.plugins.places.autocomplete.PlaceAutocomplete;
-import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 
 import org.jetbrains.annotations.NotNull;
@@ -67,7 +59,6 @@ import java.util.Objects;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import timber.log.Timber;
 
 public class UploadRideActivity extends AppCompatActivity {
     private View footerView;
@@ -188,8 +179,6 @@ public class UploadRideActivity extends AppCompatActivity {
         proceedBtn.setAnimation(animation);
 
         //Searching Location
-        CurrentLocationClass currentLocationClass = new CurrentLocationClass();
-
         startLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -387,8 +376,15 @@ public class UploadRideActivity extends AppCompatActivity {
     }
 
     public void openDialog() {
-        proceedAlert proceedAlert = new proceedAlert();
-        proceedAlert.show(getSupportFragmentManager(), "example dialog");
+        AlertDialog.Builder builder = new AlertDialog.Builder(UploadRideActivity.this);
+        builder.setMessage("You will be alerted as soon as a passenger requests to join.")
+                .setPositiveButton("Thank you!!", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        UploadRideActivity.this.finish();
+                    }
+                });
+        builder.show();
     }
 
     //Activities after Requesting A location from search

@@ -54,11 +54,13 @@ public class NewChatNotificationWorker extends Worker {
     @Override
     public Result doWork() {
 
+        Log.i("New Chat", "Chat Notification Started");
 
        db.collection("Chat").document(mUid).collection("Passengers").addSnapshotListener(
                new EventListener<QuerySnapshot>() {
                    @Override
                    public void onEvent(@Nullable @org.jetbrains.annotations.Nullable QuerySnapshot value, @Nullable @org.jetbrains.annotations.Nullable FirebaseFirestoreException error) {
+                       Log.i("New Chat", "Checking For Notification");
 
 
 
@@ -76,15 +78,15 @@ public class NewChatNotificationWorker extends Worker {
                                    if (oldDocumentSize<newDocumentSize)
                                    {
 
-                                           Log.e("New Chat", documentChange.getDocument().getString("Message"));
-                                           Log.e("New Total old", ""+oldDocumentSize);
-                                           Log.e("New Total new", ""+newDocumentSize);
+                                           Log.i("New Chat", documentChange.getDocument().getString("Message"));
+                                           Log.i("New Total old", ""+oldDocumentSize);
+                                           Log.i("New Total new", ""+newDocumentSize);
                                            buildNotification(documentChange.getDocument().getId(), documentChange.getDocument().getString("Message"), 200);
                                            sharedPreferences.edit().putInt("TheTotalNumberOfChats", newDocumentSize).apply();
 
                                    }
                                        oldDocumentSize =sharedPreferences.getInt("TheTotalNumberOfChats",-1);
-                                       Log.e("New Total old 01", ""+oldDocumentSize);
+                                       Log.i("New Total old 01", ""+oldDocumentSize);
 
                                case REMOVED:
                                    newDocumentSize = value.getDocuments().size();

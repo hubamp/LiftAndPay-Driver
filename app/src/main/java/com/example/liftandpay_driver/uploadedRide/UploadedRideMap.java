@@ -1,13 +1,17 @@
 package com.example.liftandpay_driver.uploadedRide;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
@@ -27,7 +31,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.OnTokenCanceledListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.location.LocationEngineCallback;
@@ -36,6 +42,8 @@ import com.mapbox.android.core.location.LocationEngineRequest;
 import com.mapbox.android.core.location.LocationEngineResult;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
+import com.mapbox.api.directions.v5.DirectionsCriteria;
+import com.mapbox.api.directions.v5.MapboxDirections;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.geojson.Feature;
@@ -58,6 +66,10 @@ import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
+import com.mapbox.navigation.base.trip.model.RouteProgress;
+import com.mapbox.navigation.core.MapboxNavigation;
+import com.mapbox.navigation.core.trip.session.RouteProgressObserver;
+import com.mapbox.services.android.navigation.ui.v5.camera.NavigationCamera;
 import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 
@@ -65,6 +77,7 @@ import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -106,7 +119,7 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
     private String rideId;
 
     private DirectionsRoute currentRoute;
-    private NavigationMapRoute navigationMapRoute;
+    private MapboxNavigation mapboxNavigation;
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -127,12 +140,14 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
         deleteBtn = findViewById(R.id.deleteBtn);
         startedProgessBar = findViewById(R.id.startedProgress);
 
+
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(UploadedRideMap.this);
 
-
     }
+
+
 
     @Override
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
@@ -160,54 +175,7 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
 
                 enableLocationComponent(style);
 
-                startBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        AlertDialog.Builder builder
-                                = new AlertDialog
-                                .Builder(UploadedRideMap.this);
 
-
-                        // Set the message show for the Alert time
-                        builder.setMessage("Do you want to start this ride? \nAll the passengers will be notified of your current location");
-                        builder.setTitle("Start");
-                        builder.setCancelable(true);
-                        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        }).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-
-                                startBtn.setTextColor(ContextCompat.getColor(UploadedRideMap.this, R.color.success));
-
-                                db.collection("Rides").document(rideId).update("driversStatus", "Started").addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void unused) {
-                                        startBtn.setText("Journey Started ...");
-                                        v.setClickable(false);
-                                        v.setFocusable(false);
-                                        v.setBackground(ContextCompat.getDrawable(UploadedRideMap.this, R.color.transparentColor));
-                                        startedProgessBar.setVisibility(View.VISIBLE);
-                                        updateDriversLocation();
-                                    }
-                                })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull @NotNull Exception e) {
-                                                Timber.e(e);
-                                            }
-                                        });
-
-                            }
-                        });
-                        builder.create().show();
-
-                    }
-                });
 
 
                 deleteBtn.setOnClickListener(view -> {
@@ -215,7 +183,7 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                             = new AlertDialog
                             .Builder(UploadedRideMap.this);
 
-                    // Set the message show for the Alert time
+                    // Show the delete message
                     builder.setMessage("Do you want to cancel this ride?");
                     builder.setTitle("Cancel");
                     builder.setCancelable(true);
@@ -248,6 +216,7 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
             LatLng points = new LatLng(stLat, stLon);
             LatLng pointd = new LatLng(endLat, endLon);
 
+            ///////////
             LatLngBounds latLngBounds = new LatLngBounds.Builder()
                     .include(points)
                     .include(pointd)
@@ -291,6 +260,13 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
 
     }
 
+    private RouteProgressObserver routeProgressObserver = new RouteProgressObserver() {
+        @Override
+        public void onRouteProgressChanged(RouteProgress routeProgress) {
+
+        }
+    };
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -327,10 +303,33 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
     private void addDestinationIconSymbolLayer(@NonNull Style loadedMapStyle) {
         loadedMapStyle.addImage("destination-icon-id",
                 BitmapFactory.decodeResource(this.getResources(), R.drawable.mapbox_marker_icon_default));
+
+     /*   loadedMapStyle.addImage("passenger-icon-id",
+                BitmapFactory.decodeResource(this.getResources(), R.drawable.mapbox_compass_icon));
+*/
         GeoJsonSource geoJsonSource = new GeoJsonSource("destination-source-id");
         loadedMapStyle.addSource(geoJsonSource);
 
+       /* SymbolLayer destinationSymbolLayer = new SymbolLayer("destination-symbol-layer-id", "destination-source-id");
+        destinationSymbolLayer.withProperties(
+                iconImage("passenger-icon-id"),
+                iconAllowOverlap(true),
+                iconIgnorePlacement(true));
 
+        loadedMapStyle.addLayer(destinationSymbolLayer);
+*/
+
+    }
+
+    private void addMarkerToDestination(double lat, double lon) {
+        GeoJsonSource theMainStyle = mapboxMap.getStyle().getSourceAs("destination-source-id");
+
+        if (theMainStyle != null) {
+            theMainStyle.setGeoJson(FeatureCollection.fromFeature(
+                    Feature.fromGeometry(Point.fromLngLat(lon, lat))
+            ));
+
+        }
     }
 
     private void passengerPickUpLocMarker(double Lat, double Lon) {
@@ -352,70 +351,172 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
         }
     }
 
+   /* private void passengerCurrentLocMarker(double Lat, double Lon) {
+        if (mapboxMap.getStyle() != null) {
+            SymbolManager symbolManager = new SymbolManager(mapView, mapboxMap, mapboxMap.getStyle());
+
+            symbolManager.setIconAllowOverlap(true);
+            symbolManager.setTextAllowOverlap(true);
+
+
+            SymbolOptions symbolOptions = new SymbolOptions()
+                    .withLatLng(new LatLng(Lat, Lon))
+                    .withIconImage("passenger-icon-id")
+                    .withIconSize(1.3f);
+
+// Use the manager to draw the symbol.
+            symbolManager.create(symbolOptions);
+
+        }
+    }*/
+
 
     private void getRoute(Point origin, Point destination) {
-        NavigationRoute.builder(this)
+
+        NavigationRoute.Builder navigationRoute = NavigationRoute.builder(this);
+
+        navigationRoute
                 .accessToken(Mapbox.getAccessToken())
                 .origin(origin)
-                .destination(destination)
-                .build()
-                .getRoute(new Callback<DirectionsResponse>() {
+                .destination(destination);
+
+        //Check the for approved passengers and plot their pickup locations
+        db.collection("Rides").document(rideId).collection("Booked By").get().addOnCompleteListener(
+                new OnCompleteListener<QuerySnapshot>() {
                     @Override
-                    public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
-// You can get the generic HTTP info about the response
-                        Log.d("TAG", "Response code: " + response.code());
-                        if (response.body() == null) {
-                            Timber.e("No routes found, make sure you set the right user and access token.");
-                            return;
-                        } else if (response.body().routes().size() < 1) {
-                            Timber.e("No routes found");
-                            return;
-                        }
+                    public void onComplete(@NonNull @NotNull Task<QuerySnapshot> task) {
 
-                        currentRoute = response.body().routes().get(0);
-
-                        currentRoute.legs().get(0);
-
-// Draw the route on the map
-                        if (navigationMapRoute != null) {
-                            navigationMapRoute.updateRouteArrowVisibilityTo(false);
-                            navigationMapRoute.updateRouteVisibilityTo(false);
-                        } else {
-                            navigationMapRoute = new NavigationMapRoute(null, mapView, mapboxMap, R.style.NavigationMapRoute);
-                            navigationMapRoute.addRoute(currentRoute);
-
-                            //Check the for approved passengers and plot their pickup locations
-                            db.collection("Rides").document(rideId).collection("Booked By").get().addOnCompleteListener(
-                                    new OnCompleteListener<QuerySnapshot>() {
-                                        @Override
-                                        public void onComplete(@NonNull @NotNull Task<QuerySnapshot> task) {
-
-                                            int i = 0;
-                                            for (DocumentSnapshot snapshot : task.getResult().getDocuments()) {
-                                                i++;
-                                                if (Objects.equals(snapshot.getString("Status"), "Approved")) {
+                        int i = 0;
+                        for (DocumentSnapshot snapshot : task.getResult().getDocuments()) {
+                            i++;
+                            if (Objects.equals(snapshot.getString("Status"), "Approved")) {
 //                                                    Point point = Point.fromLngLat(snapshot.getDouble("Long"), snapshot.getDouble("Lat"));
-                                                    passengerPickUpLocMarker(snapshot.getDouble("Lat"), snapshot.getDouble("Long"));
-                                                }
+                                passengerPickUpLocMarker(snapshot.getDouble("Lat"), snapshot.getDouble("Long"));
 
+                                snapshot.getReference().addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+
+                                        value.getReference().addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                            @Override
+                                            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+
+                                                if (Objects.requireNonNull(value).getDouble("pALat") != null & value.getDouble("pALat") != null)
+                                                {
+                                                    double pALat =value.getDouble("pALat");
+                                                    double pALon = value.getDouble("pALon");
+                                                    addMarkerToDestination( pALat, pALon);
+                                                    Point myWayPoint = Point.fromLngLat( pALon , pALon);
+
+
+
+                                                    navigationRoute.addWaypoint(myWayPoint);
+                                                }
                                             }
-                                        }
+                                        });
                                     }
-                            ).addOnFailureListener(new OnFailureListener() {
+                                });
+                            }
+
+                        }
+                    }
+                }
+        ).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull @NotNull Exception e) {
+                Timber.e(e.toString());
+            }
+        });
+
+
+
+
+        navigationRoute.build().getRoute(new Callback<DirectionsResponse>() {
+            @Override
+            public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
+// You can get the generic HTTP info about the response
+                Log.d("TAG", "Response code: " + response.code());
+                if (response.body() == null) {
+                    Timber.e("No routes found, make sure you set the right user and access token.");
+                    return;
+                } else if (response.body().routes().size() < 1) {
+                    Timber.e("No routes found");
+                    return;
+                }
+
+                currentRoute = response.body().routes().get(0);
+
+                currentRoute.legs().get(0);
+
+
+              // Draw the route on the map
+
+
+                    startBtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            AlertDialog.Builder builder
+                                    = new AlertDialog
+                                    .Builder(UploadedRideMap.this);
+
+
+                            // Set the message show for the Alert time
+                            builder.setMessage("Do you want to start this ride? \nAll the passengers will be notified of your current location");
+                            builder.setTitle("Start");
+                            builder.setCancelable(true);
+                            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                                 @Override
-                                public void onFailure(@NonNull @NotNull Exception e) {
-                                    Timber.e(e.toString());
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            }).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+
+                                    startBtn.setTextColor(ContextCompat.getColor(UploadedRideMap.this, R.color.success));
+
+                                    db.collection("Rides").document(rideId).update("driversStatus", "Started").addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @SuppressLint("MissingPermission")
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            startBtn.setText("Journey Started");
+                                            v.setClickable(false);
+                                            v.setFocusable(false);
+                                            v.setBackground(ContextCompat.getDrawable(UploadedRideMap.this, R.color.transparentColor));
+
+
+
+                                            mapboxNavigation.startTripSession();
+
+//                                            updateDriversLocation();
+                                        }
+                                    })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull @NotNull Exception e) {
+                                                    Timber.e(e);
+                                                }
+                                            });
+
                                 }
                             });
+                            builder.create().show();
+
                         }
-                    }
+                    });
 
-                    @Override
-                    public void onFailure(Call<DirectionsResponse> call, Throwable t) {
-                        Timber.e(t.toString());
 
-                    }
-                });
+
+
+            }
+
+            @Override
+            public void onFailure(Call<DirectionsResponse> call, Throwable t) {
+                Timber.e(t.toString());
+
+            }
+        });
 
 
     }
@@ -449,21 +550,6 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
 
                 driversLoc.put("driversLat", result.getLastLocation().getLatitude());
                 driversLoc.put("driversLon", result.getLastLocation().getLongitude());
-// Create a Toast which displays the new location's coordinates
-                db.collection("Rides").document(activity.rideId).update(driversLoc).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-
-                        Toast.makeText(activity, result.getLastLocation().getLatitude() + "" + result.getLastLocation().getLongitude(),
-                                Toast.LENGTH_SHORT).show();
-
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull @NotNull Exception e) {
-                        Timber.e(e);
-                    }
-                });
 
 // Pass the new location to the Maps SDK's LocationComponent
                 if (activity.mapboxMap != null && result.getLastLocation() != null) {
@@ -489,9 +575,19 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
     }
 
 
-    @SuppressLint("MissingPermission")
     private void updateDriversLocation() {
         locationEngine = LocationEngineProvider.getBestLocationEngine(this);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
 
         LocationEngineRequest request = new LocationEngineRequest.Builder(5000)
                 .setPriority(LocationEngineRequest.PRIORITY_HIGH_ACCURACY)
@@ -513,7 +609,16 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
     protected void onStart() {
         super.onStart();
         mapView.onStart();
+        mapboxNavigation.registerLocationObserver(locationObserver);
+
     }
+
+    @Override
+    MapboxNavigation mapboxNavigation = new MapboxNavigation(...);
+    NavigationMapRoute navigationMapRoute = new NavigationMapRoute.Builder(...)
+            .withMapboxNavigation(mapboxNavigation)
+	.withVanishRouteLineEnabled(true)
+.build();
 
     @Override
     protected void onStop() {
@@ -551,9 +656,10 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
     }
 
 
-
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
 
     }
+
+
 }
