@@ -58,6 +58,7 @@ public class ViewMapActivity extends AppCompatActivity implements OnMapReadyCall
     private MapView mapView;
     private MapboxMap mapboxMap;
     private TextView distanceText;
+    private TextView stPoint1, stPoint2;
     private MarkerViewManager markerViewManager;
     private MarkerView marker1, marker2;
 
@@ -101,6 +102,12 @@ public class ViewMapActivity extends AppCompatActivity implements OnMapReadyCall
         View customView2 = LayoutInflater.from(ViewMapActivity.this).inflate(
                 R.layout.markerview, null);
 
+        stPoint1 = customView.findViewById(R.id.locationNameId);
+        stPoint2 = customView2.findViewById(R.id.locationNameId);
+
+
+
+
         this.mapboxMap = mapboxMap;
         markerViewManager = new MarkerViewManager(mapView, mapboxMap);
 //        marker1 = new MarkerView(new LatLng(LAT,LONG), customView);
@@ -114,18 +121,18 @@ public class ViewMapActivity extends AppCompatActivity implements OnMapReadyCall
                 stName = cordinates.getString("StartingName","null");
                 endName = cordinates.getString("StoppingName","null");
 
+                stPoint1.setText(""+ stName);
+                stPoint2.setText(""+endName);
+
+
                 customView.setLayoutParams(new FrameLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT));
                 customView2.setLayoutParams(new FrameLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT));
 
                 if(!stName.equals("null") && !endName.equals("null")) {
                     marker1 = new MarkerView(locationOne, customView);
-                    markerViewManager.addMarker(marker1);
-
-
-                   locationNameTwo = customView2.findViewById(R.id.locationNameId);
+                    markerViewManager.addMarker(marker1);locationNameTwo = customView2.findViewById(R.id.locationNameId);
                     marker2 = new MarkerView(locationTwo,customView2);
                     markerViewManager.addMarker(marker2);
-
 
                 }
                 else
@@ -145,7 +152,7 @@ public class ViewMapActivity extends AppCompatActivity implements OnMapReadyCall
                      .build()
                      .getRoute(new Callback<DirectionsResponse>() {
                          @Override
-                         public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
+                         public void onResponse(Call<DirectionsResponse> call, @NonNull Response<DirectionsResponse> response) {
 // You can get the generic HTTP info about the response
                              Log.d("TAG", "Response code: " + response.code());
                              if (response.body() == null) {
@@ -207,21 +214,6 @@ public class ViewMapActivity extends AppCompatActivity implements OnMapReadyCall
             locationTwo = new LatLng(eLat, eLong);
             pointOne = Point.fromLngLat(locationOne.getLongitude(), locationOne.getLatitude());
             pointTwo = Point.fromLngLat(locationTwo.getLongitude(), locationTwo.getLatitude());
-
-            /*loadedMapStyle.addImage("icon-id", Objects.requireNonNull(BitmapUtils.getBitmapFromDrawable(
-                    getResources().getDrawable(R.drawable.mapbox_marker_icon_default))));
-
-            loadedMapStyle.addSource(new GeoJsonSource("source-id",
-                    FeatureCollection.fromFeatures(new Feature[]{
-                            Feature.fromGeometry(pointOne),
-                            Feature.fromGeometry(pointTwo),
-                    })));
-
-            loadedMapStyle.addLayer(new SymbolLayer("layer-id",
-                    "source-id").withProperties(
-                    iconImage("icon-id"),
-                    iconOffset(new Float[]{0f, -8f})
-            ));*/
 
 
             LatLngBounds latLngBounds = new LatLngBounds.Builder()

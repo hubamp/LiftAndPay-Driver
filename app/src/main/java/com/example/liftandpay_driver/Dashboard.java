@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,6 +24,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.example.liftandpay_driver.accounts.AccountActivity;
 import com.example.liftandpay_driver.chats.ChatList;
 import com.example.liftandpay_driver.fastClass.BookedNotificationWorker;
 import com.example.liftandpay_driver.fastClass.NewChatNotificationWorker;
@@ -114,6 +116,15 @@ public class Dashboard extends AppCompatActivity {
         startNotificationWorker(Dashboard.this);
 
 
+        editBtn.setOnClickListener(View->{
+
+            Dialog ratingDialog  =  new Dialog(Dashboard.this);
+
+            ratingDialog.setContentView(R.layout.alert_rate_passenger);
+
+            ratingDialog.show();
+        });
+
         rideUploadLayout.setOnClickListener(View -> {
             Intent intent = new Intent(Dashboard.this, UploadRideActivity.class);
             startActivity(intent);
@@ -145,7 +156,8 @@ public class Dashboard extends AppCompatActivity {
         accountsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(Dashboard.this, AccountActivity.class);
+                startActivity(intent);
             }
         });
 

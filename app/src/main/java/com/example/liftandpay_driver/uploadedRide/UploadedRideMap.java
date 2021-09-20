@@ -50,6 +50,8 @@ import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
+import com.mapbox.mapboxsdk.camera.CameraUpdate;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
@@ -66,12 +68,16 @@ import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
-import com.mapbox.navigation.base.trip.model.RouteProgress;
-import com.mapbox.navigation.core.MapboxNavigation;
-import com.mapbox.navigation.core.trip.session.RouteProgressObserver;
-import com.mapbox.services.android.navigation.ui.v5.camera.NavigationCamera;
+import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
+import com.mapbox.services.android.navigation.ui.v5.NavigationLauncherOptions;
 import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
+import com.mapbox.services.android.navigation.v5.navigation.MapboxNavigation;
+import com.mapbox.services.android.navigation.v5.navigation.MapboxNavigationOptions;
+import com.mapbox.services.android.navigation.v5.navigation.NavigationEventListener;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
+import com.mapbox.services.android.navigation.v5.offroute.OffRouteListener;
+import com.mapbox.services.android.navigation.v5.routeprogress.ProgressChangeListener;
+import com.mapbox.services.android.navigation.v5.routeprogress.RouteProgress;
 
 
 import org.jetbrains.annotations.NotNull;
@@ -118,8 +124,12 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
     private SharedPreferences activeRide_sharedPreference;
     private String rideId;
 
-    private DirectionsRoute currentRoute;
+    private List<DirectionsRoute> currentRoute =  new ArrayList<>();
     private MapboxNavigation mapboxNavigation;
+
+    private NavigationMapRoute navigationMapRoute;
+    private static NavigationRoute.Builder navigationRoute;
+    private static Point myWayPoint;
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -148,7 +158,6 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
     }
 
 
-
     @Override
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
 
@@ -174,8 +183,6 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                 addDestinationIconSymbolLayer(style);
 
                 enableLocationComponent(style);
-
-
 
 
                 deleteBtn.setOnClickListener(view -> {
@@ -224,6 +231,8 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
 
             mapboxMap.moveCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 150));
 
+
+
             Point destinationPoint = Point.fromLngLat(pointd.getLongitude(), pointd.getLatitude());
             Point originPoint = Point.fromLngLat(points.getLongitude(), points.getLatitude());
             getRoute(originPoint, destinationPoint);
@@ -260,12 +269,6 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
 
     }
 
-    private RouteProgressObserver routeProgressObserver = new RouteProgressObserver() {
-        @Override
-        public void onRouteProgressChanged(RouteProgress routeProgress) {
-
-        }
-    };
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -322,7 +325,7 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
     }
 
     private void addMarkerToDestination(double lat, double lon) {
-        GeoJsonSource theMainStyle = mapboxMap.getStyle().getSourceAs("destination-source-id");
+        GeoJsonSource theMainStyle = Objects.requireNonNull(mapboxMap.getStyle()).getSourceAs("destination-source-id");
 
         if (theMainStyle != null) {
             theMainStyle.setGeoJson(FeatureCollection.fromFeature(
@@ -373,12 +376,15 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
 
     private void getRoute(Point origin, Point destination) {
 
-        NavigationRoute.Builder navigationRoute = NavigationRoute.builder(this);
+        navigationRoute = NavigationRoute.builder(UploadedRideMap.this);
 
         navigationRoute
                 .accessToken(Mapbox.getAccessToken())
                 .origin(origin)
                 .destination(destination);
+
+//                .destination(destination);
+
 
         //Check the for approved passengers and plot their pickup locations
         db.collection("Rides").document(rideId).collection("Booked By").get().addOnCompleteListener(
@@ -397,20 +403,178 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                                     @Override
                                     public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
 
+                                        assert value != null;
                                         value.getReference().addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                             @Override
                                             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
 
-                                                if (Objects.requireNonNull(value).getDouble("pALat") != null & value.getDouble("pALat") != null)
-                                                {
-                                                    double pALat =value.getDouble("pALat");
+                                                if (Objects.requireNonNull(value).getDouble("pALat") != null & value.getDouble("pALat") != null) {
+                                                    double pALat = value.getDouble("pALat");
                                                     double pALon = value.getDouble("pALon");
-                                                    addMarkerToDestination( pALat, pALon);
-                                                    Point myWayPoint = Point.fromLngLat( pALon , pALon);
+                                                    addMarkerToDestination(pALat, pALon);
+//                                                    addMarkerToDestination(-0.1562534, 5.500851);
 
+                                                    myWayPoint = Point.fromLngLat(pALon, pALat);
+                                                    Log.e("Way Point", myWayPoint.toString());
+
+//        Log.e("Way Point", myWayPoint.toString());
 
 
                                                     navigationRoute.addWaypoint(myWayPoint);
+
+                                                    navigationRoute.enableRefresh(true);
+
+                                                    MapboxNavigationOptions mapboxNavigationOptions = MapboxNavigationOptions.builder()
+                                                            .enableRefreshRoute(true)
+                                                            .refreshIntervalInMilliseconds(5000).build();
+
+                                                    mapboxNavigation = new MapboxNavigation(UploadedRideMap.this, Mapbox.getAccessToken(),mapboxNavigationOptions);
+
+                                                    MapboxDirections client = MapboxDirections.builder()
+                                                            .origin(origin)
+                                                            .destination(destination)
+                                                            .overview(DirectionsCriteria.OVERVIEW_FULL)
+                                                            .profile(DirectionsCriteria.PROFILE_DRIVING)
+                                                            .accessToken(Mapbox.getAccessToken())
+                                                            .build();
+
+
+
+
+                                                    navigationRoute.build().getRoute(new Callback<DirectionsResponse>() {
+                                                        @Override
+                                                        public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
+// You can get the generic HTTP info about the response
+                                                            Log.d("TAG", "Response code: " + response.code());
+                                                            if (response.body() == null) {
+                                                                Timber.e("No routes found, make sure you set the right user and access token.");
+                                                                return;
+                                                            } else if (response.body().routes().size() < 1) {
+                                                                Timber.e("No routes found");
+                                                                return;
+                                                            }
+
+                                                           /* for (int i = 0; i <response.body().routes().size(); i++)
+                                                            {
+                                                            }*/
+                                                            currentRoute.add(response.body().routes().get(0));
+
+
+
+
+
+                                                            if (navigationMapRoute != null) {
+                                                                navigationMapRoute.removeRoute();
+                                                            } else {
+                                                                navigationMapRoute = new NavigationMapRoute(null, mapView, mapboxMap, R.style.NavigationMapRoute);
+
+                                                                navigationMapRoute.addRoutes(currentRoute);
+
+                                                                navigationMapRoute.addProgressChangeListener(mapboxNavigation);
+                                                                navigationMapRoute.showAlternativeRoutes(true);
+                                                            }
+
+
+                                                            // Draw the route on the map
+
+
+                                                            startBtn.setOnClickListener(new View.OnClickListener() {
+                                                                @Override
+                                                                public void onClick(View v) {
+                                                                    AlertDialog.Builder builder
+                                                                            = new AlertDialog
+                                                                            .Builder(UploadedRideMap.this);
+
+
+                                                                    // Set the message show for the Alert time
+                                                                    builder.setMessage("Do you want to start this ride? \nAll the passengers will be notified of your current location");
+                                                                    builder.setTitle("Start");
+                                                                    builder.setCancelable(true);
+                                                                    builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                                                        @Override
+                                                                        public void onClick(DialogInterface dialog, int which) {
+                                                                            dialog.dismiss();
+                                                                        }
+                                                                    }).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                                                        @Override
+                                                                        public void onClick(DialogInterface dialog, int which) {
+                                                                            dialog.dismiss();
+
+                                                                            startBtn.setTextColor(ContextCompat.getColor(UploadedRideMap.this, R.color.success));
+
+                                                                            db.collection("Rides").document(rideId).update("driversStatus", "Started").addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                @SuppressLint("MissingPermission")
+                                                                                @Override
+                                                                                public void onSuccess(Void unused) {
+                                                                                    startBtn.setText("Journey Started");
+                                                                                    v.setClickable(false);
+                                                                                    v.setFocusable(false);
+                                                                                    v.setBackground(ContextCompat.getDrawable(UploadedRideMap.this, R.color.transparentColor));
+
+
+                                                                                    mapboxNavigation.startNavigation(currentRoute.get(0));
+                                                                                    mapboxMap.setCameraPosition(new CameraPosition.Builder().tilt(60.00).build());
+                                                                                    mapboxNavigation.addOffRouteListener(new OffRouteListener() {
+                                                                                        @Override
+                                                                                        public void userOffRoute(Location location) {
+
+                                                                                        }
+                                                                                    });
+
+
+
+                                                                                    mapboxNavigation.addProgressChangeListener(new ProgressChangeListener() {
+                                                                                        @Override
+                                                                                        public void onProgressChange(Location location, RouteProgress routeProgress) {
+
+                                                                                        }
+                                                                                    });
+
+
+                                                                                    boolean simulateRoute = true;
+
+
+
+
+                                                                                   /* NavigationLauncherOptions options = NavigationLauncherOptions.builder()
+                                                                                            .directionsRoute(currentRoute.get(0))
+                                                                                            .waynameChipEnabled(true)
+                                                                                            .shouldSimulateRoute(true)
+                                                                                            .darkThemeResId(1)
+                                                                                            .build();
+// Call this method with Context from within an Activity
+                                                                                    NavigationLauncher.startNavigation(UploadedRideMap.this, options);*/
+
+
+
+
+//                                            updateDriversLocation();
+                                                                                }
+                                                                            })
+                                                                                    .addOnFailureListener(new OnFailureListener() {
+                                                                                        @Override
+                                                                                        public void onFailure(@NonNull @NotNull Exception e) {
+                                                                                            Timber.e(e);
+                                                                                        }
+                                                                                    });
+
+                                                                        }
+                                                                    });
+                                                                    builder.create().show();
+
+                                                                }
+                                                            });
+
+
+                                                        }
+
+                                                        @Override
+                                                        public void onFailure(Call<DirectionsResponse> call, Throwable t) {
+                                                            Timber.e(t.toString());
+
+                                                        }
+                                                    });
+
                                                 }
                                             }
                                         });
@@ -426,100 +590,18 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
             public void onFailure(@NonNull @NotNull Exception e) {
                 Timber.e(e.toString());
             }
-        });
-
-
-
-
-        navigationRoute.build().getRoute(new Callback<DirectionsResponse>() {
+        }).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
-            public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
-// You can get the generic HTTP info about the response
-                Log.d("TAG", "Response code: " + response.code());
-                if (response.body() == null) {
-                    Timber.e("No routes found, make sure you set the right user and access token.");
-                    return;
-                } else if (response.body().routes().size() < 1) {
-                    Timber.e("No routes found");
-                    return;
-                }
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
 
-                currentRoute = response.body().routes().get(0);
-
-                currentRoute.legs().get(0);
-
-
-              // Draw the route on the map
-
-
-                    startBtn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            AlertDialog.Builder builder
-                                    = new AlertDialog
-                                    .Builder(UploadedRideMap.this);
-
-
-                            // Set the message show for the Alert time
-                            builder.setMessage("Do you want to start this ride? \nAll the passengers will be notified of your current location");
-                            builder.setTitle("Start");
-                            builder.setCancelable(true);
-                            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            }).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-
-                                    startBtn.setTextColor(ContextCompat.getColor(UploadedRideMap.this, R.color.success));
-
-                                    db.collection("Rides").document(rideId).update("driversStatus", "Started").addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @SuppressLint("MissingPermission")
-                                        @Override
-                                        public void onSuccess(Void unused) {
-                                            startBtn.setText("Journey Started");
-                                            v.setClickable(false);
-                                            v.setFocusable(false);
-                                            v.setBackground(ContextCompat.getDrawable(UploadedRideMap.this, R.color.transparentColor));
-
-
-
-                                            mapboxNavigation.startTripSession();
-
-//                                            updateDriversLocation();
-                                        }
-                                    })
-                                            .addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull @NotNull Exception e) {
-                                                    Timber.e(e);
-                                                }
-                                            });
-
-                                }
-                            });
-                            builder.create().show();
-
-                        }
-                    });
-
-
-
-
-            }
-
-            @Override
-            public void onFailure(Call<DirectionsResponse> call, Throwable t) {
-                Timber.e(t.toString());
 
             }
         });
 
 
     }
+
+
 
 
     private class MainActivityLocationCallback
@@ -609,16 +691,10 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
     protected void onStart() {
         super.onStart();
         mapView.onStart();
-        mapboxNavigation.registerLocationObserver(locationObserver);
+
 
     }
 
-    @Override
-    MapboxNavigation mapboxNavigation = new MapboxNavigation(...);
-    NavigationMapRoute navigationMapRoute = new NavigationMapRoute.Builder(...)
-            .withMapboxNavigation(mapboxNavigation)
-	.withVanishRouteLineEnabled(true)
-.build();
 
     @Override
     protected void onStop() {

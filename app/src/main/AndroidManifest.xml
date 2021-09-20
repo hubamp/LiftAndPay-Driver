@@ -29,6 +29,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".pAPickUpLocation.ViewPickUpLocation" />
+        <activity android:name=".accounts.AccountActivity" />
         <activity android:name=".search.SearchActivity" />
         <activity android:name=".uploadedRide.RequestedPassenger.RequestedPassengerProfile" />
         <activity android:name=".chats.ChatList" />

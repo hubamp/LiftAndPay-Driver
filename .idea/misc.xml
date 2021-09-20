@@ -3,8 +3,14 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/drawable/img_rideupload.xml" value="0.2703125" />
+        <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/layout/activity_account.xml" value="0.17395833333333333" />
         <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/layout/activity_dashboard.xml" value="0.16666666666666666" />
         <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/layout/activity_uploaded_ride_map.xml" value="0.18854166666666666" />
+        <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/layout/alert_rate_passenger.xml" value="0.25416666666666665" />
+        <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/layout/all.xml" value="0.25416666666666665" />
+        <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/layout/list_row.xml" value="0.25416666666666665" />
+        <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/layout/markerview.xml" value="0.25416666666666665" />
       </map>
     </option>
   </component>
