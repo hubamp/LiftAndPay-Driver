@@ -70,11 +70,12 @@
                      />
 
                 <ImageView
-                    android:id="@+id/deleteBtn"
+                    android:id="@+id/cancelRideBtn"
                     style="@style/smallIconBtnStyle"
-                    android:foreground="@drawable/btn_delete"
+                    android:foreground="@drawable/btn_close"
                     android:layout_marginEnd="2dp"
-                    android:contentDescription="DELETE" />
+                    android:contentDescription="CANCEL THE RIDE"
+                    app:tint="@color/failure" />
 
             </LinearLayout>
 
