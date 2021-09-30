@@ -5,6 +5,7 @@ public class DistanceCalc {
         return degrees * Math.PI/180;
     }
 
+    //The distance is in kilometers
    static public double distanceBtnCoordinates(double lat1,double lon1, double lat2,double lon2){
         double earthRadiusInKm = 6371;
 
