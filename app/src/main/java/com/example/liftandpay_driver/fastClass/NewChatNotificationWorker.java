@@ -63,7 +63,6 @@ public class NewChatNotificationWorker extends Worker {
                        Log.i("New Chat", "Checking For Notification");
 
 
-
                        for (DocumentChange documentChange : value.getDocumentChanges())
                        {
                            switch (documentChange.getType()) {

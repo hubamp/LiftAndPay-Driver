@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
 import android.app.Dialog;
@@ -16,6 +17,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -28,6 +30,7 @@ import com.example.liftandpay_driver.accounts.AccountActivity;
 import com.example.liftandpay_driver.chats.ChatList;
 import com.example.liftandpay_driver.fastClass.BookedNotificationWorker;
 import com.example.liftandpay_driver.fastClass.NewChatNotificationWorker;
+import com.example.liftandpay_driver.fastClass.UpdatedDriverLocationWorker;
 import com.example.liftandpay_driver.menu.MenuListActivity;
 import com.example.liftandpay_driver.menu.ProfileActivity;
 import com.example.liftandpay_driver.threads.chatNotification;
@@ -54,6 +57,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 public class Dashboard extends AppCompatActivity {
 
@@ -67,7 +71,6 @@ public class Dashboard extends AppCompatActivity {
     private TextView pendingRideText;
 
     private String lastAvailableRideId;
-
 
     private TextView deleteBtn, editBtn;
 
@@ -110,10 +113,17 @@ public class Dashboard extends AppCompatActivity {
 
         requestedPassengerLayout = findViewById(R.id.requestedPassengers);
 
+        OneTimeWorkRequest periodicWorkRequest
+                =new OneTimeWorkRequest.Builder(UpdatedDriverLocationWorker.class).build();
 
-        OneTimeWorkRequest periodicWorkRequest = new OneTimeWorkRequest.Builder(chatNotification.class).build();
         WorkManager.getInstance(getApplicationContext()).enqueue(periodicWorkRequest);
+
+        OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(chatNotification.class).build();
+        WorkManager.getInstance(getApplicationContext()).enqueue(oneTimeWorkRequest);
+
+
         startNotificationWorker(Dashboard.this);
+
 
 
         editBtn.setOnClickListener(View->{
@@ -375,6 +385,9 @@ public class Dashboard extends AppCompatActivity {
     static void startNotificationWorker(Context context) {
         OneTimeWorkRequest bookedNotificationWorker = new OneTimeWorkRequest.Builder(BookedNotificationWorker.class).build();
         OneTimeWorkRequest chatNotificationWorker = new OneTimeWorkRequest.Builder(NewChatNotificationWorker.class).build();
+   //     OneTimeWorkRequest updatedDriverLocationWorker = new OneTimeWorkRequest.Builder(UpdatedDriverLocationWorker.class).build();
+
+      // WorkManager.getInstance(context).enqueue(updatedDriverLocationWorker);
         WorkManager.getInstance(context).enqueue(bookedNotificationWorker);
         WorkManager.getInstance(context).enqueue(chatNotificationWorker);
 

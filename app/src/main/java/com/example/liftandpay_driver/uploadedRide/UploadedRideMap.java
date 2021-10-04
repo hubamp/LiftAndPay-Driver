@@ -5,6 +5,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
+import androidx.work.Operation;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -12,8 +13,11 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Vibrator;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -43,7 +47,9 @@ import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
+import com.mapbox.geojson.LineString;
 import com.mapbox.geojson.Point;
+import com.mapbox.geojson.Polygon;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -58,6 +64,7 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
+import com.mapbox.mapboxsdk.style.layers.FillLayer;
 import com.mapbox.mapboxsdk.style.layers.LineLayer;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
@@ -67,6 +74,8 @@ import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 import com.mapbox.services.android.navigation.v5.offroute.OffRouteListener;
 import com.mapbox.services.android.navigation.v5.routeprogress.ProgressChangeListener;
 import com.mapbox.services.android.navigation.v5.routeprogress.RouteProgress;
+import com.mapbox.turf.TurfMeta;
+import com.mapbox.turf.TurfTransformation;
 
 
 import org.jetbrains.annotations.NotNull;
@@ -75,6 +84,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -85,11 +95,14 @@ import timber.log.Timber;
 
 import static com.example.liftandpay_driver.fastClass.DistanceCalc.distanceBtnCoordinates;
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillOpacity;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconIgnorePlacement;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineColor;
+import static com.mapbox.turf.TurfConstants.UNIT_KILOMETERS;
 
 
 public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallback, PermissionsListener {
@@ -101,11 +114,15 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
     private MapboxMap mapboxMap;
 
     private final String geojsonSourceLayerId = "geojsonSourceLayerId";
+    private final String TURF_CALCULATION_FILL_LAYER_GEOJSON_SOURCE_ID = "TURF_CALCULATION_FILL_LAYER_GEOJSON_SOURCE_ID";
     private final String symbolIconId = "symbolIconId";
     private final String mapBoxStyleUrl = "mapbox://styles/hubert-brako/cknk4g1t6031l17to153efhbs";
 
     private Map<String, Object> driversLoc = new HashMap<>();
     ImageView cancelBtn;
+
+    private TextToSpeech textToSpeech;
+    private Vibrator vibrator;
 
     private LatLngBounds.Builder latLngBounds;
 
@@ -135,6 +152,12 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
 
     private int theDriverRangeInMeters;
 
+    // Not static final because they will be adjusted by the seekbars and spinner menu
+    private final String circleUnit = UNIT_KILOMETERS;
+    private final int circleSteps = 180;
+    private final double circleRadius = 0.1;
+
+    private static int nearByReportId = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,13 +169,20 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 
 
+        textToSpeech = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                textToSpeech.setLanguage(Locale.UK);
+            }
+        });
+
+        vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
         startBtn = findViewById(R.id.startBtn);
         cancelBtn = findViewById(R.id.cancelRideBtn);
         startedProgessBar = findViewById(R.id.startedProgress);
         distanceToPoint = findViewById(R.id.distanceToWayPoint);
 
         locationEngine = LocationEngineProvider.getBestLocationEngine(UploadedRideMap.this);
-
 
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
@@ -220,6 +250,8 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                             mapboxNavigation.stopNavigation();
                             Toast.makeText(UploadedRideMap.this, "Navigation Cancelled", Toast.LENGTH_LONG).show();
                             dialog.dismiss();
+                            textToSpeech.speak("Ride is cancelled",TextToSpeech.QUEUE_FLUSH, null);
+
                         }
                     });
                     builder.create().show();
@@ -229,6 +261,7 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
             }
         });
 
+        initPolygonCircleFillLayer();
 
         double stLat = Double.parseDouble(activeRide_sharedPreference.getString("TheStLat", "0"));
         double stLon = Double.parseDouble(activeRide_sharedPreference.getString("TheStLon", "0"));
@@ -240,13 +273,11 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
             LatLng points = new LatLng(stLat, stLon);
             LatLng pointd = new LatLng(endLat, endLon);
 
+
             ///////////
             latLngBounds = new LatLngBounds.Builder()
                     .include(points)
                     .include(pointd);
-
-
-
 
 
             destinationPoint = Point.fromLngLat(pointd.getLongitude(), pointd.getLatitude());
@@ -274,6 +305,7 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                                     myWayPoint = Point.fromLngLat(point.longitude(), point.latitude());
                                     allWayPoints.add(myWayPoint);
                                     latLngBounds.include(new LatLng(point.latitude(),point.longitude()));
+                                    drawPolygonCircle(myWayPoint);
 
 
                                     Log.e("Way Point", myWayPoint.toString());
@@ -313,6 +345,8 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
 
+                                                        textToSpeech.speak("Continue ride",TextToSpeech.QUEUE_FLUSH, null);
+
                                                         allWayPoints.remove(0);
                                                         switchStartBtn(toSTARTED);
                                                         getRoute(originPoint, destinationPoint);
@@ -346,6 +380,7 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                                                 startBtn.setTextColor(ContextCompat.getColor(UploadedRideMap.this, R.color.success));
 
                                                 enableLocationComponent(mapboxMap.getStyle());
+                                                textToSpeech.speak("Ride has started",TextToSpeech.QUEUE_FLUSH, null);
 
 
                                                 getRoute(originPoint, destinationPoint);
@@ -417,18 +452,31 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                     String distanceToPnt =(distanceFromWayPoint*1000)+"m";
                     distanceToPoint.setText(distanceToPnt);
 
-                    Log.i("DistanceBetween", "" + distanceFromWayPoint*1000+ "meters");
-                    if ((distanceFromWayPoint * 1000) < 50 && (distanceFromWayPoint * 1000) > 20) {
-                        theDriverRangeInMeters = 50;
+                    Log.i("DistanceBetween", "" + distanceFromWayPoint*1000+ " meters");
+                    if ((distanceFromWayPoint * 1000) < 100 && (distanceFromWayPoint * 1000) > 20) {
+                        theDriverRangeInMeters = 100;
                        switchStartBtn(toCONFIRM_PICKUP);
+                       textToSpeech.setSpeechRate(1.5f);
+                       nearByReportId++;
+                       if (nearByReportId == 1){
+                           textToSpeech.speak("You are almost at the pickup area",TextToSpeech.QUEUE_FLUSH, null,"");
+                       }
+
 
                     } else if ((distanceFromWayPoint * 1000) <= 20) {
                         theDriverRangeInMeters = 20;
                         switchStartBtn(toCONFIRM_PICKUP);
 
+                        nearByReportId++;
+                        vibrator.vibrate(5000);
+                        if (nearByReportId == 2){
+                            textToSpeech.speak("You are at the pickup point",TextToSpeech.QUEUE_FLUSH, null);
+                        }
+
                     } else {
-                        theDriverRangeInMeters = 100;
+                        theDriverRangeInMeters = 500;
                         switchStartBtn(toONGOING);
+                        nearByReportId =0;
                     }
                 }
 
@@ -537,6 +585,24 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
 
     }
 
+    /**
+     * Add a {@link FillLayer} to display a {@link Polygon} in a the shape of a circle.
+     */
+    private void initPolygonCircleFillLayer() {
+        mapboxMap.getStyle(new Style.OnStyleLoaded() {
+            @Override
+            public void onStyleLoaded(@NonNull Style style) {
+// Create and style a FillLayer based on information that will come from the Turf calculation
+                FillLayer fillLayer = new FillLayer("FILL_LAYER_ID",
+                        geojsonSourceLayerId);
+                fillLayer.setProperties(
+                        fillColor(ContextCompat.getColor(UploadedRideMap.this, R.color.primaryColors)),
+                        fillOpacity(.7f));
+                style.addLayerBelow(fillLayer, "CIRCLE_CENTER_LAYER_ID");
+            }
+        });
+    }
+
     private void addMarkerToDestination(double lat, double lon) {
         GeoJsonSource theMainStyle = Objects.requireNonNull(mapboxMap.getStyle()).getSourceAs("destination-source-id");
 
@@ -557,6 +623,28 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
             ));
 
         }
+    }
+
+    /**
+     * Update the {@link FillLayer} based on the GeoJSON retrieved via
+     * .
+     *
+     * @param circleCenter the center coordinate to be used in the Turf calculation.
+     */
+    private void drawPolygonCircle(Point circleCenter) {
+        mapboxMap.getStyle(new Style.OnStyleLoaded() {
+            @Override
+            public void onStyleLoaded(@NonNull Style style) {
+// Use Turf to calculate the Polygon's coordinates
+
+                Polygon polygonArea = TurfTransformation.circle(circleCenter, circleRadius, circleSteps, circleUnit);
+                GeoJsonSource polygonCircleSource = style.getSourceAs(geojsonSourceLayerId);
+                if (polygonCircleSource != null) {
+                    polygonCircleSource.setGeoJson(Polygon.fromOuterInner(
+                            LineString.fromLngLats(TurfMeta.coordAll(polygonArea, false))));
+                }
+            }
+        });
     }
 
     private void setDestinationPoint(double Lat, double Lon) {
