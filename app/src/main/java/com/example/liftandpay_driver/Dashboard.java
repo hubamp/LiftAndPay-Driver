@@ -26,6 +26,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.example.liftandpay_driver.SignUp.PhoneAuthenticationActivity;
 import com.example.liftandpay_driver.accounts.AccountActivity;
 import com.example.liftandpay_driver.chats.ChatList;
 import com.example.liftandpay_driver.fastClass.BookedNotificationWorker;
@@ -43,6 +44,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -69,6 +71,8 @@ public class Dashboard extends AppCompatActivity {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String mUid = FirebaseAuth.getInstance().getUid();
     private TextView pendingRideText;
+    private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
 
     private String lastAvailableRideId;
 
@@ -113,10 +117,7 @@ public class Dashboard extends AppCompatActivity {
 
         requestedPassengerLayout = findViewById(R.id.requestedPassengers);
 
-        OneTimeWorkRequest periodicWorkRequest
-                =new OneTimeWorkRequest.Builder(UpdatedDriverLocationWorker.class).build();
 
-        WorkManager.getInstance(getApplicationContext()).enqueue(periodicWorkRequest);
 
         OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(chatNotification.class).build();
         WorkManager.getInstance(getApplicationContext()).enqueue(oneTimeWorkRequest);
@@ -393,5 +394,15 @@ public class Dashboard extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
 
+        if (currentUser == null) {
+            Intent intent = new Intent(Dashboard.this, PhoneAuthenticationActivity.class);
+            startActivity(intent);
+            finish();
+        }
+    }
 }

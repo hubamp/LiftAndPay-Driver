@@ -7,6 +7,7 @@ import android.os.Handler;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.example.liftandpay_driver.SignUp.PhoneAuthenticationActivity;
 import com.example.liftandpay_driver.uploadedRide.UploadedRidesActivity;
 import com.google.firebase.FirebaseApp;
 

@@ -50,7 +50,7 @@ public class PhoneAuthenticationActivity extends AppCompatActivity {
         infoText = findViewById(R.id.infoText);
 
 
-       /* mAuth.signInWithEmailAndPassword("hubamp@gmail.com", "123456")
+    /*    mAuth.signInWithEmailAndPassword("hubamp@gmail.com", "123456")
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -62,9 +62,8 @@ public class PhoneAuthenticationActivity extends AppCompatActivity {
                             Toast.makeText(PhoneAuthenticationActivity.this,"Failed",Toast.LENGTH_LONG).show();
                         }
                     }
-                });*/
-
-        mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks(){
+                });
+*/        mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks(){
 
             @Override
             public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
