@@ -2,33 +2,106 @@
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="15dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="15dp">
 
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Review the passenger to help other drivers"
-        />
+        android:textColor="@color/primaryColors"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
     <RatingBar
+        android:id="@+id/ratingsId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:numStars="5"
-        />
+        android:progressTint="@color/primaryColors" />
+
+    <TextView
+        android:tag="option"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:background="@drawable/ripple"
+        android:backgroundTint="@color/extraFadedBlue"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="6dp"
+        android:text="The driver is not serious in life"
+        android:textAlignment="center"
+        android:textColor="@color/primaryColors" />
+
+    <TextView
+        android:tag="option"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:background="@drawable/ripple"
+        android:backgroundTint="@color/extraFadedBlue"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="6dp"
+        android:text="The Passenger is not punctual"
+        android:textAlignment="center"
+        android:textColor="@color/primaryColors" />
+
+    <TextView
+        android:tag="option"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:background="@drawable/ripple"
+        android:backgroundTint="@color/extraFadedBlue"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="6dp"
+        android:text="Passenger gave wrong pickup point"
+        android:textAlignment="center"
+        android:textColor="@color/primaryColors" />
+
+    <TextView
+        android:tag="option"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:background="@drawable/ripple"
+        android:backgroundTint="@color/extraFadedBlue"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="6dp"
+        android:text="Passenger is boring"
+        android:textAlignment="center"
+        android:textColor="@color/primaryColors" />
 
 
     <EditText
+        android:id="@+id/ratingsCommentId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="comments (optional)"/>
+        android:gravity="top"
+        android:hint="comments (optional)"
+        android:minHeight="70dp"
+        android:textColor="@color/primaryColors"
+        android:textColorHighlight="@color/primaryColors"
 
-    <Button
+        android:textColorHint="@color/fadedBlue" />
+
+    <TextView
+        android:id="@+id/submitId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="submit"
-        android:backgroundTint="@color/white"
-        android:textColor="@color/primaryColors"
         android:layout_gravity="end"
-/>
+        android:background="@drawable/ripple"
+        android:backgroundTint="@color/primaryColors"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="6dp"
+        android:text="submit"
+        android:textColor="@color/white" />
+
+
 </androidx.appcompat.widget.LinearLayoutCompat>

@@ -52,7 +52,7 @@ public class RequestedPassengerProfile extends AppCompatActivity {
         //was taken from RequestedPassengersAdapter.java
         thePassengerId = sharedPreferences.getString("ThePassengersId",null);
         thePassengerName = sharedPreferences.getString("ThePassengersName",null);
-        thePassengerProfile = sharedPreferences.getString("ThePassengersProfile",null);
+        thePassengerProfile = sharedPreferences.getString(thePassengerId,null);
 
         if (thePassengerProfile != null)
         Picasso.get().load(thePassengerProfile).into(pAProfileImage);

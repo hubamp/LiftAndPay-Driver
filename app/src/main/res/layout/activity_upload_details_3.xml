@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/gradient"
     tools:context=".UploadDetailsActivity_3">
 
 
@@ -12,6 +13,7 @@
         android:background="@drawable/img_backgroundview001"
         android:layout_height="150dp"
         />
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -35,118 +37,160 @@
 
     </LinearLayout>
 
-
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/uploadedRideFooter"
+        android:clipToPadding="true"
         android:gravity="center"
-        android:orientation="vertical">
+        >
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:orientation="vertical">
 
             <LinearLayout
-                style="@style/ParentLayoutForCarImages">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
 
-                <TextView
-                style="@style/TextViewForCarImages"
-                    android:text="SIDE VIEW"/>
+                <LinearLayout style="@style/ParentLayoutForCarImages">
 
-                <ImageView
-                  style="@style/ImageViewForCarImages"
-                    android:src="@drawable/img_car_front"
-                    />
+                    <TextView
+                        style="@style/TextViewForCarImages"
+                        android:text="MAIN CAR IMAGE" />
+
+                    <ImageView
+                        android:id="@+id/mainImage"
+                        style="@style/ImageViewForCarImages"
+                        android:src="@drawable/img_image" />
+
+                </LinearLayout>
+
+
+                <LinearLayout style="@style/ParentLayoutForCarImages">
+
+                    <TextView
+                        style="@style/TextViewForCarImages"
+                        android:text="OTHER IMAGE" />
+
+                    <ImageView
+                        android:id="@+id/sideImage"
+                        style="@style/ImageViewForCarImages"
+                        android:src="@drawable/img_image" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
-
             <LinearLayout
-                style="@style/ParentLayoutForCarImages">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:background="@color/fadedBlue"
+                android:gravity="center"
+                android:orientation="vertical">
 
-                <TextView
-                    style="@style/TextViewForCarImages"
-                    android:text="FRONT VIEW"/>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    app:boxBackgroundColor="@color/fadedBlue"
+                    app:boxBackgroundMode="outline">
 
-                <ImageView
-                    style="@style/ImageViewForCarImages"
-                    android:src="@drawable/img_car_front"
-                    />
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/carModelId"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Car Model"
+                        android:inputType="text" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    app:boxBackgroundColor="@color/fadedBlue"
+                    app:boxBackgroundMode="outline">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/numberPlateId"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Number plate"
+                        android:inputType="text" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    app:boxBackgroundColor="@color/fadedBlue"
+                    app:boxBackgroundMode="outline">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/numberOfSeatsId"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Number of seats"
+                        android:inputType="number" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    app:boxBackgroundColor="@color/fadedBlue"
+                    app:boxBackgroundMode="outline">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/colorInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Color"
+                        android:inputType="text" />
+                </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
-
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                style="@style/ParentLayoutForCarImages">
-
-                <TextView
-                    style="@style/TextViewForCarImages"
-                    android:text="DASHBOARD VIEW"/>
-
-                <ImageView
-                    style="@style/ImageViewForCarImages"
-                    android:src="@drawable/btn_profile"
-                    />
-
-            </LinearLayout>
-
-
-            <LinearLayout
-                style="@style/ParentLayoutForCarImages">
-
-                <TextView
-                    style="@style/TextViewForCarImages"
-                    android:text="INTERIOR VIEW"/>
-
-                <ImageView
-                    style="@style/ImageViewForCarImages"
-                    android:src="@drawable/btn_profile"
-                    />
-
-            </LinearLayout>
-
-        </LinearLayout>
-    </LinearLayout>
+    </ScrollView>
 
 
     <LinearLayout
         android:id="@+id/uploadedRideFooter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_alignParentBottom="true"
-        android:gravity="end"
         android:background="@color/fadedBlue"
-        >
+        android:gravity="end"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/btn_proceed_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:tooltipText="Approve the passenger's request"
+            android:background="@drawable/ripple"
             android:backgroundTint="@color/primaryColors"
-            android:text="Next"
+            android:clickable="true"
             android:drawableEnd="@drawable/btn_forward"
             android:drawableTint="@color/white"
-            android:textColor="@color/white"
+            android:focusable="true"
             android:gravity="center"
-            android:paddingVertical="10dp"
             android:paddingHorizontal="10dp"
-            android:background="@drawable/ripple"/>
+            android:paddingVertical="10dp"
+            android:text="Complete"
+            android:textColor="@color/white"
+            android:tooltipText="Approve the passenger's request" />
 
 
     </LinearLayout>
+
 
 </RelativeLayout>

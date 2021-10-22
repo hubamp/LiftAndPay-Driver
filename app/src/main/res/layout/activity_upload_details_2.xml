@@ -4,13 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/gradient"
     tools:context=".UploadDetailsActivity_4">
 
 
     <View
         android:layout_width="match_parent"
         android:layout_height="250dp"
-        android:background="@drawable/img_backgroundview001"/>
+        android:background="@drawable/img_backgroundview001" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -34,53 +35,89 @@
     </LinearLayout>
 
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/uploadedRideFooter"
+        android:layout_centerHorizontal="true"
+        >
 
     <androidx.appcompat.widget.LinearLayoutCompat
-        android:layout_width="wrap_content"
-        android:layout_height="400dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="150dp"
-        android:padding="11dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="15dp"
         android:background="@color/white"
         android:elevation="2dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="11dp">
 
         <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/addImageId"
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:layout_gravity="center"
             android:layout_margin="5dp"
-            android:focusable="true"
-            android:clickable="true"
-            android:foreground="@drawable/img_bck_rectangle"
             android:background="@drawable/ripple"
-            android:src="@drawable/btn_profile"
-            />
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="@drawable/img_bck_rectangle"
+            android:src="@drawable/btn_profile" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="15dp"
             android:orientation="vertical">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Name"/>
+                app:boxBackgroundColor="@color/white">
 
-            <com.google.android.material.textfield.TextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/nameId"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPersonName"
+                    android:hint="Name" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Email"/>
+                app:boxBackgroundColor="@color/white">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/emailId"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:hint="Email" />
+            </com.google.android.material.textfield.TextInputLayout>
+
 
             <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="wrap_content"
+                android:id="@+id/aboutId"
+                android:layout_width="match_parent"
                 android:layout_height="80dp"
+                android:inputType="textLongMessage"
                 android:gravity="bottom"
-                android:hint="Write something small about yourself"/>
+                android:hint="Write something small about yourself" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+
     </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+    </ScrollView>
+
 
 
     <RelativeLayout
@@ -88,32 +125,31 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:gravity="end"
         android:background="@color/fadedBlue"
-        >
+        android:gravity="end">
 
         <TextView
             android:id="@+id/btn_proceed_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:tooltipText="Approve the passenger's request"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/ripple"
             android:backgroundTint="@color/primaryColors"
-            android:text="Next"
+            android:clickable="true"
             android:drawableEnd="@drawable/btn_forward"
             android:drawableTint="@color/white"
-            android:textColor="@color/white"
+            android:focusable="true"
             android:gravity="center"
-            android:paddingVertical="10dp"
             android:paddingHorizontal="10dp"
-            android:background="@drawable/ripple"/>
+            android:paddingVertical="10dp"
+            android:text="Continue"
+            android:textColor="@color/white"
+            android:tooltipText="Approve the passenger's request" />
 
 
     </RelativeLayout>
-
-
-
 
 </RelativeLayout>

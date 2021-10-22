@@ -17,7 +17,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Approving Passenger ..."
+        android:text="Passenger Info"
         android:textSize="20sp"
         android:gravity="center"
         android:padding="8dp"

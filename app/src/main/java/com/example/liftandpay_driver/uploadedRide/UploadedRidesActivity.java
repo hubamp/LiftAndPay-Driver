@@ -256,13 +256,6 @@ public class UploadedRidesActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-
-        if (currentUser == null) {
-            Intent intent = new Intent(UploadedRidesActivity.this, PhoneAuthenticationActivity.class);
-            startActivity(intent);
-            finish();
-        }
     }
 
 

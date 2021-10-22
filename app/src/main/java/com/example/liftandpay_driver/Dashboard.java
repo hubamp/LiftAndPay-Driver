@@ -19,6 +19,7 @@ import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -73,8 +74,11 @@ public class Dashboard extends AppCompatActivity {
     private TextView pendingRideText;
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
+    private ImageView imageMenu;
 
     private String lastAvailableRideId;
+    private String passengersStatus;
+    private String rideStatus;
 
     private TextView deleteBtn, editBtn;
 
@@ -103,6 +107,8 @@ public class Dashboard extends AppCompatActivity {
         deleteBtn = findViewById(R.id.deleteBtn);
         editBtn = findViewById(R.id.editBtn);
 
+        imageMenu = findViewById(R.id.imageMenu);
+
         journeyName = findViewById(R.id.locationNameId);
         dateTime = findViewById(R.id.dateTimeId);
         distanceCost = findViewById(R.id.distanceCostId);
@@ -125,15 +131,17 @@ public class Dashboard extends AppCompatActivity {
 
         startNotificationWorker(Dashboard.this);
 
-
+        imageMenu.setOnClickListener(view ->{
+            Intent intent = new Intent(Dashboard.this, PhoneAuthenticationActivity.class);
+            startActivity(intent);
+            mAuth.signOut();
+            finish();
+        });
 
         editBtn.setOnClickListener(View->{
 
-            Dialog ratingDialog  =  new Dialog(Dashboard.this);
+        Ratings ratings = new Ratings(Dashboard.this,mUid,passengersStatus,rideStatus);
 
-            ratingDialog.setContentView(R.layout.alert_rate_passenger);
-
-            ratingDialog.show();
         });
 
         rideUploadLayout.setOnClickListener(View -> {
@@ -145,6 +153,8 @@ public class Dashboard extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // codes go here
+                Intent i = new Intent(Dashboard.this,RideHistory.class);
+                startActivity(i);
             }
         });
 

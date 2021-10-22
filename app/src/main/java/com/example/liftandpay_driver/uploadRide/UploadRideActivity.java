@@ -111,7 +111,7 @@ public class UploadRideActivity extends AppCompatActivity {
 
     private double sLat, sLong, eLat, eLong;
 
-    private static String myName;
+    private static String myName,myPlate;
 
 
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -142,6 +142,7 @@ public class UploadRideActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
                 myName = task.getResult().getString("Name");
+                myPlate = task.getResult().getString("Plate");
             }
         });
 
@@ -303,6 +304,7 @@ public class UploadRideActivity extends AppCompatActivity {
                     ride.put("endLat", eLat);
                     ride.put("phone number", phoneNumber);
                     ride.put("driverName", myName);
+                    ride.put("plate", myPlate);
                     ride.put("myId", mAuth.getUid());
                     ride.put("Number Of Occupants", Integer.parseInt(numberOfOccuppants.getText().toString()));
 

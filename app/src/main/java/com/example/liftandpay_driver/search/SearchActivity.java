@@ -40,7 +40,6 @@ public class SearchActivity extends AppCompatActivity {
     private ProgressBar progressBar;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -142,7 +141,6 @@ public class SearchActivity extends AppCompatActivity {
                             infoText.setText("Slow internet connection");
                             progressBar.setVisibility(View.GONE);
                         }
-
 
                     });
                 }

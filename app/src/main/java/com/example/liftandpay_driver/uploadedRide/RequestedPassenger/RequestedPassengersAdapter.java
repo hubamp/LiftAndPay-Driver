@@ -83,7 +83,7 @@ public class RequestedPassengersAdapter extends RecyclerView.Adapter<RequestedPa
                 sharedPreferences.edit().putString("ThePickupLatitude", String.valueOf(holder.pAPickUpLat)).apply();
                 sharedPreferences.edit().putString("ThePickupLongitude", String.valueOf(holder.pAPickUpLon)).apply();
                 sharedPreferences.edit().putString("ThePassengersStatus", holder.pAStatus.getText().toString()).apply();
-                sharedPreferences.edit().putString("ThePassengersProfile", passengersImageString).apply();
+                sharedPreferences.edit().putString(holder.pAId, passengersImageString).apply();
                 context.startActivity(intent);
             }
         });

@@ -11,13 +11,13 @@
         android:id="@+id/pAPickUpTopView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Approving Passenger ..."
-        android:textSize="20sp"
-        android:gravity="center"
         android:layout_alignParentTop="true"
-        android:padding="8dp"
         android:background="@color/primaryColors"
-        android:textColor="@color/white"/>
+        android:gravity="center"
+        android:padding="8dp"
+        android:text="Passengers Pickup Location"
+        android:textColor="@color/white"
+        android:textSize="20sp" />
 
 
     <com.mapbox.mapboxsdk.maps.MapView

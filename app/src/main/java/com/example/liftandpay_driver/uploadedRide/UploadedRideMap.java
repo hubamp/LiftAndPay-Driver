@@ -33,6 +33,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.liftandpay_driver.R;
+import com.example.liftandpay_driver.Ratings;
 import com.example.liftandpay_driver.fastClass.UpdatedDriverLocationWorker;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -90,6 +91,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -124,6 +126,8 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
     private Handler handler = new Handler();
     private int LOCATION_UPDATE_TIME_INTERVAL_IN_SECONDS = 7000;
 
+    private String passengersStatus;
+    private String rideStatus;
     private final String geojsonSourceLayerId = "geojsonSourceLayerId";
     private final String TURF_CALCULATION_FILL_LAYER_GEOJSON_SOURCE_ID = "TURF_CALCULATION_FILL_LAYER_GEOJSON_SOURCE_ID";
     private final String symbolIconId = "symbolIconId";
@@ -170,9 +174,14 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
     private final double circleRadius = 0.1;
 
     private static int nearByReportId = 0;
-
     private OneTimeWorkRequest updateDriverLocRequest;
     private Data data;
+
+    private List<BookedBy> bookedBIES = new ArrayList<>();
+    private List<BookedBy> newBookesBIES = new ArrayList<>();
+    private List<Double> rawDistance = new ArrayList<>();
+    private List<Double> newRawDistance = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -197,7 +206,6 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
         distanceToPoint = findViewById(R.id.distanceToWayPoint);
 
         locationEngine = LocationEngineProvider.getBestLocationEngine(UploadedRideMap.this);
-
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(UploadedRideMap.this);
@@ -261,10 +269,26 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                     }).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            mapboxNavigation.stopNavigation();
-                            Toast.makeText(UploadedRideMap.this, "Navigation Cancelled", Toast.LENGTH_LONG).show();
-                            dialog.dismiss();
-                            textToSpeech.speak("Ride is cancelled", TextToSpeech.QUEUE_FLUSH, null);
+
+
+                            db.collection("Rides").document(rideId).update("driversStatus", "Cancelled").addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @SuppressLint("MissingPermission")
+                                @Override
+                                public void onSuccess(Void unused) {
+                                    rideStatus = "cancelled";
+                                    Ratings ratings = new Ratings(UploadedRideMap.this,bookedBIES.get(0).getPassengersId(),passengersStatus,rideStatus);
+
+                                    switchStartBtn(toCANCELLED);
+                                    Log.i("LastLocation", originPoint.latitude() + " : " + originPoint.longitude());
+
+                                    mapboxNavigation.stopNavigation();
+                                    Toast.makeText(UploadedRideMap.this, "Navigation Cancelled", Toast.LENGTH_LONG).show();
+                                    dialog.dismiss();
+                                    textToSpeech.speak("Ride is cancelled", TextToSpeech.QUEUE_FLUSH, null);
+                                    WorkManager.getInstance(UploadedRideMap.this).cancelUniqueWork("UpdateMyLocId").getResult().isCancelled();
+
+                                }
+                            });
 
                         }
                     });
@@ -307,14 +331,31 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                         public void onComplete(@NonNull @NotNull Task<QuerySnapshot> task) {
 
 
+                            //plot the the destination marker
                             setDestinationPoint(destinationPoint.latitude(), destinationPoint.longitude());
 
 
+                            //fetch all passenger who have booked and have been approved
                             for (DocumentSnapshot snapshot : task.getResult().getDocuments()) {
 
                                 if (Objects.equals(snapshot.getString("Status"), "Approved")) {
-//                                                    Point point = Point.fromLngLat(snapshot.getDouble("Long"), snapshot.getDouble("Lat"));
+
+                                    passengersStatus = "Approved";
+
+//                                    Point point = Point.fromLngLat(snapshot.getDouble("Long"), snapshot.getDouble("Lat"));
                                     Point point = passengerPickUpLocMarker(snapshot.getDouble("Lat"), snapshot.getDouble("Long"));
+
+                                    double distanceFromOrigin = distanceBtnCoordinates(originPoint.latitude(), originPoint.longitude(),
+                                            point.latitude(), point.longitude());
+
+                                    rawDistance.add(distanceFromOrigin);
+                                    bookedBIES.add(new BookedBy(
+                                            snapshot.getId(),
+                                            point,
+                                            snapshot.getString("Location Desc"),
+                                            distanceFromOrigin
+                                    ));
+
 
                                     myWayPoint = Point.fromLngLat(point.longitude(), point.latitude());
                                     allWayPoints.add(myWayPoint);
@@ -326,16 +367,25 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
 
                                 }
 
+
                             }
 
+                            //sort according to distance algorithm implementation
+                            bookedBIES = new BookedBy().rearrangeBookedBies(
+                                    bookedBIES,
+                                    newBookesBIES,
+                                    rawDistance,
+                                    newRawDistance
+                            );
+
+                            //Update the driver's location
                             updateDriversLocation();
 
+                            //route from trip origin to trip destination
                             getRoute(originPoint, destinationPoint);
-
                             mapboxMap.moveCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds.build(), 250));
 
-                            // Draw the route on the map
-
+                            //Actions when start button is clicked
                             startBtn.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
@@ -363,7 +413,8 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
 
                                                         textToSpeech.speak("Continue ride", TextToSpeech.QUEUE_FLUSH, null);
 
-                                                        allWayPoints.remove(0);
+                                                        removeWayPoint(0);
+
                                                         switchStartBtn(toSTARTED);
                                                         getRoute(originPoint, destinationPoint);
 
@@ -407,18 +458,11 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                                                     @SuppressLint("MissingPermission")
                                                     @Override
                                                     public void onSuccess(Void unused) {
+                                                        rideStatus = "Started";
                                                         switchStartBtn(toSTARTED);
                                                         Log.i("LastLocation", originPoint.latitude() + " : " + originPoint.longitude());
 
                                                         mapboxNavigation.startNavigation(currentRoute.get(0));
-
-                                                   /* NavigationLauncherOptions options = NavigationLauncherOptions.builder()
-                                                            .directionsRoute(currentRoute.get(0))
-                                                            .waynameChipEnabled(true)
-                                                            .shouldSimulateRoute(true)
-                                                            .darkThemeResId(1)
-                                                            .build();
-                                                    NavigationLauncher.startNavigation(UploadedRideMap.this, options);*/
 
                                                     }
                                                 })
@@ -472,10 +516,16 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                     if ((distanceFromWayPoint * 1000) < 100 && (distanceFromWayPoint * 1000) > 20) {
                         theDriverRangeInMeters = 100;
                         switchStartBtn(toCONFIRM_PICKUP);
-                        textToSpeech.setSpeechRate(1.5f);
+
                         nearByReportId++;
                         if (nearByReportId == 1) {
                             textToSpeech.speak("You are almost at the pickup area", TextToSpeech.QUEUE_FLUSH, null, "");
+
+                            //Alert passenger that driver is almost around.
+                            db.collection("Rides").document(rideId).collection("Booked By").document(bookedBIES.get(0).passengersId)
+                                    .update("Status", "Driver almost there");
+
+                            passengersStatus = "Driver almost there";
                         }
 
 
@@ -484,9 +534,12 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                         switchStartBtn(toCONFIRM_PICKUP);
 
                         nearByReportId++;
-                        vibrator.vibrate(5000);
+                        vibrator.vibrate(4000);
                         if (nearByReportId == 2) {
                             textToSpeech.speak("You are at the pickup point", TextToSpeech.QUEUE_FLUSH, null);
+
+                            //Alert passenger that driver is at the pickup point.
+
                         }
 
                     } else {
@@ -523,6 +576,11 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
             }
         });
 
+    }
+
+    private void removeWayPoint(int i) {
+        allWayPoints.remove(i);
+        bookedBIES.remove(i);
     }
 
 
@@ -770,6 +828,60 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
 
     }
 
+    private static class BookedBy {
+        private String passengersId;
+        private Point passengerPickUpPoint;
+        private String passengersPickUpLocation;
+        private double distanceFromOrigin;
+
+        public BookedBy(String passengersId, Point passengerPickUpPoint, String passengersPickUpLocation, double distanceFromOrigin) {
+            this.passengersId = passengersId;
+            this.passengerPickUpPoint = passengerPickUpPoint;
+            this.passengersPickUpLocation = passengersPickUpLocation;
+            this.distanceFromOrigin = distanceFromOrigin;
+        }
+
+        public BookedBy() {
+        }
+
+        public List<BookedBy> rearrangeBookedBies(List<BookedBy> bookedBies,
+                                                  List<BookedBy> newBookedBies,
+                                                  List<Double> distances,
+                                                  List<Double> newDistances) {
+            int totalSize = distances.size();
+            while (totalSize != 0) {
+
+                int indx = distances.indexOf(Collections.max(distances));
+                newDistances.add(0, distances.get(indx));
+                newBookedBies.add(0, bookedBies.get(indx));
+
+                distances.remove(indx);
+                bookedBies.remove(indx);
+
+                totalSize--;
+
+            }
+
+            return newBookedBies;
+
+        }
+
+        public String getPassengersId() {
+            return passengersId;
+        }
+
+        public Point getPassengerPickUpPoint() {
+            return passengerPickUpPoint;
+        }
+
+        public String getPassengersPickUpLocation() {
+            return passengersPickUpLocation;
+        }
+
+        public double getDistanceFromOrigin() {
+            return distanceFromOrigin;
+        }
+    }
 
     private static class MainActivityLocationCallback
             implements LocationEngineCallback<LocationEngineResult> {
@@ -837,18 +949,21 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                 setInputData(data).
                 build();
 
-        WorkManager.getInstance(getApplicationContext()).beginUniqueWork("UpdateMyLocId", ExistingWorkPolicy.REPLACE,updateDriverLocRequest).enqueue();
+        WorkManager.getInstance(getApplicationContext()).beginUniqueWork("UpdateMyLocId", ExistingWorkPolicy.REPLACE, updateDriverLocRequest).enqueue();
 
     }
 
     String toCONFIRM_PICKUP = "Confirm Pickup";
     String toSTARTED = "Started";
+    String toCANCELLED = "Cancelled";
     String toONGOING = "Journey Continues";
 
     /**
-     * Set the visibility state of this view.
+     * Switches among the start button statuses
+     * <p>
+     * toCONFIRM_PICKUP, toSTARTED, toCANCELLED ,toONGOING
      *
-     * @param status One of {@link #toCONFIRM_PICKUP}, {@link #toSTARTED}, or {@link #toONGOING}.
+     * @param status One of {@link #toCONFIRM_PICKUP}, {@link #toSTARTED}, {@link #toCANCELLED} or {@link #toONGOING}.
      * @attr ref android.R.styleable#View_visibility
      */
     private void switchStartBtn(String status) {
@@ -877,6 +992,15 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                 startBtn.setTextColor(ContextCompat.getColor(UploadedRideMap.this, R.color.success));
                 startBtn.setBackground(ContextCompat.getDrawable(UploadedRideMap.this, R.color.transparentColor));
                 break;
+
+            case "Cancelled":
+                startBtn.setText("CANCELLED");
+                startBtn.setClickable(false);
+                startBtn.setFocusable(false);
+                startBtn.setTextColor(ContextCompat.getColor(UploadedRideMap.this, R.color.mapbox_navigation_route_layer_congestion_red));
+                startBtn.setBackground(ContextCompat.getDrawable(UploadedRideMap.this, R.color.transparentColor));
+                break;
+
 
             default:
                 startBtn.setText("Start Ride");
@@ -913,8 +1037,9 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
 
     @Override
     public void onPause() {
-        super.onPause();
         mapView.onPause();
+        super.onPause();
+
     }
 
     @Override
