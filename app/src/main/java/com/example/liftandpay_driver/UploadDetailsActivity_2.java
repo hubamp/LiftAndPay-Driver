@@ -9,12 +9,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.liftandpay_driver.fastClass.SingleActionForAllClass;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 
 public class UploadDetailsActivity_2 extends AppCompatActivity {
@@ -24,7 +26,7 @@ public class UploadDetailsActivity_2 extends AppCompatActivity {
     TextView nextButton;
     AppCompatImageView addImage;
     SharedPreferences driverInfoPreferences;
-    TextInputEditText name, email, about;
+    EditText name, email, about;
 
 
     @Override
@@ -39,9 +41,36 @@ public class UploadDetailsActivity_2 extends AppCompatActivity {
         nextButton = findViewById(R.id.btn_proceed_id);
         addImage = findViewById(R.id.addImageId);
         driverInfoPreferences = getApplication().getSharedPreferences("DRIVERSFILE", MODE_PRIVATE);
+      //  driverInfoPreferences.edit().apply();
 
 
 
+         /*When it loads fresh*/
+        if (driverInfoPreferences.contains("TheEmail")) {
+            String em =driverInfoPreferences.getString("TheEmail","null");
+            Toast.makeText(getApplicationContext(),em,Toast.LENGTH_LONG ).show();
+            email.setText(driverInfoPreferences.getString("TheEmail", "null"));
+            Log.i("Content Available",em);
+        }
+
+        if (driverInfoPreferences.contains("TheName")) {
+            Log.i("Content Available","name");
+            name.setText(driverInfoPreferences.getString("TheName", "null"));
+        }
+
+        if (driverInfoPreferences.contains("TheAbout")) {
+            Log.i("Content Available",driverInfoPreferences.getString("TheAbout", "null"));
+            about.setText(driverInfoPreferences.getString("TheAbout", "nothing"));
+        }
+
+        if (driverInfoPreferences.contains("TheImageString")) {
+            addImage.setImageURI(Uri.parse(driverInfoPreferences.getString("TheImageString", "")));
+        }
+
+
+        if (getIntent().getStringArrayExtra("NewUser") != null) {
+            Snackbar.make(name, "The number is a new number \nkindly setup before signing up", 10000).setBackgroundTint(getColor(R.color.primaryColors)).show();
+        }
 
         /*When the focus changes*/
         name.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -88,30 +117,6 @@ public class UploadDetailsActivity_2 extends AppCompatActivity {
         });
 
 
-        email.setText("hello", TextView.BufferType.EDITABLE);
-
-
-        /*When it loads afresh */
-        if (driverInfoPreferences.contains("TheEmail")) {
-            String em =driverInfoPreferences.getString("TheEmail","null");
-            Toast.makeText(getApplicationContext(),em,Toast.LENGTH_LONG ).show();
-            Log.i("Content Available",em);
-
-        }
-
-        if (driverInfoPreferences.contains("TheName")) {
-            Log.i("Content Available","name");
-            email.setText(driverInfoPreferences.getString("TheName", "null"));
-        }
-
-        if (driverInfoPreferences.contains("TheAbout")) {
-            Log.i("Content Available",driverInfoPreferences.getString("TheAbout", "null"));
-            email.setText(driverInfoPreferences.getString("TheAbout", "nothing"));
-        }
-
-        if (driverInfoPreferences.contains("TheImageString")) {
-            addImage.setImageURI(Uri.parse(driverInfoPreferences.getString("TheImageString", "")));
-        }
 
 
     }

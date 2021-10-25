@@ -94,15 +94,15 @@ public class PhoneAuthenticationActivity extends AppCompatActivity {
                     HashMap<Object, Object> getDriverDetails = new HashMap<>();
 
                     getDriverDetails.put("Name", driversFile.getString("TheName", "null"));
-                    getDriverDetails.put("Email", driversFile.getString("TheEmail", null));
-                    getDriverDetails.put("About", driversFile.getString("TheAbout", null));
-                    getDriverDetails.put("Car Model", driversFile.getString("TheCarModel", null));
-                    getDriverDetails.put("Numberplate", driversFile.getString("TheCarNumberPlate", null));
-                    getDriverDetails.put("Number Of Seats", driversFile.getString("TheCarNumberOfSeats", null));
-                    getDriverDetails.put("Car color", driversFile.getString("TheCarColor", null));
+                    getDriverDetails.put("Email", driversFile.getString("TheEmail", "null"));
+                    getDriverDetails.put("About", driversFile.getString("TheAbout", "null"));
+                    getDriverDetails.put("Car Model", driversFile.getString("TheCarModel", "null"));
+                    getDriverDetails.put("Numberplate", driversFile.getString("TheCarNumberPlate", "null"));
+                    getDriverDetails.put("Number Of Seats", driversFile.getString("TheCarNumberOfSeats", "null"));
+                    getDriverDetails.put("Car color", driversFile.getString("TheCarColor", "null"));
 
 
-                    db.collection("Driver").document(mAuth.getUid()).set(getDriverDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    db.collection("Driver").document(Objects.requireNonNull(mAuth.getUid())).set(getDriverDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void unused) {
 
@@ -257,8 +257,8 @@ public class PhoneAuthenticationActivity extends AppCompatActivity {
                                 else
                                 {
                                     Log.i("Bundle Info", "Not null and contains readiness");
-                                    Snackbar.make(infoText, "This number has not been setup, kindly setup before signing up", 10000).setBackgroundTint(getColor(R.color.primaryColors)).show();
                                     Intent intent = new Intent(PhoneAuthenticationActivity.this, UploadDetailsActivity_2.class);
+                                    intent.putExtra("NewUser","New");
                                     startActivity(intent);
 
                                     progressBar.setVisibility(View.GONE);

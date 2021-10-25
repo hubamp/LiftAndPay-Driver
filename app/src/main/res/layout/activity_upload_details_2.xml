@@ -39,81 +39,80 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/uploadedRideFooter"
-        android:layout_centerHorizontal="true"
-        >
-
-    <androidx.appcompat.widget.LinearLayoutCompat
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="15dp"
-        android:layout_marginBottom="15dp"
-        android:background="@color/white"
-        android:elevation="2dp"
-        android:orientation="vertical"
-        android:padding="11dp">
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/addImageId"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:layout_gravity="center"
-            android:layout_margin="5dp"
-            android:background="@drawable/ripple"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="@drawable/img_bck_rectangle"
-            android:src="@drawable/btn_profile" />
+        android:layout_centerHorizontal="true">
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_marginStart="15dp"
             android:layout_marginTop="15dp"
-            android:orientation="vertical">
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="15dp"
+            android:background="@color/white"
+            android:elevation="2dp"
+            android:orientation="vertical"
+            android:padding="11dp">
 
-            <com.google.android.material.textfield.TextInputLayout
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/addImageId"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:background="@drawable/ripple"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="@drawable/img_bck_rectangle"
+                android:src="@drawable/btn_profile" />
+
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:boxBackgroundColor="@color/white">
+                android:layout_height="match_parent"
+                android:layout_marginTop="15dp"
+                android:orientation="vertical">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/nameId"
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPersonName"
-                    android:hint="Name" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    app:boxBackgroundColor="@color/white">
+
+                    <EditText
+                        android:id="@+id/nameId"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Name"
+                        android:inputType="textPersonName" />
+                </com.google.android.material.textfield.TextInputLayout>
 
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:boxBackgroundColor="@color/white">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/emailId"
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress"
-                    android:hint="Email" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    app:boxBackgroundColor="@color/white">
+
+                    <EditText
+                        android:id="@+id/emailId"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Email"
+                        android:inputType="textEmailAddress"
+                       />
+                </com.google.android.material.textfield.TextInputLayout>
 
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/aboutId"
-                android:layout_width="match_parent"
-                android:layout_height="80dp"
-                android:inputType="textLongMessage"
-                android:gravity="bottom"
-                android:hint="Write something small about yourself" />
+                <EditText
+                    android:id="@+id/aboutId"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:gravity="bottom"
+                    android:hint="Write something small about yourself"
+                    android:inputType="textLongMessage" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
 
         </androidx.appcompat.widget.LinearLayoutCompat>
-
-
-
-    </androidx.appcompat.widget.LinearLayoutCompat>
 
 
     </ScrollView>
