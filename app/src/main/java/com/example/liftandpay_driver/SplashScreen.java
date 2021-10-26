@@ -40,9 +40,11 @@ public class SplashScreen extends AppCompatActivity {
 
                 if (mAuth.getCurrentUser() == null) {
                     i = new Intent(SplashScreen.this, PhoneAuthenticationActivity.class);
+                    i.putExtra("Readiness","Ready");
                 } else {
                     i = new Intent(SplashScreen.this, Dashboard.class);
                 }
+
                 startActivity(i);
                 finish();
 

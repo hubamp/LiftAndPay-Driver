@@ -42,7 +42,7 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class PhoneAuthenticationActivity extends AppCompatActivity {
-    private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private FirebaseAuth mAuth =FirebaseAuth.getInstance();//FirebaseAuth.getInstance();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
     private ProgressBar progressBar;
@@ -67,32 +67,18 @@ public class PhoneAuthenticationActivity extends AppCompatActivity {
         driversFile = getSharedPreferences("DRIVERSFILE", MODE_PRIVATE);
 
 
-
-    /*    mAuth.signInWithEmailAndPassword("hubamp@gmail.com", "123456")
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Toast.makeText(PhoneAuthenticationActivity.this,"Successful",Toast.LENGTH_LONG).show();
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Toast.makeText(PhoneAuthenticationActivity.this,"Failed",Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
-*/
-
         mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
             @Override
             public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
 
 
-                if (getIntent().getStringArrayExtra("Readiness") != null) {
+                if (getIntent().getStringExtra("Readiness") != null) {
 
                     HashMap<Object, Object> getDriverDetails = new HashMap<>();
+                    HashMap<Object, Object> getName = new HashMap<>();
 
+                    getName.put("Name", driversFile.getString("TheName", "null"));
                     getDriverDetails.put("Name", driversFile.getString("TheName", "null"));
                     getDriverDetails.put("Email", driversFile.getString("TheEmail", "null"));
                     getDriverDetails.put("About", driversFile.getString("TheAbout", "null"));
@@ -102,38 +88,45 @@ public class PhoneAuthenticationActivity extends AppCompatActivity {
                     getDriverDetails.put("Car color", driversFile.getString("TheCarColor", "null"));
 
 
-                    db.collection("Driver").document(Objects.requireNonNull(mAuth.getUid())).set(getDriverDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void unused) {
+                    mAuth.signInWithCredential(phoneAuthCredential)
+                            .addOnCompleteListener(PhoneAuthenticationActivity.this, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
 
-                            mAuth.signInWithCredential(phoneAuthCredential)
-                                    .addOnCompleteListener(PhoneAuthenticationActivity.this, new OnCompleteListener<AuthResult>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<AuthResult> task) {
+                                    mAuth = FirebaseAuth.getInstance();
 
+                                    if (task.isSuccessful()) {
+                                        // Sign in success, update UI with the signed-in user's information
+                                        Toast.makeText(PhoneAuthenticationActivity.this, "Successfully Signed Up", Toast.LENGTH_LONG).show();
 
-                                            if (task.isSuccessful()) {
-                                                // Sign in success, update UI with the signed-in user's information
-                                                Toast.makeText(PhoneAuthenticationActivity.this, "Successfully Signed Up", Toast.LENGTH_LONG).show();
+                                        db.collection("DriversPhone").document(phoneNumber).set(getName);
 
-                                                db.collection("driversPhone").document(phoneNumber).set(Objects.requireNonNull(getDriverDetails.get("Name")), SetOptions.merge());
+                                        Intent intent = new Intent(PhoneAuthenticationActivity.this, Dashboard.class);
+                                        startActivity(intent);
+                                        finish();
 
-                                                Intent intent = new Intent(PhoneAuthenticationActivity.this, Dashboard.class);
-                                                startActivity(intent);
-                                                finish();
+                                        db.collection("Driver").document(Objects.requireNonNull(mAuth.getUid())).set(getDriverDetails).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                mAuth.signOut();
+                                                Toast.makeText(PhoneAuthenticationActivity.this, "Signup failed", Toast.LENGTH_LONG).show();
 
                                             }
+                                        });
+                                    } else {
+                                        mAuth.signOut();
+                                        Toast.makeText(PhoneAuthenticationActivity.this, "Signup failed", Toast.LENGTH_LONG).show();
+                                    }
 
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull @NotNull Exception e) {
-                                            infoText.setText(e.getMessage());
-                                        }
-                                    });
-                        }
-                    });
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull @NotNull Exception e) {
+                                    infoText.setText(e.getMessage());
+                                }
+                            });
+
                 } else {
                     mAuth.signInWithCredential(phoneAuthCredential)
                             .addOnCompleteListener(PhoneAuthenticationActivity.this, new OnCompleteListener<AuthResult>() {
@@ -176,14 +169,14 @@ public class PhoneAuthenticationActivity extends AppCompatActivity {
             public void onCodeSent(@NonNull String verificationId,
                                    @NonNull PhoneAuthProvider.ForceResendingToken token) {
 
-                infoText.setText("Code Sent");
+                infoText.setText("Waiting for code");
 
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         infoText.setText("Validiating ...");
                     }
-                }, 7000);
+                }, 10000);
 
                 PhoneAuthProvider.getCredential(verificationId, token.toString());
 
@@ -195,7 +188,7 @@ public class PhoneAuthenticationActivity extends AppCompatActivity {
                         progressBar.setVisibility(View.GONE);
                         verifyNumberBtn.setVisibility(View.VISIBLE);
                     }
-                }, 4000);
+                }, 8000);
 
             }
         };
@@ -228,7 +221,7 @@ public class PhoneAuthenticationActivity extends AppCompatActivity {
                                 PhoneAuthOptions options =
                                         PhoneAuthOptions.newBuilder(mAuth)
                                                 .setPhoneNumber(phoneNumber)       // Phone number to verify
-                                                .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
+                                                .setTimeout(90L, TimeUnit.SECONDS) // Timeout and unit
                                                 .setActivity(PhoneAuthenticationActivity.this)                 // Activity (for callback binding)
                                                 .setCallbacks(mCallbacks)          // OnVerificationStateChangedCallbacks
                                                 .build();
@@ -241,24 +234,22 @@ public class PhoneAuthenticationActivity extends AppCompatActivity {
                                 String bundle = getIntent().getStringExtra("Readiness");
 
 
-                                if(bundle != null && bundle.equals("Ready")) {
-                                    Log.i("Bundle Info", "equal to null and doesn't contain readiness");
+                                if (bundle != null && bundle.equals("Ready")) {
+                                    Log.i("Bundle Info", "equal to null and contains readiness");
 
-                                    Log.i("User Existence","UNDER_SURVEILLANCE");
+                                    Log.i("User Existence", "UNDER_SURVEILLANCE");
                                     PhoneAuthOptions options =
                                             PhoneAuthOptions.newBuilder(mAuth)
                                                     .setPhoneNumber(phoneNumber)       // Phone number to verify
-                                                    .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
+                                                    .setTimeout(90L, TimeUnit.SECONDS) // Timeout and unit
                                                     .setActivity(PhoneAuthenticationActivity.this)                 // Activity (for callback binding)
                                                     .setCallbacks(mCallbacks)          // OnVerificationStateChangedCallbacks
                                                     .build();
                                     PhoneAuthProvider.verifyPhoneNumber(options);
-                                }
-                                else
-                                {
+                                } else {
                                     Log.i("Bundle Info", "Not null and contains readiness");
                                     Intent intent = new Intent(PhoneAuthenticationActivity.this, UploadDetailsActivity_2.class);
-                                    intent.putExtra("NewUser","New");
+                                    intent.putExtra("NewUser", "New");
                                     startActivity(intent);
 
                                     progressBar.setVisibility(View.GONE);
