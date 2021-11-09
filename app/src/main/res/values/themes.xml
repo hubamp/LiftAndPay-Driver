@@ -20,15 +20,22 @@
 
 <!--    Theme For SplashScreen-->
     <style name="Theme.Transparent" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="android:windowIsTranslucent">true</item>
+<!--        <item name="android:windowShowAnimation"-->
         <item name="android:windowBackground">@color/primaryColors</item>
-        <item name="android:windowContentOverlay">@color/primaryColors</item>
-        <item name="windowActionBar">false</item>
         <item name="android:windowFullscreen">true</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowIsFloating">false</item>
-        <item name="android:backgroundDimEnabled">false</item>
+<!--        <item name="android:windowNoTitle">true</item>-->
+<!--        <item name="android:windowIsFloating">false</item>-->
+        <item name="android:windowActivityTransitions">false</item>
+<!--        <item name="android:backgroundDimEnabled">false</item>-->
     </style>
+
+
+
+    <style name="ShapeAppearanceOverlay.Cut.ShapeableImageView" parent="">
+        <item name="cornerFamily">cut</item>
+        <item name="cornerRadius">18dp</item>
+    </style>
+
 
     <style name="AppBottomSheetDialogTheme"
         parent="Theme.Design.Light.BottomSheetDialog">

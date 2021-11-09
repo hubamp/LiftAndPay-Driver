@@ -76,15 +76,18 @@
                 android:orientation="vertical">
 
             <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imageProfileId"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
-                android:background="@drawable/img_circle"
+                android:src="@drawable/btn_profile"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Cut.ShapeableImageView"
                 android:layout_gravity="center"
                 android:layout_margin="5dp"
                 android:layout_marginBottom="1dp"
                 />
 
             <TextView
+                android:id="@+id/mainNameId"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 style="@style/ProfileMenuText_Style"
@@ -150,6 +153,7 @@
                             android:text="Name:"/>
 
                         <TextView
+                            android:id="@+id/driverName"
                             android:layout_height="wrap_content"
                             android:layout_width="wrap_content"
                             android:layout_margin="5dp"
@@ -174,6 +178,7 @@
                             android:text="Email:"/>
 
                         <TextView
+                            android:id="@+id/driverEmail"
                             android:layout_height="wrap_content"
                             android:layout_width="wrap_content"
                             android:layout_margin="5dp"
@@ -198,6 +203,7 @@
                             android:text="Phone:"/>
 
                         <TextView
+                            android:id="@+id/driverNumber"
                             android:layout_height="wrap_content"
                             android:layout_width="wrap_content"
                             android:layout_margin="5dp"
@@ -222,6 +228,7 @@
                             android:text="Location:"/>
 
                         <TextView
+                            android:id="@+id/driverLocation"
                             android:layout_height="wrap_content"
                             android:layout_width="wrap_content"
                             android:layout_margin="5dp"
@@ -245,7 +252,9 @@
                             android:textStyle="bold"
                             android:text="Number Of Rides:"/>
 
+
                         <TextView
+                            android:id="@+id/numberOfRides"
                             android:layout_height="wrap_content"
                             android:layout_width="wrap_content"
                             android:layout_margin="5dp"

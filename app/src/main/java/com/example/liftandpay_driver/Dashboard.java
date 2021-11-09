@@ -31,6 +31,7 @@ import com.example.liftandpay_driver.SignUp.PhoneAuthenticationActivity;
 import com.example.liftandpay_driver.accounts.AccountActivity;
 import com.example.liftandpay_driver.chats.ChatList;
 import com.example.liftandpay_driver.fastClass.BookedNotificationWorker;
+import com.example.liftandpay_driver.fastClass.CheckForSignUpWorker;
 import com.example.liftandpay_driver.fastClass.NewChatNotificationWorker;
 import com.example.liftandpay_driver.fastClass.UpdatedDriverLocationWorker;
 import com.example.liftandpay_driver.menu.MenuListActivity;
@@ -225,6 +226,7 @@ public class Dashboard extends AppCompatActivity {
                             Log.e("available002", "Exists with item");
 
                             lastAvailableRideId = availableRideIds.get(availableRideIds.size() - 1).trim();
+                            Log.i("The Ride Id",lastAvailableRideId);
 
 
                             //Setting up the deleteBtn
@@ -396,9 +398,7 @@ public class Dashboard extends AppCompatActivity {
     static void startNotificationWorker(Context context) {
         OneTimeWorkRequest bookedNotificationWorker = new OneTimeWorkRequest.Builder(BookedNotificationWorker.class).build();
         OneTimeWorkRequest chatNotificationWorker = new OneTimeWorkRequest.Builder(NewChatNotificationWorker.class).build();
-   //     OneTimeWorkRequest updatedDriverLocationWorker = new OneTimeWorkRequest.Builder(UpdatedDriverLocationWorker.class).build();
 
-      // WorkManager.getInstance(context).enqueue(updatedDriverLocationWorker);
         WorkManager.getInstance(context).enqueue(bookedNotificationWorker);
         WorkManager.getInstance(context).enqueue(chatNotificationWorker);
 
@@ -414,5 +414,13 @@ public class Dashboard extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        OneTimeWorkRequest checkForSignUpWorker = new OneTimeWorkRequest.Builder(CheckForSignUpWorker.class).build();
+        WorkManager.getInstance(Dashboard.this).enqueue(checkForSignUpWorker);
     }
 }

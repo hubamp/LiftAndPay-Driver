@@ -50,7 +50,6 @@ public class NewMessageNotificationWorker extends Worker {
     @Override
     public Result doWork() {
 
-
        db.collection("Chat").document(mUid).collection("Passengers").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
            @Override
            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {

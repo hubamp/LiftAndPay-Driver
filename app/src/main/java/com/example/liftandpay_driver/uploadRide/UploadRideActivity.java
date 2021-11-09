@@ -29,6 +29,7 @@ import com.example.liftandpay_driver.search.SearchActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.material.datepicker.MaterialDatePicker;
@@ -142,7 +143,7 @@ public class UploadRideActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
                 myName = task.getResult().getString("Name");
-                myPlate = task.getResult().getString("Plate");
+                myPlate = task.getResult().getString("Numberplate");
             }
         });
 
@@ -317,11 +318,39 @@ public class UploadRideActivity extends AppCompatActivity {
                                     if (!task.getResult().exists()) {
                                         ArrayList<String> availableRideIds = new ArrayList<>();
                                         Map<String, Object> data = new HashMap<>();
+                                        availableRideIds.add(theDriverId + " " + 0);
+
                                         data.put("LastNumber", "0");
                                         data.put("AvailableRideIds", availableRideIds);
-                                        task.getResult().getReference().set(data);
+                                        task.getResult().getReference().set(data).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task001) {
+                                                Log.e("Task002", "Completed");
+
+                                                if (task001.isSuccessful()) {
+                                                    Log.e("Task002", "Successful");
+
+
+                                                    db.collection("Rides").document(theDriverId + " " + 0).set(ride).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull @NotNull Task<Void> task003) {
+                                                            if (task003.isSuccessful()) {
+                                                                Snackbar.make(UploadRideActivity.this, time, "Uploaded successfully", 5000)
+                                                                        .setTextColor(Color.WHITE)
+                                                                        .setBackgroundTint(getResources().getColor(R.color.success)).show();
+
+                                                                openDialog();
+                                                            }
+                                                        }
+                                                    });
+
+
+                                                }
+                                            }
+                                        });
                                     }
-                                    if (task.isSuccessful()) {
+                                    else if (task.isSuccessful())
+                                    {
                                         Log.e("Task001", "Successful");
 
                                         lastNumber = (task.getResult().getString("LastNumber"));

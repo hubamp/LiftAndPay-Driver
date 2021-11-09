@@ -96,8 +96,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Email"
-                        android:inputType="textEmailAddress"
-                       />
+                        android:inputType="textEmailAddress" />
                 </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -144,7 +143,7 @@
             android:gravity="center"
             android:paddingHorizontal="10dp"
             android:paddingVertical="10dp"
-            android:text="Continue"
+            android:text="Proceed"
             android:textColor="@color/white"
             android:tooltipText="Approve the passenger's request" />
 

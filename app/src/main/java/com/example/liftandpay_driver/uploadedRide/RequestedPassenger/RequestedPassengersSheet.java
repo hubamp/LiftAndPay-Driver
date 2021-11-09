@@ -1,15 +1,26 @@
 package com.example.liftandpay_driver.uploadedRide.RequestedPassenger;
 
+import android.Manifest;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.liftandpay_driver.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -25,6 +36,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
 
 public class RequestedPassengersSheet extends BottomSheetDialogFragment {
 
@@ -49,10 +61,21 @@ private String theRequestedId;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+//        Log.i("The retrieved Id",theRequestedId);
+
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_requested_passengers_sheet, container, false);
 
         recyclerView = v.findViewById(R.id.requestedRecyclerView);
+
+
+        if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_PHONE_STATE)
+                != PackageManager.PERMISSION_GRANTED)
+        {
+            mPermissionResult.launch(Manifest.permission.READ_PHONE_STATE);
+            ActivityCompat.requestPermissions(getActivity(), new String[] { Manifest.permission.READ_PHONE_STATE },119);
+            Toast.makeText(getContext(),"Grant phone permission to continue", Toast.LENGTH_LONG).show();            // Permission is not granted
+        }
 
         //shared from UploadedRideAdapter.java
         sharedPreferences = getContext().getSharedPreferences("ACTIVE_RIDEFILE",MODE_PRIVATE);
@@ -77,6 +100,8 @@ private String theRequestedId;
 
         return v;
     }
+
+
 
     @Override
     public void onDestroy() {
@@ -113,5 +138,23 @@ private String theRequestedId;
 
     public void setTheRequestedId(String theRequestedId) {
         this.theRequestedId = theRequestedId;
+        Log.i("The Ride set Id",theRequestedId);
+
     }
+
+
+
+
+    private ActivityResultLauncher<String> mPermissionResult = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(),
+            new ActivityResultCallback<Boolean>() {
+                @Override
+                public void onActivityResult(Boolean result) {
+                    if(result) {
+//                        Log.e(TAG, "onActivityResult: PERMISSION GRANTED");
+                    } else {
+//                        Log.e(TAG, "onActivityResult: PERMISSION DENIED");
+                    }
+                }
+            });
 }

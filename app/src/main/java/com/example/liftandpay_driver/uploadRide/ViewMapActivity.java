@@ -82,7 +82,7 @@ public class ViewMapActivity extends AppCompatActivity implements OnMapReadyCall
 
 // Mapbox access token is configured here. This needs to be called either in your application
 // object or in the same activity which contains the mapview.
-        Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
+        Mapbox.getInstance(ViewMapActivity.this, getString(R.string.mapbox_access_token));
 
 // This contains the MapView in XML and needs to be called after the access token is configured.
         setContentView(R.layout.activity_view_map);
@@ -90,6 +90,8 @@ public class ViewMapActivity extends AppCompatActivity implements OnMapReadyCall
 
         distanceText = findViewById(R.id.distanceId);
         mapView = findViewById(R.id.mapView);
+
+
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
