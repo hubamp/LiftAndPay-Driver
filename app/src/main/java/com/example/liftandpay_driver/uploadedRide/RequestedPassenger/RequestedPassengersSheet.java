@@ -87,7 +87,7 @@ private String theRequestedId;
 
                 for (DocumentSnapshot passengersSnapshot : task.getResult().getDocuments())
                 {
-                    requestedPassengersModel = new RequestedPassengersModel(passengersSnapshot.getString("Name"), passengersSnapshot.getId(), passengersSnapshot.getId(),
+                    requestedPassengersModel = new RequestedPassengersModel(passengersSnapshot.getString("Name"), passengersSnapshot.getString("Location Desc"), passengersSnapshot.getId(),
                             passengersSnapshot.getDouble("Long"),  passengersSnapshot.getDouble("Lat"),
                             passengersSnapshot.getString("Status"));
                     requestedPassengersModels.add(requestedPassengersModel);
@@ -139,10 +139,7 @@ private String theRequestedId;
     public void setTheRequestedId(String theRequestedId) {
         this.theRequestedId = theRequestedId;
         Log.i("The Ride set Id",theRequestedId);
-
     }
-
-
 
 
     private ActivityResultLauncher<String> mPermissionResult = registerForActivityResult(

@@ -60,6 +60,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -91,6 +92,7 @@ public class Dashboard extends AppCompatActivity {
     private LinearLayout requestedPassengerLayout;
     private Button checkRideBtn;
     private SharedPreferences sharedPreferences, activeRidesShared;
+    private ImageView menuBtn;
 
 
     @Override
@@ -108,7 +110,7 @@ public class Dashboard extends AppCompatActivity {
         deleteBtn = findViewById(R.id.deleteBtn);
         editBtn = findViewById(R.id.editBtn);
 
-        imageMenu = findViewById(R.id.imageMenu);
+        menuBtn = findViewById(R.id.imageMenu);
 
         journeyName = findViewById(R.id.locationNameId);
         dateTime = findViewById(R.id.dateTimeId);
@@ -132,12 +134,23 @@ public class Dashboard extends AppCompatActivity {
 
         startNotificationWorker(Dashboard.this);
 
-        imageMenu.setOnClickListener(view ->{
+         menuBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Dashboard.this, MenuListActivity.class);
+                startActivity(intent);
+                overridePendingTransition(0, 0);
+
+            }
+        });
+
+
+        /*imageMenu.setOnClickListener(view ->{
             Intent intent = new Intent(Dashboard.this, PhoneAuthenticationActivity.class);
             startActivity(intent);
             mAuth.signOut();
             finish();
-        });
+        });*/
 
         editBtn.setOnClickListener(View->{
 
@@ -380,7 +393,9 @@ public class Dashboard extends AppCompatActivity {
                                     availableRideIds.remove(theRideId);
                                     task.getResult().getReference().update("AvailableRideIds", availableRideIds);
 
-                                    db.collection("Rides").document(theRideId).delete();
+                                    HashMap<String,Object> update = new HashMap<>();
+                                    update.put("driversStatus","Deleted");
+                                    db.collection("Rides").document(theRideId).update(update);
 
                                     Log.e("Delete Ride", "Deleted Successfully");
                                 }

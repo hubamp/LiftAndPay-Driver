@@ -28,11 +28,10 @@
             android:id="@+id/backButton"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:src="@drawable/btn_back"
-            android:background="@drawable/ripplebtn"
             android:layout_centerVertical="true"
-            android:focusableInTouchMode="true"
-            android:focusable="true"/>
+            android:background="@drawable/ripplebtn"
+            android:focusable="true"
+            android:src="@drawable/btn_back" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -75,12 +74,11 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-            <com.google.android.material.imageview.ShapeableImageView
+            <ImageView
                 android:id="@+id/imageProfileId"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:src="@drawable/btn_profile"
-                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Cut.ShapeableImageView"
                 android:layout_gravity="center"
                 android:layout_margin="5dp"
                 android:layout_marginBottom="1dp"

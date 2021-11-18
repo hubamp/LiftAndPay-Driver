@@ -7,6 +7,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.liftandpay_driver.R;
@@ -31,13 +34,15 @@ public class ProfileActivity extends AppCompatActivity {
     private String mUID = FirebaseAuth.getInstance().getUid();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseStorage storage = FirebaseStorage.getInstance();
-    private ShapeableImageView profileImage;
+    private ImageView profileImage;
+    private ImageButton backBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile2);
 
+        backBtn = findViewById(R.id.backButton);
         name = findViewById(R.id.driverName);
         mainName = findViewById(R.id.mainNameId);
         email = findViewById(R.id.driverEmail);
@@ -45,6 +50,13 @@ public class ProfileActivity extends AppCompatActivity {
         location = findViewById(R.id.driverLocation);
         noRides = findViewById(R.id.numberOfRides);
         profileImage = findViewById(R.id.imageProfileId);
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
 
         db.collection("Driver").document(mUID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override

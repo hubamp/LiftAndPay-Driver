@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".menu.ProfileActivity">
+    tools:context=".menu.MenuListActivity">
 
     <RelativeLayout
         android:id="@+id/topViewId"
@@ -68,10 +68,11 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <com.google.android.material.imageview.ShapeableImageView
+            <ImageView
+                android:id="@+id/profilePicture"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:background="@drawable/img_circle"
+                android:src="@drawable/btn_profile"
                 android:layout_gravity="center"
                 android:layout_margin="5dp"
                 android:layout_marginBottom="1dp"
@@ -232,26 +233,7 @@
 
     </ScrollView>
 
-    <LinearLayout
-        android:id="@+id/logoutId"
-        android:layout_alignParentBottom="true"
-        style="@style/ProfileMenuLayout_Style">
 
-
-        <ImageView
-            style="@style/ProfileMenuImage_Style"
-            android:src="@drawable/btn_power_off"
-            app:tint="#F14646" />
-
-        <TextView
-            style="@style/ProfileMenuText_Style"
-            android:text="Logout"
-            android:layout_gravity="center_vertical"
-            android:textColor="#F14646"
-            android:textSize="19sp"/>
-
-
-    </LinearLayout>
 
 
 </RelativeLayout>
