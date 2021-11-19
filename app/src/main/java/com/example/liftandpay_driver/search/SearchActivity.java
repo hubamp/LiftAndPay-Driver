@@ -51,6 +51,11 @@ public class SearchActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progress);
         SearchAdapter searchAdapter;
 
+
+        searchView.setIconified(false);
+        searchView.requestFocus();
+
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
