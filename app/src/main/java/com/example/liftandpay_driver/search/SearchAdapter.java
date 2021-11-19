@@ -42,20 +42,20 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.viewHolder
     @Override
     public void onBindViewHolder(@NonNull @NotNull viewHolder holder, int position) {
 
-        holder.theName.setText(searchItemModels.get(position).getTheName());
-        holder.theAddress.setText(searchItemModels.get(position).getTheAddress());
-        holder.lat = searchItemModels.get(position).getLat();
-        holder.lon = searchItemModels.get(position).getLon();
-        pos =position;
+        holder.theName.setText(searchItemModels.get(holder.getAdapterPosition()).getTheName());
+        holder.theAddress.setText(searchItemModels.get(holder.getAdapterPosition()).getTheAddress());
+        holder.lat = searchItemModels.get(holder.getAdapterPosition()).getLat();
+        holder.lon = searchItemModels.get(holder.getAdapterPosition()).getLon();
+
 
 
         holder.itemView.setOnClickListener(View -> {
 
                 Intent i = new Intent();
-                i.putExtra("theLocationName",searchItemModels.get(pos).getTheName());
-                i.putExtra("theLocationAddress",searchItemModels.get(pos).getTheAddress());
-                i.putExtra("theLat",searchItemModels.get(pos).getLat());
-                i.putExtra("theLon",searchItemModels.get(pos).getLon());
+                i.putExtra("theLocationName",searchItemModels.get(holder.getAdapterPosition()).getTheName());
+                i.putExtra("theLocationAddress",searchItemModels.get(holder.getAdapterPosition()).getTheAddress());
+                i.putExtra("theLat",searchItemModels.get(holder.getAdapterPosition()).getLat());
+                i.putExtra("theLon",searchItemModels.get(holder.getAdapterPosition()).getLon());
 
                 activity.setResult(Activity.RESULT_OK,i);
                 activity.finish();
