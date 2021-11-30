@@ -30,6 +30,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
@@ -47,6 +48,7 @@ import org.jetbrains.annotations.NotNull;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -111,7 +113,7 @@ public class ChatActivity extends AppCompatActivity {
                     System.out.println(dtf.format(now));
 
                     chat.put("Message",typedMessage.getText().toString());
-                    chat.put("Time",dtf.format(now));
+                    chat.put("Time",new Timestamp(new Date()));
                     chat.put("ChatMode","1");
 
                   chatCollection.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -146,7 +148,7 @@ public class ChatActivity extends AppCompatActivity {
         });
 
         chatCollection
-                .orderBy("Time", Query.Direction.ASCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
 

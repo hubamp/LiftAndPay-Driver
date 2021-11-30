@@ -27,7 +27,7 @@ import com.example.liftandpay_driver.R;
 import com.example.liftandpay_driver.UploadDetailsActivity_2;
 import com.example.liftandpay_driver.fastClass.BookedNotificationWorker;
 import com.example.liftandpay_driver.fastClass.NewChatNotificationWorker;
-import com.example.liftandpay_driver.fastClass.NewMessageNotificationWorker;
+
 import com.example.liftandpay_driver.fastClass.StringFunction;
 import com.example.liftandpay_driver.menu.MenuListActivity;
 import com.example.liftandpay_driver.threads.chatNotification;

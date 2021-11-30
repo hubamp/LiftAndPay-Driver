@@ -78,12 +78,6 @@ public class UploadDetailsActivity_3 extends AppCompatActivity {
         driverInfoPreferences = getApplication().getSharedPreferences("DRIVERSFILE", MODE_PRIVATE);
 
 
-        mainCarImage.setDrawingCacheEnabled(true);
-        mainCarImage.buildDrawingCache();
-        sideCarImage.setDrawingCacheEnabled(true);
-        sideCarImage.buildDrawingCache();
-
-
         carModel.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -197,7 +191,7 @@ public class UploadDetailsActivity_3 extends AppCompatActivity {
                 Intent intent = new Intent(Intent.ACTION_PICK,
                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
-                startActivityForResult(intent, 123);
+                startActivityIfNeeded(intent, 123);
             }
         });
 
@@ -208,7 +202,7 @@ public class UploadDetailsActivity_3 extends AppCompatActivity {
                 Intent intent = new Intent(Intent.ACTION_PICK,
                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
-                startActivityForResult(intent, 321);
+                startActivityIfNeeded(intent, 321);
             }
         });
 

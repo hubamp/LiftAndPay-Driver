@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <!--layout of contact rectangle-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/layout_id"
+            style="@style/contact_layout">
+
+
+            <ImageView
+                android:id="@+id/pAImageId"
+                style="@style/picture_image"
+                android:src="@drawable/btn_profile"/>
+
+
+            <!--Image-->
+
+
+            <!--Texts-->
+            <LinearLayout style="@style/msg_name_layout">
+                <!--name-->
+                <TextView
+
+                    android:id="@+id/pAnameId"
+                    style="@style/nameOfContact"
+                    android:text="---" />
+
+
+                <!--message-->
+                <TextView
+                    android:id="@+id/pALastMessageId"
+                    style="@style/messages"
+
+                    android:text="---"
+
+                    />
+
+            </LinearLayout>
+
+            <!--Status-->
+            <LinearLayout style="@style/status_layout"
+
+                >
+
+                <!--date-->
+                <TextView
+
+                    android:id="@+id/timeModelId"
+                    style="@style/dateOfMessage_layout"
+                    android:text="..." />
+
+                <!--number of new messages-->
+
+                <TextView
+                    android:id="@+id/pAstatusId"
+                    style="@style/num_of_messages"
+                    android:text="1"
+
+                    />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+        <!--divider-->
+        <View
+            android:id="@+id/textview5"
+            style="@style/divider_view"
+            android:layout_marginStart="75dp" />
+
+
+    </LinearLayout>
+
+</LinearLayout>

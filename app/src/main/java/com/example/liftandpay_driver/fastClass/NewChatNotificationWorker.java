@@ -41,8 +41,9 @@ public class NewChatNotificationWorker extends Worker {
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String mUid = FirebaseAuth.getInstance().getUid();
-    SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("BACKGROUNDFILE", MODE_PRIVATE);
+    private static String passengerName;
 
+    SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("BACKGROUNDFILE", MODE_PRIVATE);
 
 
     public NewChatNotificationWorker(@NonNull @NotNull Context context, @NonNull @NotNull WorkerParameters workerParams) {
@@ -56,50 +57,55 @@ public class NewChatNotificationWorker extends Worker {
 
         Log.i("New Chat", "Chat Notification Started");
 
-       db.collection("Chat").document(mUid).collection("Passengers").addSnapshotListener(
-               new EventListener<QuerySnapshot>() {
-                   @Override
-                   public void onEvent(@Nullable @org.jetbrains.annotations.Nullable QuerySnapshot value, @Nullable @org.jetbrains.annotations.Nullable FirebaseFirestoreException error) {
-                       Log.i("New Chat", "Checking For Notification");
+        db.collection("Chat").document(mUid).collection("Passengers").addSnapshotListener(
+                new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable @org.jetbrains.annotations.Nullable QuerySnapshot value, @Nullable @org.jetbrains.annotations.Nullable FirebaseFirestoreException error) {
+                        Log.i("New Chat", "Checking For Notification");
 
 
-                       for (DocumentChange documentChange : value.getDocumentChanges())
-                       {
-                           switch (documentChange.getType()) {
-                               case MODIFIED:
-                                   if(Objects.requireNonNull(documentChange.getDocument().get("ChatMode")).toString().equals("2"))
-                                   buildNotification(documentChange.getDocument().getId(), documentChange.getDocument().getString("Message"), documentChange.getNewIndex());
+                        for ( DocumentChange documentChange : value.getDocumentChanges()) {
 
-                               case ADDED:
-                                   int newDocumentSize = value.getDocuments().size();
-                                   int oldDocumentSize =sharedPreferences.getInt("TheTotalNumberOfChats",-1);
+                            db.collection("Passenger").document(documentChange.getDocument().getId()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
 
-                                   if (oldDocumentSize<newDocumentSize)
-                                   {
+                                    passengerName = documentSnapshot.getString("Name");
 
-                                           Log.i("New Chat", documentChange.getDocument().getString("Message"));
-                                           Log.i("New Total old", ""+oldDocumentSize);
-                                           Log.i("New Total new", ""+newDocumentSize);
-                                           buildNotification(documentChange.getDocument().getId(), documentChange.getDocument().getString("Message"), 200);
-                                           sharedPreferences.edit().putInt("TheTotalNumberOfChats", newDocumentSize).apply();
+                                    switch (documentChange.getType()) {
+                                        case MODIFIED:
+                                            if (Objects.requireNonNull(documentChange.getDocument().get("ChatMode")).toString().equals("2"))
+                                                buildNotification(passengerName, documentChange.getDocument().getString("Message"), documentChange.getNewIndex());
 
-                                   }
-                                       oldDocumentSize =sharedPreferences.getInt("TheTotalNumberOfChats",-1);
-                                       Log.i("New Total old 01", ""+oldDocumentSize);
+                                        case ADDED:
+                                            int newDocumentSize = value.getDocuments().size();
+                                            int oldDocumentSize = sharedPreferences.getInt("TheTotalNumberOfChats", -1);
 
-                               case REMOVED:
-                                   newDocumentSize = value.getDocuments().size();
-                                   sharedPreferences.edit().putInt("TheTotalNumberOfChats", newDocumentSize).apply();
+                                            if (oldDocumentSize < newDocumentSize) {
+
+                                                Log.i("New Chat", documentChange.getDocument().getString("Message"));
+                                                Log.i("New Total old", "" + oldDocumentSize);
+                                                Log.i("New Total new", "" + newDocumentSize);
+                                                buildNotification(passengerName, documentChange.getDocument().getString("Message"), 200);
+                                                sharedPreferences.edit().putInt("TheTotalNumberOfChats", newDocumentSize).apply();
+
+                                            }
+                                            oldDocumentSize = sharedPreferences.getInt("TheTotalNumberOfChats", -1);
+                                            Log.i("New Total old 01", "" + oldDocumentSize);
+
+                                        case REMOVED:
+                                            newDocumentSize = value.getDocuments().size();
+                                            sharedPreferences.edit().putInt("TheTotalNumberOfChats", newDocumentSize).apply();
 
 
+                                    }
 
-                           }
-
-
-                       }
-                   }
-               }
-       );
+                                }
+                            });
+                        }
+                    }
+                }
+        );
 
         return Result.success();
 

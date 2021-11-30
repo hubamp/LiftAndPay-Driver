@@ -29,6 +29,7 @@ import android.widget.TextView;
 
 import com.example.liftandpay_driver.SignUp.PhoneAuthenticationActivity;
 import com.example.liftandpay_driver.accounts.AccountActivity;
+
 import com.example.liftandpay_driver.chats.ChatList;
 import com.example.liftandpay_driver.fastClass.BookedNotificationWorker;
 import com.example.liftandpay_driver.fastClass.CheckForSignUpWorker;
@@ -36,6 +37,7 @@ import com.example.liftandpay_driver.fastClass.NewChatNotificationWorker;
 import com.example.liftandpay_driver.fastClass.UpdatedDriverLocationWorker;
 import com.example.liftandpay_driver.menu.MenuListActivity;
 import com.example.liftandpay_driver.menu.ProfileActivity;
+import com.example.liftandpay_driver.chats.ChatList;
 import com.example.liftandpay_driver.threads.chatNotification;
 import com.example.liftandpay_driver.uploadRide.UploadRideActivity;
 import com.example.liftandpay_driver.uploadedRide.RequestedPassenger.RequestedPassengersSheet;

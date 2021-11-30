@@ -11,10 +11,15 @@
         <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/drawable/img_circle.xml" value="0.2703125" />
         <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/drawable/img_rideupload.xml" value="0.2703125" />
         <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/drawable/ripple.xml" value="0.14479166666666668" />
+        <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/layout-v28/activity_chats.xml" value="0.21822916666666667" />
+        <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/layout-v28/activity_main.xml" value="0.17135416666666667" />
+        <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/layout-v28/contact_item.xml" value="0.20925925925925926" />
+        <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/layout-v28/toolbar.xml" value="0.17135416666666667" />
         <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/layout/activity_account.xml" value="0.17395833333333333" />
         <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/layout/activity_dashboard.xml" value="0.16666666666666666" />
         <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/layout/activity_phone_authentication.xml" value="0.19010416666666666" />
-        <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/layout/activity_profile2.xml" value="0.4" />
+        <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/layout/activity_profile.xml" value="0.21822916666666667" />
+        <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/layout/activity_profile2.xml" value="0.1712962962962963" />
         <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/layout/activity_requested_passenger_profile.xml" value="0.25416666666666665" />
         <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/layout/activity_ride_history.xml" value="0.25416666666666665" />
         <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/layout/activity_splash.xml" value="0.21145833333333333" />
@@ -29,7 +34,9 @@
         <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/layout/all.xml" value="0.25416666666666665" />
         <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/layout/list_row.xml" value="0.25416666666666665" />
         <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/layout/markerview.xml" value="0.25416666666666665" />
+        <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/layout/model_chatlist.xml" value="0.16666666666666666" />
         <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/layout/model_requested_passenger.xml" value="0.1" />
+        <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/layout/model_ride_history.xml" value="0.103125" />
         <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.2703125" />
         <entry key="..\:/Projects.MyProjects/AndroidProjects/sokoprojects/LiftAndPay/Driver/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.2703125" />
       </map>

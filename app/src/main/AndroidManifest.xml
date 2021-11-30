@@ -47,6 +47,7 @@
         <activity android:name=".search.SearchActivity" />
         <activity android:name=".uploadedRide.RequestedPassenger.RequestedPassengerProfile" />
         <activity android:name=".chats.ChatList" />
+        <activity android:name=".message.ChatActivity"/>
         <activity android:name=".chats.ChatActivity" />
         <activity android:name=".uploadRide.ViewMapActivity" />
         <activity android:name=".menu.ProfileActivity" />

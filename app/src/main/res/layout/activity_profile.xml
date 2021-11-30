@@ -72,6 +72,8 @@
                 android:id="@+id/profilePicture"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
+                android:clickable="true"
+                android:focusable="true"
                 android:src="@drawable/btn_profile"
                 android:layout_gravity="center"
                 android:layout_margin="5dp"
@@ -83,7 +85,7 @@
                 android:layout_height="wrap_content"
                 style="@style/ProfileMenuText_Style"
                 android:gravity="center"
-                android:text="Hubert Amponsah - Driver"/>
+                android:text="Driver"/>
 
 
             <LinearLayout
