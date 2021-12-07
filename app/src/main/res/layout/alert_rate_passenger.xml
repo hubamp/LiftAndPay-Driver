@@ -9,73 +9,19 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Review the passenger to help other drivers"
+        android:text="Review this passenger to help other drivers"
         android:textColor="@color/primaryColors"
         android:textSize="18sp"
         android:textStyle="bold" />
 
     <RatingBar
         android:id="@+id/ratingsId"
+        android:layout_marginTop="5dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:numStars="5"
         android:progressTint="@color/primaryColors" />
 
-    <TextView
-        android:tag="option"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:background="@drawable/ripple"
-        android:backgroundTint="@color/extraFadedBlue"
-        android:clickable="true"
-        android:focusable="true"
-        android:padding="6dp"
-        android:text="The driver is not serious in life"
-        android:textAlignment="center"
-        android:textColor="@color/primaryColors" />
-
-    <TextView
-        android:tag="option"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:background="@drawable/ripple"
-        android:backgroundTint="@color/extraFadedBlue"
-        android:clickable="true"
-        android:focusable="true"
-        android:padding="6dp"
-        android:text="The Passenger is not punctual"
-        android:textAlignment="center"
-        android:textColor="@color/primaryColors" />
-
-    <TextView
-        android:tag="option"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:background="@drawable/ripple"
-        android:backgroundTint="@color/extraFadedBlue"
-        android:clickable="true"
-        android:focusable="true"
-        android:padding="6dp"
-        android:text="Passenger gave wrong pickup point"
-        android:textAlignment="center"
-        android:textColor="@color/primaryColors" />
-
-    <TextView
-        android:tag="option"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:background="@drawable/ripple"
-        android:backgroundTint="@color/extraFadedBlue"
-        android:clickable="true"
-        android:focusable="true"
-        android:padding="6dp"
-        android:text="Passenger is boring"
-        android:textAlignment="center"
-        android:textColor="@color/primaryColors" />
 
 
     <EditText
@@ -83,7 +29,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="top"
-        android:hint="comments (optional)"
+        android:hint="Comments"
         android:minHeight="70dp"
         android:textColor="@color/primaryColors"
         android:textColorHighlight="@color/primaryColors"

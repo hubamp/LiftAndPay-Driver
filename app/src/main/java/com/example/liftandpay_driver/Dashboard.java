@@ -7,25 +7,22 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.work.OneTimeWorkRequest;
-import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
-import android.speech.tts.TextToSpeech;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.liftandpay_driver.SignUp.PhoneAuthenticationActivity;
 import com.example.liftandpay_driver.accounts.AccountActivity;
@@ -34,18 +31,14 @@ import com.example.liftandpay_driver.chats.ChatList;
 import com.example.liftandpay_driver.fastClass.BookedNotificationWorker;
 import com.example.liftandpay_driver.fastClass.CheckForSignUpWorker;
 import com.example.liftandpay_driver.fastClass.NewChatNotificationWorker;
-import com.example.liftandpay_driver.fastClass.UpdatedDriverLocationWorker;
 import com.example.liftandpay_driver.menu.MenuListActivity;
 import com.example.liftandpay_driver.menu.ProfileActivity;
-import com.example.liftandpay_driver.chats.ChatList;
 import com.example.liftandpay_driver.threads.chatNotification;
 import com.example.liftandpay_driver.uploadRide.UploadRideActivity;
 import com.example.liftandpay_driver.uploadedRide.RequestedPassenger.RequestedPassengersSheet;
 import com.example.liftandpay_driver.uploadedRide.UploadedRideMap;
 import com.example.liftandpay_driver.uploadedRide.UploadedRidesActivity;
-import com.google.android.gms.maps.model.Dash;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -63,8 +56,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 public class Dashboard extends AppCompatActivity {
 
@@ -251,8 +242,8 @@ public class Dashboard extends AppCompatActivity {
                                         .Builder(Dashboard.this);
 
                                 // Set the message show for the Alert time
-                                builder.setMessage("Do you want to delete this ride?");
-                                builder.setTitle("Delete");
+                                builder.setMessage("Do you want to cancel this ride?");
+                                builder.setTitle("Cancel");
                                 builder.setCancelable(true);
                                 builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                                     @Override
@@ -262,7 +253,7 @@ public class Dashboard extends AppCompatActivity {
                                 }).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        deleteTheRide(lastAvailableRideId);
+                                        cancelTheRide(lastAvailableRideId);
                                         dialog.dismiss();
                                     }
                                 });
@@ -318,6 +309,10 @@ public class Dashboard extends AppCompatActivity {
                                                 if (value003.isEmpty()) {
                                                     Log.e("Request", "Empty");
                                                     no_Requests.setText("0");
+
+                                                    requestedPassengerLayout.setOnClickListener(view -> {
+                                                        Toast.makeText(Dashboard.this, "No request yet",Toast.LENGTH_SHORT).show();
+                                                    });
                                                 } else {
                                                     Log.e("Request", "Not Empty");
                                                     no_Requests.setText("" + value003.size());
@@ -372,7 +367,7 @@ public class Dashboard extends AppCompatActivity {
 
 
 
-    private void deleteTheRide(String theRideId) {
+    private void cancelTheRide(String theRideId) {
 
         db.collection("Driver").document(mUid).collection("Rides").document("Pending").get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -396,7 +391,7 @@ public class Dashboard extends AppCompatActivity {
                                     task.getResult().getReference().update("AvailableRideIds", availableRideIds);
 
                                     HashMap<String,Object> update = new HashMap<>();
-                                    update.put("driversStatus","Deleted");
+                                    update.put("driversStatus","Cancelled");
                                     db.collection("Rides").document(theRideId).update(update);
 
                                     Log.e("Delete Ride", "Deleted Successfully");

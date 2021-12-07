@@ -307,6 +307,7 @@ public class UploadRideActivity extends AppCompatActivity {
                     ride.put("driverName", myName);
                     ride.put("plate", myPlate);
                     ride.put("myId", mAuth.getUid());
+                    ride.put("driversStatus","Pending");
                     ride.put("Number Of Occupants", Integer.parseInt(numberOfOccuppants.getText().toString()));
 
 

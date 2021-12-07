@@ -250,6 +250,7 @@
                     android:background="@color/extraFadedBlue"
                     android:orientation="horizontal">
 
+                    <!--TODO: edit the ride-->
                     <TextView
                         android:id="@+id/editBtn"
                         android:layout_width="30dp"
@@ -257,6 +258,7 @@
                         android:clickable="true"
                         android:focusable="true"
                         android:background="@drawable/ripple"
+                        android:visibility="gone"
                         android:backgroundTint="@color/transparentColor"
                         android:foreground="@drawable/btn_edit"/>
 
@@ -269,7 +271,7 @@
                         android:background="@drawable/ripple"
                         android:foregroundTint="@color/primaryColors"
                         android:backgroundTint="@color/transparentColor"
-                        android:foreground="@drawable/btn_delete"/>
+                        android:foreground="@drawable/btn_close"/>
                 </LinearLayout>
             </LinearLayout>
 
@@ -373,6 +375,7 @@
         android:focusable="true"
         android:backgroundTint="@color/white"
         android:layout_margin="15dp"
+        android:visibility="invisible"
         android:background="@drawable/ripple"
         android:padding="5dp"
         android:elevation="3dp">
