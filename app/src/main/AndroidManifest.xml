@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name = "android.permission.ACCESS_NETWORK_STATE" />
 <!--    <uses-permission android:name="android.permission.READ_PRECISE_PHONE_STATE"/>-->
     <uses-permission android:name="android.permission.VIBRATE" />
 
@@ -68,7 +69,6 @@
             android:name=".uploadedRide.UploadedRideMap"
             android:label="@string/title_activity_uploaded_ride_map" />
         <activity android:name=".uploadedRide.UploadedRidesActivity" />
-        <activity android:name=".UploadDetailsActivity_4" />
         <activity android:name=".UploadDetailsActivity_2" />
         <activity android:name=".UploadDetailsActivity_3" />
         <activity android:name=".uploadRide.UploadRideActivity" />
@@ -85,7 +85,6 @@
             android:name="com.google.android.wearable.standalone"
             android:value="false" />
 
-        <activity android:name=".UploadDetailsActivity_1" />
     </application>
 
 </manifest>

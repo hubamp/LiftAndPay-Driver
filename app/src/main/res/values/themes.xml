@@ -224,6 +224,12 @@
     </style>
 
 
+    <style name="ShapeAppearance.CircularBorder" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">55%</item>
+    </style>
+
+
     <!--From Gerorge message-->
     <style name="contact_layout">
         <item name="android:layout_width">match_parent</item>

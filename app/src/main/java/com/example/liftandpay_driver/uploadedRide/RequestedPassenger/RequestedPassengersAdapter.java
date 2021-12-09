@@ -57,7 +57,7 @@ public class RequestedPassengersAdapter extends RecyclerView.Adapter<RequestedPa
         holder.pAPickUpLon = requestedPassengersModels.get(position).getPICKUPLONG();
         holder.pAStatus.setText(requestedPassengersModels.get(position).getSTATUS());
 
-        storage.getReference().child("Passenger").child(requestedPassengersModels.get(position).getPASSENGERID()).child("profile.png").getDownloadUrl().addOnCompleteListener(
+        storage.getReference().child("Passenger").child(requestedPassengersModels.get(holder.getAdapterPosition()).getPASSENGERID()).child("profile.png").getDownloadUrl().addOnCompleteListener(
               new OnCompleteListener<Uri>() {
                   @Override
                   public void onComplete(@NonNull @NotNull Task<Uri> task) {
@@ -84,6 +84,8 @@ public class RequestedPassengersAdapter extends RecyclerView.Adapter<RequestedPa
                 sharedPreferences.edit().putString("ThePickupLongitude", String.valueOf(holder.pAPickUpLon)).apply();
                 sharedPreferences.edit().putString("ThePassengersStatus", holder.pAStatus.getText().toString()).apply();
                 sharedPreferences.edit().putString(holder.pAId, passengersImageString).apply();
+
+                intent.putExtra(holder.pAId,passengersImageString);
                 context.startActivity(intent);
             }
         });

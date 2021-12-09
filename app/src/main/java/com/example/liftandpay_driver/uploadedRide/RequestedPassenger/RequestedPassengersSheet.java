@@ -87,9 +87,15 @@ private String theRequestedId;
 
                 for (DocumentSnapshot passengersSnapshot : task.getResult().getDocuments())
                 {
-                    requestedPassengersModel = new RequestedPassengersModel(passengersSnapshot.getString("Name"), passengersSnapshot.getString("Location Desc"), passengersSnapshot.getId(),
-                            passengersSnapshot.getDouble("Long"),  passengersSnapshot.getDouble("Lat"),
-                            passengersSnapshot.getString("Status"));
+                    requestedPassengersModel = new RequestedPassengersModel(
+                            passengersSnapshot.getString("Name"),
+                            passengersSnapshot.getString("Location Desc"),
+                            passengersSnapshot.getId(),
+                            passengersSnapshot.getDouble("Long"),
+                            passengersSnapshot.getDouble("Lat"),
+                            passengersSnapshot.getString("Status")
+                    );
+
                     requestedPassengersModels.add(requestedPassengersModel);
                 }
 

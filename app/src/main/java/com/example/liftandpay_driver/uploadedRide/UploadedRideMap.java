@@ -1,6 +1,7 @@
 package com.example.liftandpay_driver.uploadedRide;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -41,8 +42,11 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.location.LocationEngineCallback;
@@ -282,7 +286,7 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                                     Log.i("LastLocation", originPoint.latitude() + " : " + originPoint.longitude());
 
                                     mapboxNavigation.stopNavigation();
-                                    Toast.makeText(UploadedRideMap.this, "Navigation Cancelled", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(UploadedRideMap.this, "Ride Cancelled", Toast.LENGTH_LONG).show();
                                     dialog.dismiss();
                                     textToSpeech.speak("Ride is cancelled", TextToSpeech.QUEUE_FLUSH, null);
                                     WorkManager.getInstance(UploadedRideMap.this).cancelUniqueWork("UpdateMyLocId").getResult().isCancelled();
@@ -349,6 +353,7 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                                             point.latitude(), point.longitude());
 
                                     rawDistance.add(distanceFromOrigin);
+
                                     bookedBIES.add(new BookedBy(
                                             snapshot.getId(),
                                             point,
@@ -384,6 +389,8 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                             //route from trip origin to trip destination
                             getRoute(originPoint, destinationPoint);
                             mapboxMap.moveCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds.build(), 250));
+
+
 
                             //Actions when start button is clicked
                             startBtn.setOnClickListener(new View.OnClickListener() {
@@ -495,6 +502,8 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
             });
 
 
+
+
         } else {
             Toast.makeText(getApplicationContext(), "The Cordinates are null, Route could not render", Toast.LENGTH_LONG).show();
         }
@@ -534,6 +543,7 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                         switchStartBtn(toCONFIRM_PICKUP);
 
                         nearByReportId++;
+
                         vibrator.vibrate(4000);
                         if (nearByReportId == 2) {
                             textToSpeech.speak("You are at the pickup point", TextToSpeech.QUEUE_FLUSH, null);
@@ -787,6 +797,11 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                 .build();*/
 
 
+        buildNavigation();
+
+    }
+
+    private void buildNavigation(){
         navigationRoute.build().getRoute(new Callback<DirectionsResponse>() {
             @Override
             public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
@@ -803,8 +818,12 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                 currentRoute.clear();
 
                 currentRoute.add(response.body().routes().get(0));
+                checkIfDriverHasStarted();
+
+
                 if (response.body().routes().size() > 1) {
                     currentRoute.add(response.body().routes().get(1));
+
                 }
 
 
@@ -821,11 +840,10 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
 
             @Override
             public void onFailure(Call<DirectionsResponse> call, Throwable t) {
-                Timber.e(t.toString());
+                Log.i("Main","Building failed");
 
             }
         });
-
     }
 
     private static class BookedBy {
@@ -1012,6 +1030,39 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
     }
 
 
+    private void checkIfDriverHasStarted(){
+        db.collection("Rides").document(rideId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                if (documentSnapshot.contains("driversStatus")) {
+
+                    if (documentSnapshot.get("driversStatus").equals("Started")) {
+
+                        if (currentRoute.size() !=0) {
+                            enableLocationComponent(mapboxMap.getStyle());
+                            textToSpeech.speak("Ride has started", TextToSpeech.QUEUE_FLUSH, null);
+                            switchStartBtn(toSTARTED);
+                            mapboxNavigation.startNavigation(currentRoute.get(0));
+                        }
+                    }
+
+                    if (documentSnapshot.get("driversStatus").equals("Cancelled")) {
+
+                        switchStartBtn(toCANCELLED);
+                        Log.i("LastLocation", originPoint.latitude() + " : " + originPoint.longitude());
+                        mapboxNavigation.stopNavigation();
+                        Toast.makeText(UploadedRideMap.this, "Ride Cancelled", Toast.LENGTH_LONG).show();
+                        textToSpeech.speak("Ride is cancelled", TextToSpeech.QUEUE_FLUSH, null);
+                        WorkManager.getInstance(UploadedRideMap.this).cancelUniqueWork("UpdateMyLocId").getResult().isCancelled();
+
+                    }
+                }
+            }
+        });
+    }
+
+
     // Add the mapView lifecycle to the activity's lifecycle methods
     @Override
     public void onResume() {
@@ -1070,6 +1121,16 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
     public void onPointerCaptureChanged(boolean hasCapture) {
 
     }
+
+
+
+
+
+
+
+
+
+
 
 
 }

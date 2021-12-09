@@ -40,22 +40,15 @@
                 android:padding="15dp"
                 android:orientation="vertical">
 
-                <ImageView
+                <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/pAImage"
                     android:layout_width="150dp"
                     android:layout_height="150dp"
                     android:src="@drawable/btn_profile"
+                    app:shapeAppearance="@style/ShapeAppearance.CircularBorder"
                     android:background="@color/extraFadedBlue"
                     android:layout_margin="10dp"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Student"
-                    android:textSize="25sp"
-                    android:textColor="@color/primaryColors"
-                    android:textStyle="bold"
-                    />
 
                 <TextView
                     android:id="@+id/pAName"
@@ -71,19 +64,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     >
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/img_star_fullyfilled"/>
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/img_star_fullyfilled"/>
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/img_star_fullyfilled"/>
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

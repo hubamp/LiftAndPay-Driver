@@ -30,7 +30,7 @@
             android:background="@drawable/bottom_sheet_bkg"
             android:orientation="vertical"
             app:behavior_hideable="false"
-            app:behavior_peekHeight="65dp"
+            app:behavior_peekHeight="300dp"
             app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
             <Button
@@ -82,105 +82,36 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
+           <LinearLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_margin="5dp"
+               android:background="@color/extra_faded_success"
+               android:orientation="horizontal">
 
-                <TextView
-                    style="@style/TextLabelForPendingFragment"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="From:" />
+               <com.google.android.material.imageview.ShapeableImageView
+                   android:layout_width="50dp"
+                   android:layout_height="50dp"
+                   android:src="@drawable/btn_profile"
+                   app:shapeAppearance="@style/ShapeAppearance.CircularBorder"/>
 
-                <TextView
-                    style="@style/TextForPendingFragment"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Ablekuma" />
+               <LinearLayout
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:orientation="vertical">
 
-            </LinearLayout>
+                   <TextView
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:text="Passenger Name"
+                       android:layout_margin="15dp"/>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/extraFadedBlue" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    style="@style/TextLabelForPendingFragment"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="To:" />
-
-                <TextView
-                    style="@style/TextForPendingFragment"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Lapaz" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/extraFadedBlue" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    style="@style/TextLabelForPendingFragment"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Date:" />
-
-                <TextView
-                    style="@style/TextForPendingFragment"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="15th March 1998" />
+               </LinearLayout>
 
 
-                <ImageView
-                    style="@style/smallIconBtnStyle"
-                    android:layout_gravity="center"
-                    android:layout_marginEnd="5dp"
-                    android:src="@drawable/btn_edit" />
-            </LinearLayout>
+           </LinearLayout>
 
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/extraFadedBlue" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    style="@style/TextLabelForPendingFragment"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Time:" />
-
-                <TextView
-                    style="@style/TextForPendingFragment"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="15:00pm" />
-
-                <ImageView
-                    style="@style/smallIconBtnStyle"
-                    android:layout_marginEnd="5dp"
-                    android:src="@drawable/btn_edit" />
-            </LinearLayout>
         </LinearLayout>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

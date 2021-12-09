@@ -47,16 +47,6 @@ public class Ratings extends AlertDialog.Builder {
         ratingBar = v.findViewById(R.id.ratingsId);
         commentText = v.findViewById(R.id.ratingsCommentId);
 
-      option = v.findViewWithTag("option");
-
-
-      option.setOnClickListener(new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-              commentString = commentString +"\n" + option.getText().toString();
-              Toast.makeText(context,commentString, Toast.LENGTH_LONG).show();
-          }
-      });
 
         v.findViewById(R.id.submitId).setOnClickListener(V->{
 

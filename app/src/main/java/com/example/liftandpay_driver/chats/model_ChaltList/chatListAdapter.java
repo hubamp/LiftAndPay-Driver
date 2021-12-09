@@ -75,14 +75,14 @@ public class chatListAdapter extends RecyclerView.Adapter<chatListAdapter.chatVi
                         child(passengerId).
                         child("profile.png").
                         getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+
                     @Override
                     public void onComplete(@NonNull Task<Uri> task) {
+
                         passengerProfile = task.getResult().toString();
                         Picasso.get().load( passengerProfile).into(holder.image);
-
                     }
                 });
-
 
 //                Toast.makeText(context,passengerId,Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(context, ChatActivity.class);
@@ -92,7 +92,6 @@ public class chatListAdapter extends RecyclerView.Adapter<chatListAdapter.chatVi
                 context.startActivity(intent);
             }
         });
-
     }
 
     @Override
