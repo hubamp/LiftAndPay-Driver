@@ -355,10 +355,10 @@ public class UploadRideActivity extends AppCompatActivity {
                 } else {
                     ride.put("startLocation", startLocation.getText().toString());
                     ride.put("endLocation", endingLocation.getText().toString());
-                    ride.put("Ride Distance", distanceText);
-                    ride.put("Ride Cost", cost.getText().toString());
-                    ride.put("Ride Date", date.getText().toString());
-                    ride.put("Ride Time", time.getText().toString());
+                    ride.put("rideDistance", distanceText);
+                    ride.put("rideCost", cost.getText().toString());
+                    ride.put("rideDate", date.getText().toString());
+                    ride.put("rideTime", time.getText().toString());
                     ride.put("startLon", sLong);
                     ride.put("startLat", sLat);
                     ride.put("endLon", eLong);

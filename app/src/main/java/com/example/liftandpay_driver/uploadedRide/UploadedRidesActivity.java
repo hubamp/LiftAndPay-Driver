@@ -153,8 +153,8 @@ public class UploadedRidesActivity extends AppCompatActivity {
                                             uploadedRidesModel = new uploadedRidesModel(
                                                     Objects.requireNonNull(Objects.requireNonNull(documentSnapshot.getData()).get("startLocation")).toString() +
                                                             " - " + Objects.requireNonNull(documentSnapshot.getData().get("endLocation")).toString(),
-                                                    Objects.requireNonNull(documentSnapshot.getData().get("Ride Date")).toString(),
-                                                    Objects.requireNonNull(documentSnapshot.getData().get("Ride Time")).toString(),
+                                                    Objects.requireNonNull(documentSnapshot.getData().get("rideDate")).toString(),
+                                                    Objects.requireNonNull(documentSnapshot.getData().get("rideTime")).toString(),
                                                     numberOfBookedPassengers,
                                                     documentSnapshot.getId(),
                                                     Objects.requireNonNull(documentSnapshot.getData().get("startLat")).toString(),
@@ -218,8 +218,8 @@ public class UploadedRidesActivity extends AppCompatActivity {
                         uploadedRidesModel = new uploadedRidesModel(
                                 Objects.requireNonNull(Objects.requireNonNull(ds.getData()).get("startLocation")).toString() +
                                         " - " + Objects.requireNonNull(ds.getData().get("endLocation")).toString(),
-                                Objects.requireNonNull(ds.getData().get("Ride Date")).toString(),
-                                Objects.requireNonNull(ds.getData().get("Ride Time")).toString(),
+                                Objects.requireNonNull(ds.getData().get("rideDate")).toString(),
+                                Objects.requireNonNull(ds.getData().get("rideTime")).toString(),
                                 numberOfBookedPassengers,
                                 ds.getId(),
                                 Objects.requireNonNull(ds.getData().get("startLat")).toString(),
