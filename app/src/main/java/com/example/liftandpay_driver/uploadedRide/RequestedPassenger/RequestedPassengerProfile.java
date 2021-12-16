@@ -84,10 +84,6 @@ public class RequestedPassengerProfile extends AppCompatActivity {
         reviewModels = new ArrayList<>();
 
         reviewModel reviewModel = new reviewModel();
-        reviewModels.add(reviewModel);
-        reviewModels.add(reviewModel);
-        reviewModels.add(reviewModel);
-        reviewModels.add(reviewModel);
         recyclerView.setAdapter(new reviewAdapter(reviewModels));
 
     }

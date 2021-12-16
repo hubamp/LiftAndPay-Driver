@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="15dp"
+        android:text="Oww we are sad to see you cancel"/>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="15dp"
+        android:layout_marginTop="15dp"
+        android:textColor="@color/primaryColors"
+        android:text="Reason for cancellation"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:background="@color/extraFadedBlue"
+        android:layout_margin="15dp"
+        android:layout_height="100dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="15dp"
+        android:paddingVertical="2dp"
+        android:textStyle="italic"
+        android:text="Submission will be visible to passengers"/>
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginHorizontal="15dp"
+        android:paddingHorizontal="40dp"
+        android:text="Submit"/>
+
+
+
+</androidx.appcompat.widget.LinearLayoutCompat>

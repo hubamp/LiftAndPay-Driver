@@ -16,6 +16,7 @@ import androidx.work.WorkerParameters;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -35,7 +36,9 @@ import android.widget.Toast;
 
 import com.example.liftandpay_driver.R;
 import com.example.liftandpay_driver.Ratings;
+import com.example.liftandpay_driver.fastClass.StringFunction;
 import com.example.liftandpay_driver.fastClass.UpdatedDriverLocationWorker;
+import com.example.liftandpay_driver.pAPickUpLocation.ViewPickUpLocation;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -92,7 +95,13 @@ import com.mapbox.turf.TurfTransformation;
 
 
 import org.jetbrains.annotations.NotNull;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -123,9 +132,11 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
 
     private TextView startBtn;
     private ProgressBar startedProgessBar;
+    private TextView navigationText;
 
     private MapView mapView;
     private MapboxMap mapboxMap;
+    private static String previousInstruction, startedSpeech ="";
 
     private Handler handler = new Handler();
     private int LOCATION_UPDATE_TIME_INTERVAL_IN_SECONDS = 7000;
@@ -172,6 +183,9 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
 
     private int theDriverRangeInMeters;
 
+    private AlertDialog routDialog;
+    private AlertDialog.Builder routingDialog;
+
     // Not static final because they will be adjusted by the seekbars and spinner menu
     private final String circleUnit = UNIT_KILOMETERS;
     private final int circleSteps = 180;
@@ -208,12 +222,12 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
         cancelBtn = findViewById(R.id.cancelRideBtn);
         startedProgessBar = findViewById(R.id.startedProgress);
         distanceToPoint = findViewById(R.id.distanceToWayPoint);
+        navigationText = findViewById(R.id.directionId);
 
         locationEngine = LocationEngineProvider.getBestLocationEngine(UploadedRideMap.this);
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(UploadedRideMap.this);
-
 
     }
 
@@ -234,6 +248,10 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
         mapboxMap.setStyle(new Style.Builder().fromUri(mapBoxStyleUrl), new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
+
+                routingDialog = new AlertDialog.Builder(UploadedRideMap.this).setMessage("Loading ...");
+                routingDialog.setCancelable(false);
+                routDialog = routingDialog.show();
 
                 navigationMapRoute = new NavigationMapRoute(null, mapView, mapboxMap, R.style.NavigationMapRoute);
 
@@ -509,17 +527,42 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
         }
 
 
+
         mapboxNavigation.addProgressChangeListener(new ProgressChangeListener() {
             @Override
             public void onProgressChange(Location location, RouteProgress routeProgress) {
 
                 theDriverRangeInMeters = 100;
 
+//               String nextInstruction =routeProgress.voiceInstruction().getSsmlAnnouncement();
+               String nextInstruction = mapboxNavigation.retrieveSsmlAnnouncementInstruction(0);
+
+               /*Filtering announcement xmlinstruction (ssmlAnnouncement)*/
+
+                    String prosodyString = new StringFunction(mapboxNavigation.retrieveSsmlAnnouncementInstruction(0)).splitStringWithAndGet("prosody", 1);
+                    String removedRate = new StringFunction(prosodyString).splitStringWithAndGet(">", 1);
+                    String instruction = new StringFunction(removedRate).splitStringWithAndGet("<", 0);
+
+                navigationText.setText(String.format("%s",instruction));
+
+                if (!instruction.equals(previousInstruction)){
+                    textToSpeech.speak(instruction,TextToSpeech.QUEUE_ADD,null,"null");
+                    previousInstruction = instruction;
+                }
+
+
+                locationComponent.setCameraMode(CameraMode.TRACKING_GPS);
+
+                locationComponent.tiltWhileTracking(50);
+
+
+
                 for (Point thisPoint : allWayPoints) {
                     double distanceFromWayPoint = distanceBtnCoordinates(location.getLatitude(), location.getLongitude(), thisPoint.latitude(), thisPoint.longitude());
 
-                    String distanceToPnt = (distanceFromWayPoint * 1000) + "m";
+                    String distanceToPnt = String.format("%.2f",distanceFromWayPoint) + "km";
                     distanceToPoint.setText(distanceToPnt);
+
 
                     Log.i("DistanceBetween", "" + distanceFromWayPoint * 1000 + " meters");
                     if ((distanceFromWayPoint * 1000) < 100 && (distanceFromWayPoint * 1000) > 20) {
@@ -607,7 +650,7 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
             locationComponent.setRenderMode(RenderMode.GPS);
 
 // Set the component's camera mode
-            locationComponent.setCameraMode(CameraMode.TRACKING_COMPASS);
+            locationComponent.setCameraMode(CameraMode.TRACKING_GPS);
             locationComponent.tiltWhileTracking(50);
 
 
@@ -665,7 +708,6 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
 
         GeoJsonSource geoJsonSource = new GeoJsonSource("destination-source-id");
         loadedMapStyle.addSource(geoJsonSource);
-
 
     }
 
@@ -836,11 +878,16 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                 navigationMapRoute.showAlternativeRoutes(true);
                 navigationMapRoute.updateRouteVisibilityTo(true);
 
+                routDialog.dismiss();
+
             }
 
             @Override
             public void onFailure(Call<DirectionsResponse> call, Throwable t) {
                 Log.i("Main","Building failed");
+
+                routDialog.dismiss();
+                Toast.makeText(UploadedRideMap.this, "Failing to load", Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -1041,7 +1088,13 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
 
                         if (currentRoute.size() !=0) {
                             enableLocationComponent(mapboxMap.getStyle());
-                            textToSpeech.speak("Ride has started", TextToSpeech.QUEUE_FLUSH, null);
+
+                            if(!startedSpeech.equals("Ride has started"))
+                            {
+                                textToSpeech.speak("Ride has started", TextToSpeech.QUEUE_FLUSH, null,"");
+                                startedSpeech = "Ride has started";
+                            }
+
                             switchStartBtn(toSTARTED);
                             mapboxNavigation.startNavigation(currentRoute.get(0));
                         }
@@ -1081,7 +1134,6 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
     @Override
     protected void onStop() {
         super.onStop();
-        mapboxNavigation.stopNavigation();
         mapView.onStop();
         activeRide_sharedPreference.edit().clear().apply();
     }
@@ -1126,6 +1178,43 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
 
 
 
+    private String getXMLValue(String xmlString){
+
+        InputStream stream = new ByteArrayInputStream(xmlString.getBytes());
+
+        XmlPullParserFactory xmlFactoryObject = null;
+        try {
+            xmlFactoryObject = XmlPullParserFactory.newInstance();
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        }
+        try {
+            XmlPullParser myparser = xmlFactoryObject.newPullParser();
+            myparser.setInput(stream, null);
+
+            int event = myparser.getEventType();
+            while (event != XmlPullParser.END_DOCUMENT)  {
+                String name=myparser.getName();
+                switch (event){
+                    case XmlPullParser.START_TAG:
+                        break;
+
+                    case XmlPullParser.END_TAG:
+                        if(name.equals("prosody")){
+                            xmlString = myparser.getAttributeValue(null,"value");
+                        }
+                        break;
+                }
+                event = myparser.next();
+            }
+
+        } catch (XmlPullParserException | IOException e) {
+            e.printStackTrace();
+        }
+
+
+        return xmlString;
+    }
 
 
 

@@ -1,16 +1,19 @@
 package com.example.liftandpay_driver.uploadRide;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -29,11 +32,9 @@ import com.example.liftandpay_driver.search.SearchActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
@@ -51,6 +52,7 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -92,7 +94,7 @@ public class UploadRideActivity extends AppCompatActivity {
     private TextInputEditText numberOfOccuppants;
 
     //private TextInputEditText numberOfOccuppants;
-    private Date dates;
+    private Date times, dates;
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private final String theDriverId = mAuth.getUid();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -117,12 +119,14 @@ public class UploadRideActivity extends AppCompatActivity {
 
     private FusedLocationProviderClient fusedLocationProviderClient;
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         Mapbox.getInstance(UploadRideActivity.this, getString(R.string.mapbox_access_token));//This comes before oncreate
 
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_upload_ride);
         footerLayout = findViewById(R.id.footerView);
         footerView = getLayoutInflater().inflate(R.layout.footer_view, footerLayout, false);
@@ -138,6 +142,13 @@ public class UploadRideActivity extends AppCompatActivity {
         viewMapBtn = findViewById(R.id.viewMapId);
         costProgressBar = findViewById(R.id.costProgress);
         distanceProgressBar = findViewById(R.id.distanceProgress);
+
+        final Calendar calendar = Calendar.getInstance();
+
+        // initialising the date variables
+        final int day = calendar.get(Calendar.DAY_OF_MONTH);
+        final int year = calendar.get(Calendar.YEAR);
+        final int month = calendar.get(Calendar.MONTH);
 
         db.collection("Driver").document(mAuth.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -225,12 +236,49 @@ public class UploadRideActivity extends AppCompatActivity {
         }
 
         MaterialDatePicker.Builder<Long> dateBulder = MaterialDatePicker.Builder.datePicker();
-        MaterialDatePicker<Long> materialDatePicker = dateBulder.build();
+
+
+//        MaterialDatePicker<Long> materialDatePicker = dateBulder.build();
         dateBulder.setTitleText("Set your ride date");
 
         date.setOnClickListener(v -> {
+
+           DatePickerDialog datePicker = new DatePickerDialog(UploadRideActivity.this);
+
+           dateProgressBar.setVisibility(View.INVISIBLE);
+
+
+            datePicker = new DatePickerDialog(UploadRideActivity.this, new DatePickerDialog.OnDateSetListener() {
+                @Override
+                public void onDateSet(android.widget.DatePicker view, int year, int month, int dayOfMonth) {
+                    // adding the selected date in the edittext
+
+                    SimpleDateFormat d =new SimpleDateFormat("dd-MM-yyyy");
+
+                    try {
+                        String datee = dayOfMonth + "-" + (month+1) + "-" + year;
+                        dates = d.parse(datee);
+                        SimpleDateFormat chosenDate = new SimpleDateFormat("EEE, d MMM yyyy");
+                        date.setText(chosenDate.format(dates));
+                        dateProgressBar.setVisibility(View.INVISIBLE);
+                        sharedPreferences.edit().putString("TheRideDate", Objects.requireNonNull(date.getText()).toString()).apply();
+
+                    }
+                    catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
+
+                }
+            }, year, month, day);
+
+            sharedPreferences.edit().putString("TheRideDate", Objects.requireNonNull(date.getText()).toString()).apply();
+
+            datePicker.getDatePicker().setMinDate(calendar.getTimeInMillis());
+
+            datePicker.show();
             dateProgressBar.setVisibility(View.VISIBLE);
-            materialDatePicker.show(getSupportFragmentManager(), "Date Picker");
+//            materialDatePicker.show(getSupportFragmentManager(), "Date Picker");
         });
 
         time.setOnClickListener(v -> {
@@ -245,9 +293,9 @@ public class UploadRideActivity extends AppCompatActivity {
                     SimpleDateFormat f24hours = new SimpleDateFormat("HH:mm");
 
                     try {
-                        dates = f24hours.parse(timeString);
+                        times = f24hours.parse(timeString);
                         SimpleDateFormat f12Hours = new SimpleDateFormat("hh:mm:aa");
-                        time.setText(f12Hours.format(dates));
+                        time.setText(f12Hours.format(times));
                         sharedPreferences.edit().putString("TheRideTime", Objects.requireNonNull(time.getText()).toString()).apply();
 
                     } catch (ParseException e) {
@@ -261,13 +309,25 @@ public class UploadRideActivity extends AppCompatActivity {
         });
 
 
-        materialDatePicker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener() {
+       /* materialDatePicker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener() {
             @Override
             public void onPositiveButtonClick(Object selection) {
+
+
                 date.setText(materialDatePicker.getHeaderText());
+                dateProgressBar.setVisibility(View.INVISIBLE);
                 sharedPreferences.edit().putString("TheRideDate", Objects.requireNonNull(date.getText()).toString()).apply();
             }
         });
+
+        materialDatePicker.addOnNegativeButtonClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                dateProgressBar.setVisibility(View.INVISIBLE);
+
+            }
+        });*/
 
 
         proceedBtn.setOnClickListener(new View.OnClickListener() {

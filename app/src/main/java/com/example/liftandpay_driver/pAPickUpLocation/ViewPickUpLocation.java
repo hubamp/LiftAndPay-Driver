@@ -1,6 +1,7 @@
 package com.example.liftandpay_driver.pAPickUpLocation;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -10,9 +11,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.liftandpay_driver.R;
 import com.example.liftandpay_driver.chats.ChatActivity;
@@ -29,6 +32,8 @@ import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
+import com.mapbox.mapboxsdk.camera.CameraUpdate;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
@@ -61,6 +66,10 @@ public class ViewPickUpLocation extends AppCompatActivity implements OnMapReadyC
     private MapboxMap mapboxMap;
 
     private FloatingActionButton chatFab;
+    private double initialzoom;
+    private CameraPosition initialCameraPos;
+
+    private static LatLngBounds initlatLngBounds, newLatLngBounds;
 
     private final String geojsonSourceLayerId = "geojsonSourceLayerId";
     private final String symbolIconId = "symbolIconId";
@@ -73,15 +82,15 @@ public class ViewPickUpLocation extends AppCompatActivity implements OnMapReadyC
 
     private SharedPreferences passengerRequests_sharedPreference, activeRide_sharedPreference;
 
-    private String thePassengerId,thePassengerName;
+    private String thePassengerId, thePassengerName;
 
     private AlertDialog.Builder routingDialog;
 
-    private final FirebaseFirestore db =FirebaseFirestore.getInstance();
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final String mUid = FirebaseAuth.getInstance().getUid();
 
 
-    private TextView approveBtn,declinedBtn;
+    private TextView approveBtn, declinedBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,13 +123,13 @@ public class ViewPickUpLocation extends AppCompatActivity implements OnMapReadyC
         });
 
 
-        approveBtn.setOnClickListener(View->{
+        approveBtn.setOnClickListener(View -> {
             AlertDialog.Builder builder
                     = new AlertDialog
                     .Builder(ViewPickUpLocation.this);
 
             // Set the message show for the Alert time
-            builder.setMessage("Do you want to Approve "+thePassengerName+" for this ride?");
+            builder.setMessage("Do you want to Approve " + thePassengerName + " for this ride?");
             builder.setTitle("Approve");
             builder.setCancelable(true);
             builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -134,36 +143,36 @@ public class ViewPickUpLocation extends AppCompatActivity implements OnMapReadyC
 
                     db.collection("Rides")
                             .document(activeRide_sharedPreference
-                                    .getString("TheRideId",null))
+                                    .getString("TheRideId", null))
                             .collection("Booked By").document(thePassengerId)
-                            .update("Status","Approved")
+                            .update("Status", "Approved")
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull @NotNull Task<Void> task) {
-                            dialog.dismiss();
-                            Snackbar.make(chatFab,"Approved",3000).setBackgroundTint( ContextCompat.getColor(ViewPickUpLocation.this, R.color.mapbox_plugins_green)).show();
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull @NotNull Exception e) {
-                            dialog.dismiss();
-                            Snackbar.make(chatFab,"Approval Incomplete",3000).setBackgroundTint( ContextCompat.getColor(ViewPickUpLocation.this, R.color.mapbox_navigation_route_layer_congestion_red)).show();
+                                @Override
+                                public void onComplete(@NonNull @NotNull Task<Void> task) {
+                                    dialog.dismiss();
+                                    Snackbar.make(chatFab, "Approved", 3000).setBackgroundTint(ContextCompat.getColor(ViewPickUpLocation.this, R.color.mapbox_plugins_green)).show();
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull @NotNull Exception e) {
+                                    dialog.dismiss();
+                                    Snackbar.make(chatFab, "Approval Incomplete", 3000).setBackgroundTint(ContextCompat.getColor(ViewPickUpLocation.this, R.color.mapbox_navigation_route_layer_congestion_red)).show();
 
-                        }
-                    });
+                                }
+                            });
                 }
             });
             builder.create().show();
         });
 
-        declinedBtn.setOnClickListener(View->{
+        declinedBtn.setOnClickListener(View -> {
             AlertDialog.Builder builder
                     = new AlertDialog
                     .Builder(ViewPickUpLocation.this);
 
             // Set the message show for the Alert time
-            builder.setMessage("Do you want to Decline "+thePassengerName+"'s request?");
+            builder.setMessage("Do you want to Decline " + thePassengerName + "'s request?");
             builder.setTitle("Decline");
             builder.setCancelable(true);
             builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -177,24 +186,24 @@ public class ViewPickUpLocation extends AppCompatActivity implements OnMapReadyC
 
                     db.collection("Rides")
                             .document(activeRide_sharedPreference
-                                    .getString("TheRideId",null))
+                                    .getString("TheRideId", null))
                             .collection("Booked By").document(thePassengerId)
-                            .update("Status","Declined")
+                            .update("Status", "Declined")
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull @NotNull Task<Void> task) {
-                            dialog.dismiss();
-                            Snackbar.make(chatFab,"Declined",3000).setBackgroundTint( ContextCompat.getColor(ViewPickUpLocation.this, R.color.primaryColors)).show();
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull @NotNull Exception e) {
-                            dialog.dismiss();
-                            Snackbar.make(chatFab,"Approval Incomplete",3000).setBackgroundTint( ContextCompat.getColor(ViewPickUpLocation.this, R.color.failure)).show();
+                                @Override
+                                public void onComplete(@NonNull @NotNull Task<Void> task) {
+                                    dialog.dismiss();
+                                    Snackbar.make(chatFab, "Declined", 3000).setBackgroundTint(ContextCompat.getColor(ViewPickUpLocation.this, R.color.primaryColors)).show();
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull @NotNull Exception e) {
+                                    dialog.dismiss();
+                                    Snackbar.make(chatFab, "Approval Incomplete", 3000).setBackgroundTint(ContextCompat.getColor(ViewPickUpLocation.this, R.color.failure)).show();
 
-                        }
-                    });
+                                }
+                            });
                 }
             });
             builder.create().show();
@@ -222,40 +231,35 @@ public class ViewPickUpLocation extends AppCompatActivity implements OnMapReadyC
                 setupLayer(style);
                 addDestinationIconSymbolLayer(style);
 
-                double pickupLat = Double.parseDouble(passengerRequests_sharedPreference.getString("ThePickupLatitude", null));
-                double pickupLon = Double.parseDouble(passengerRequests_sharedPreference.getString("ThePickupLongitude", null));
 
-                passengerPickUpLocMarker(Point.fromLngLat(pickupLon, pickupLat));
             }
         });
 
 
-        double stLat = Double.parseDouble(activeRide_sharedPreference.getString("TheStLat","0"));
-        double stLon = Double.parseDouble(activeRide_sharedPreference.getString("TheStLon","0"));
-        double endLat = Double.parseDouble(activeRide_sharedPreference.getString("TheEndLat","0"));
-        double endLon = Double.parseDouble(activeRide_sharedPreference.getString("TheEndLon","0"));
+        double stLat = Double.parseDouble(activeRide_sharedPreference.getString("TheStLat", "0"));
+        double stLon = Double.parseDouble(activeRide_sharedPreference.getString("TheStLon", "0"));
+        double endLat = Double.parseDouble(activeRide_sharedPreference.getString("TheEndLat", "0"));
+        double endLon = Double.parseDouble(activeRide_sharedPreference.getString("TheEndLon", "0"));
 
-        if (stLat !=0 && stLon!= 0 && endLat != 0 && endLon != 0 ) {
+        if (stLat != 0 && stLon != 0 && endLat != 0 && endLon != 0) {
             LatLng points = new LatLng(stLat, stLon);
             LatLng pointd = new LatLng(endLat, endLon);
 
-            LatLngBounds latLngBounds = new LatLngBounds.Builder()
+            initlatLngBounds = new LatLngBounds.Builder()
                     .include(points)
                     .include(pointd)
                     .build();
 
-            mapboxMap.moveCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 150));
+            mapboxMap.moveCamera(CameraUpdateFactory.newLatLngBounds(initlatLngBounds, 150));
 
-          routingDialog =   new AlertDialog.Builder(ViewPickUpLocation.this).setMessage("Routing ...");
-          routingDialog.setCancelable(false);
-         routDialog = routingDialog.show();
-        getRoute(Point.fromLngLat(stLon, stLat), Point.fromLngLat(endLon, endLat));
+            routingDialog = new AlertDialog.Builder(ViewPickUpLocation.this).setMessage("Routing ...");
+            routingDialog.setCancelable(false);
+            routDialog = routingDialog.show();
+            getRoute(Point.fromLngLat(stLon, stLat), Point.fromLngLat(endLon, endLat));
                         /*    passengerPickUpLocMarker(originPoint);
                             passengerPickUpLocMarker(originPoint);*/
-        }
-        else
-        {
-            Snackbar.make(chatFab,"stLat: "+stLat +"\nstLon: "+stLon+"\neLat: "+endLat+"\nelon: "+ endLon ,3000).setBackgroundTint( ContextCompat.getColor(ViewPickUpLocation.this, R.color.mapbox_navigation_route_layer_congestion_red)
+        } else {
+            Snackbar.make(chatFab, "stLat: " + stLat + "\nstLon: " + stLon + "\neLat: " + endLat + "\nelon: " + endLon, 3000).setBackgroundTint(ContextCompat.getColor(ViewPickUpLocation.this, R.color.mapbox_navigation_route_layer_congestion_red)
             ).show();
         }
 
@@ -297,6 +301,7 @@ public class ViewPickUpLocation extends AppCompatActivity implements OnMapReadyC
                         Feature.fromGeometry(Point.fromLngLat(point.longitude(), point.latitude()))
                 ));
 
+
             }
         }
     }
@@ -331,11 +336,41 @@ public class ViewPickUpLocation extends AppCompatActivity implements OnMapReadyC
                             navigationMapRoute.addRoute(currentRoute);
                         }
                         routDialog.dismiss();
+
+                        double pickupLat = Double.parseDouble(passengerRequests_sharedPreference.getString("ThePickupLatitude", null));
+                        double pickupLon = Double.parseDouble(passengerRequests_sharedPreference.getString("ThePickupLongitude", null));
+
+                        passengerPickUpLocMarker(Point.fromLngLat(pickupLon, pickupLat));
+
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+
+
+                                mapboxMap.easeCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder().zoom(15).target(new LatLng(pickupLat,pickupLon)).build()),2000);
+
+
+
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(
+                                                initlatLngBounds,150),3000);
+                                    }
+                                },5000);
+
+                            }
+                        },3000);
+
+
                     }
 
                     @Override
                     public void onFailure(Call<DirectionsResponse> call, Throwable t) {
                         Timber.e(t.toString());
+                        routDialog.dismiss();
+                        Toast.makeText(ViewPickUpLocation.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+
 
                     }
                 });

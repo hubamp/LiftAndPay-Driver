@@ -33,7 +33,6 @@ import com.example.liftandpay_driver.fastClass.CheckForSignUpWorker;
 import com.example.liftandpay_driver.fastClass.NewChatNotificationWorker;
 import com.example.liftandpay_driver.menu.MenuListActivity;
 import com.example.liftandpay_driver.menu.ProfileActivity;
-import com.example.liftandpay_driver.threads.chatNotification;
 import com.example.liftandpay_driver.uploadRide.UploadRideActivity;
 import com.example.liftandpay_driver.uploadedRide.RequestedPassenger.RequestedPassengersSheet;
 import com.example.liftandpay_driver.uploadedRide.UploadedRideMap;
@@ -119,10 +118,6 @@ public class Dashboard extends AppCompatActivity {
 
         requestedPassengerLayout = findViewById(R.id.requestedPassengers);
 
-
-
-        OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(chatNotification.class).build();
-        WorkManager.getInstance(getApplicationContext()).enqueue(oneTimeWorkRequest);
 
 
         startNotificationWorker(Dashboard.this);
@@ -337,7 +332,7 @@ public class Dashboard extends AppCompatActivity {
                                                         activeRidesShared.edit().putString("TheStLon", String.valueOf(stLon)).apply();
                                                         activeRidesShared.edit().putString("TheRideId",lastAvailableRideId).apply();
 
-                                                        requestedPassengersSheet.show(manager, null);
+                                                        requestedPassengersSheet.show(manager, "null");
                                                     });
                                                 }
                                             }
@@ -413,7 +408,6 @@ public class Dashboard extends AppCompatActivity {
 
         WorkManager.getInstance(context).enqueue(bookedNotificationWorker);
         WorkManager.getInstance(context).enqueue(chatNotificationWorker);
-
     }
 
     @Override
