@@ -18,6 +18,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
@@ -44,6 +45,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -134,6 +137,7 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
     private ProgressBar startedProgessBar;
     private TextView navigationText;
 
+    private FloatingActionButton recenterBtn;
     private MapView mapView;
     private MapboxMap mapboxMap;
     private static String previousInstruction, startedSpeech ="";
@@ -149,7 +153,7 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
     private final String mapBoxStyleUrl = "mapbox://styles/hubert-brako/cknk4g1t6031l17to153efhbs";
 
     private Map<String, Object> driversLoc = new HashMap<>();
-    ImageView cancelBtn;
+    private TextView cancelBtn;
 
     private TextToSpeech textToSpeech;
     private Vibrator vibrator;
@@ -228,6 +232,7 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(UploadedRideMap.this);
+        recenterBtn =findViewById(R.id.recenterBtn);
 
     }
 
@@ -551,9 +556,15 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                 }
 
 
-                locationComponent.setCameraMode(CameraMode.TRACKING_GPS);
 
-                locationComponent.tiltWhileTracking(50);
+               recenterBtn.setOnClickListener(new View.OnClickListener() {
+                   @Override
+                   public void onClick(View view) {
+                       locationComponent.setCameraMode(CameraMode.TRACKING_GPS_NORTH);
+
+                       locationComponent.tiltWhileTracking(50);
+                   }
+               });
 
 
 
@@ -566,7 +577,7 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
 
                     Log.i("DistanceBetween", "" + distanceFromWayPoint * 1000 + " meters");
                     if ((distanceFromWayPoint * 1000) < 100 && (distanceFromWayPoint * 1000) > 20) {
-                        theDriverRangeInMeters = 100;
+                        theDriverRangeInMeters = 400;
                         switchStartBtn(toCONFIRM_PICKUP);
 
                         nearByReportId++;

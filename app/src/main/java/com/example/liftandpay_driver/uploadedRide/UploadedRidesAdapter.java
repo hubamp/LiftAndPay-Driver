@@ -63,7 +63,7 @@ public class UploadedRidesAdapter extends RecyclerView.Adapter<UploadedRidesAdap
     @Override
     public void onBindViewHolder(@NonNull UploadedRidesAdapter.uploadedViewHolder holder, int position) {
 
-        uploadedRidesModel uploadedRidesModel = uploadedRidesModels.get(position);
+        uploadedRidesModel uploadedRidesModel = uploadedRidesModels.get(holder.getAdapterPosition());
         holder.rTimeView.setText(uploadedRidesModel.getRIDETIME());
         holder.rDateView.setText(uploadedRidesModel.getRIDEDATE());
         holder.rJourney.setText(uploadedRidesModel.getJOURNEY());
@@ -84,7 +84,7 @@ public class UploadedRidesAdapter extends RecyclerView.Adapter<UploadedRidesAdap
                 } else {
                     holder.toMapPrograssBar.setVisibility(View.VISIBLE);
                     Intent intent = new Intent(context, UploadedRideMap.class);
-                    applySharedToActiveRide(position);
+                    applySharedToActiveRide(holder.getAdapterPosition());
                     context.startActivity(intent);
                     holder.toMapPrograssBar.setVisibility(View.INVISIBLE);
                 }

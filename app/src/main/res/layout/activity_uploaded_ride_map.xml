@@ -39,20 +39,20 @@
     </LinearLayout>
 
 
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/recenterBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-
         android:layout_alignParentBottom="true"
         android:layout_marginHorizontal="5dp"
         android:layout_marginBottom="80dp"
-        android:backgroundTint="@color/primaryColors"
-        android:foregroundTint="@color/white"
-        android:src="@drawable/btn_profile"
+        android:backgroundTint="@color/white"
+        android:tintMode="multiply"
         android:tint="@color/white"
-        app:icon="@drawable/btn_profile"
-        app:iconTint="@color/white" />
+        android:backgroundTintMode="@color/white"
+        android:src="@drawable/ic_navigation"
+        />
 
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -109,13 +109,6 @@
                     android:indeterminateTint="@color/primaryColors"
                     android:visibility="invisible" />
 
-                <ImageView
-                    android:id="@+id/cancelRideBtn"
-                    style="@style/smallIconBtnStyle"
-                    android:layout_marginEnd="2dp"
-                    android:contentDescription="CANCEL THE RIDE"
-                    android:foreground="@drawable/btn_close"
-                    app:tint="@color/failure" />
 
             </LinearLayout>
 
@@ -123,28 +116,38 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:background="@color/extra_faded_success"
+                android:layout_margin="15dp"
+                android:gravity="end"
                 android:orientation="horizontal">
 
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:src="@drawable/btn_profile"
-                    app:shapeAppearance="@style/ShapeAppearance.CircularBorder" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/cancelRideBtn"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:layout_marginEnd="2dp"
+                    android:background="@color/transparentColor"
+                    android:contentDescription="CANCEL THE RIDE"
+                    android:drawableTint="@color/failure"
+                    android:padding="5dp"
+                    android:text="Cancel"
+                    android:textColor="@color/failure"
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="15dp"
-                        android:text="Passenger Name" />
+                    app:drawableStartCompat="@drawable/btn_close"
+                    app:tint="@color/failure" />
 
-                </LinearLayout>
+                <TextView
+                    android:id="@+id/completeRideBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_margin="5dp"
+                    android:layout_marginEnd="2dp"
+                    android:background="@color/primaryColors"
+                    android:backgroundTint="@color/fadedBlue"
+                    android:contentDescription="COMPLETE THE RIDE"
+                    android:padding="5dp"
+                    android:text="Complete Ride"
+                    android:textColor="@color/primaryColors" />
 
 
             </LinearLayout>

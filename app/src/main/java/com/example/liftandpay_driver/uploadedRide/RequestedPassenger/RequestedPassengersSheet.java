@@ -34,28 +34,28 @@ import com.google.firebase.firestore.QuerySnapshot;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
 
 public class RequestedPassengersSheet extends BottomSheetDialogFragment {
 
-//For Recycler View
-private RecyclerView recyclerView;
-private ArrayList<RequestedPassengersModel> requestedPassengersModels = new ArrayList<>();
-private RequestedPassengersModel requestedPassengersModel;
-private String name;
-private String number;
-private String theRequestedId;
+    //For Recycler View
+    private RecyclerView recyclerView;
+    private ArrayList<RequestedPassengersModel> requestedPassengersModels = new ArrayList<>();
+    private RequestedPassengersModel requestedPassengersModel;
+    private String name;
+    private String number;
+    private String theRequestedId;
 
-//Variables
+    //Variables
     private int numberOfRequests;
 
-//For firebase
+    //For firebase
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private SharedPreferences sharedPreferences;
-
 
 
     @Override
@@ -69,24 +69,22 @@ private String theRequestedId;
         recyclerView = v.findViewById(R.id.requestedRecyclerView);
 
 
-        if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_PHONE_STATE)
-                != PackageManager.PERMISSION_GRANTED)
-        {
+        if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_PHONE_STATE)
+                != PackageManager.PERMISSION_GRANTED) {
             mPermissionResult.launch(Manifest.permission.READ_PHONE_STATE);
-            ActivityCompat.requestPermissions(getActivity(), new String[] { Manifest.permission.READ_PHONE_STATE },119);
-            Toast.makeText(getContext(),"Grant phone permission to continue", Toast.LENGTH_LONG).show();            // Permission is not granted
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.READ_PHONE_STATE}, 119);
+            Toast.makeText(getContext(), "Grant phone permission to continue", Toast.LENGTH_LONG).show();            // Permission is not granted
         }
 
         //shared from UploadedRideAdapter.java
-        sharedPreferences = getContext().getSharedPreferences("ACTIVE_RIDEFILE",MODE_PRIVATE);
+        sharedPreferences = requireContext().getSharedPreferences("ACTIVE_RIDEFILE", MODE_PRIVATE);
         CollectionReference requestedReference = db.collection("Rides").document(theRequestedId).collection("Booked By");
 
         requestedReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull @NotNull Task<QuerySnapshot> task) {
 
-                for (DocumentSnapshot passengersSnapshot : task.getResult().getDocuments())
-                {
+                for (DocumentSnapshot passengersSnapshot : task.getResult().getDocuments()) {
                     requestedPassengersModel = new RequestedPassengersModel(
                             passengersSnapshot.getString("Name"),
                             passengersSnapshot.getString("Location Desc"),
@@ -99,14 +97,13 @@ private String theRequestedId;
                     requestedPassengersModels.add(requestedPassengersModel);
                 }
 
-                recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
+                recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
                 recyclerView.setAdapter(new RequestedPassengersAdapter(requestedPassengersModels, getContext()));
             }
         });
 
         return v;
     }
-
 
 
     @Override
@@ -118,6 +115,7 @@ private String theRequestedId;
     public int getNumberOfRequests() {
         return numberOfRequests;
     }
+
     public void setNumberOfRequests(int numberOfRequests) {
         this.numberOfRequests = numberOfRequests;
     }
@@ -144,7 +142,7 @@ private String theRequestedId;
 
     public void setTheRequestedId(String theRequestedId) {
         this.theRequestedId = theRequestedId;
-        Log.i("The Ride set Id",theRequestedId);
+        Log.i("The Ride set Id", theRequestedId);
     }
 
 
@@ -153,7 +151,7 @@ private String theRequestedId;
             new ActivityResultCallback<Boolean>() {
                 @Override
                 public void onActivityResult(Boolean result) {
-                    if(result) {
+                    if (result) {
 //                        Log.e(TAG, "onActivityResult: PERMISSION GRANTED");
                     } else {
 //                        Log.e(TAG, "onActivityResult: PERMISSION DENIED");
