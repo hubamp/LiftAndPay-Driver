@@ -258,7 +258,7 @@
                         android:clickable="true"
                         android:focusable="true"
                         android:background="@drawable/ripple"
-                        android:visibility="gone"
+                        android:visibility="visible"
                         android:backgroundTint="@color/transparentColor"
                         android:foreground="@drawable/btn_edit"/>
 

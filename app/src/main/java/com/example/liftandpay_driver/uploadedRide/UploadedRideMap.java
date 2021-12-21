@@ -537,7 +537,7 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
             @Override
             public void onProgressChange(Location location, RouteProgress routeProgress) {
 
-                theDriverRangeInMeters = 100;
+                theDriverRangeInMeters = 400;
 
 //               String nextInstruction =routeProgress.voiceInstruction().getSsmlAnnouncement();
                String nextInstruction = mapboxNavigation.retrieveSsmlAnnouncementInstruction(0);
@@ -576,7 +576,7 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
 
 
                     Log.i("DistanceBetween", "" + distanceFromWayPoint * 1000 + " meters");
-                    if ((distanceFromWayPoint * 1000) < 100 && (distanceFromWayPoint * 1000) > 20) {
+                    if ((distanceFromWayPoint * 1000) < 400 && (distanceFromWayPoint * 1000) > 20) {
                         theDriverRangeInMeters = 400;
                         switchStartBtn(toCONFIRM_PICKUP);
 

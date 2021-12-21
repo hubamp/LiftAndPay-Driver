@@ -44,9 +44,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
+        android:layout_above="@id/bottomSheet"
         android:layout_marginHorizontal="5dp"
-        android:layout_marginBottom="80dp"
         android:backgroundTint="@color/white"
         android:tintMode="multiply"
         android:tint="@color/white"
@@ -56,18 +55,21 @@
 
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/bottomSheet"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true">
 
 
         <LinearLayout
+            android:id="@+id/bottomSheetLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/bottom_sheet_bkg"
             android:orientation="vertical"
             app:behavior_hideable="false"
             app:behavior_peekHeight="70dp"
+            app:layout_anchorGravity="top"
             app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
             <Button
@@ -117,23 +119,29 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="15dp"
-                android:gravity="end"
+                android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/cancelRideBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_margin="5dp"
                     android:layout_marginEnd="2dp"
-                    android:background="@color/transparentColor"
+                    android:background="@drawable/ripple"
+                    android:backgroundTint="@color/white"
+                    android:clickable="true"
                     android:contentDescription="CANCEL THE RIDE"
-                    android:drawableTint="@color/failure"
-                    android:padding="5dp"
-                    android:text="Cancel"
-                    android:textColor="@color/failure"
+                    android:focusable="true"
+                    android:padding="15dp"
+                    android:text="Cancel Ride"
+                    android:textColor="@color/failure" />
 
-                    app:drawableStartCompat="@drawable/btn_close"
-                    app:tint="@color/failure" />
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1" />
 
                 <TextView
                     android:id="@+id/completeRideBtn"
@@ -142,10 +150,12 @@
                     android:layout_gravity="end"
                     android:layout_margin="5dp"
                     android:layout_marginEnd="2dp"
-                    android:background="@color/primaryColors"
+                    android:background="@drawable/ripple"
                     android:backgroundTint="@color/fadedBlue"
+                    android:clickable="true"
                     android:contentDescription="COMPLETE THE RIDE"
-                    android:padding="5dp"
+                    android:focusable="true"
+                    android:padding="15dp"
                     android:text="Complete Ride"
                     android:textColor="@color/primaryColors" />
 

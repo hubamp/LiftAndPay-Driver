@@ -80,10 +80,11 @@ public class RequestedPassengerProfile extends AppCompatActivity {
         });
 
         recyclerView = findViewById(R.id.reviewRecycler);
-        recyclerView.setLayoutManager(new LinearLayoutManager(RequestedPassengerProfile.this,LinearLayoutManager.VERTICAL,true));
+        recyclerView.setLayoutManager(new LinearLayoutManager(RequestedPassengerProfile.this,LinearLayoutManager.VERTICAL,false));
         reviewModels = new ArrayList<>();
 
         reviewModel reviewModel = new reviewModel();
+//        reviewModels.add(reviewModel);
         recyclerView.setAdapter(new reviewAdapter(reviewModels));
 
     }

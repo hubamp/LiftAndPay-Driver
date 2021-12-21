@@ -25,11 +25,11 @@
             android:textSize="20sp" />
 
         <ScrollView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
@@ -51,23 +51,25 @@
 
 
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal">
 
                         <TextView
                             android:id="@+id/pAName"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Hubert Brako Amponsah"
+                            android:text="/"
                             android:textSize="20sp"
                             android:textStyle="italic" />
 
+
                         <TextView
                             android:id="@+id/pAChatbtn_id"
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            android:layout_marginTop="15dp"
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:layout_margin="4dp"
                             android:foreground="@drawable/ic_message"
                             android:foregroundTint="@color/primaryColors" />
 
@@ -85,8 +87,8 @@
                     android:padding="4dp"
                     android:paddingStart="15dp"
                     android:text="Reviews"
-                    android:textAlignment="textStart"
-                    tools:ignore="RtlCompat,RtlSymmetry" />
+
+                    />
 
                 <View
                     android:id="@+id/reviewTopicId"
@@ -99,13 +101,10 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/reviewRecycler"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="2dp"
+                    android:minHeight="30dp"
                     tools:listitem="@layout/model_passenger_review">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="No Review Yet" />
                 </androidx.recyclerview.widget.RecyclerView>
 
 
