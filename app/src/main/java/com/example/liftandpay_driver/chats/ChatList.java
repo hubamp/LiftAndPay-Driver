@@ -18,6 +18,7 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -45,7 +46,7 @@ public class ChatList extends AppCompatActivity {
         recyclerView = findViewById(R.id.chatListRecycler);
 
 
-        db.collection("Chat").document(mUid).collection("Passengers").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        db.collection("Chat").document(mUid).collection("Passengers").orderBy("Time", Query.Direction.DESCENDING).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull @NotNull Task<QuerySnapshot> task) {
 

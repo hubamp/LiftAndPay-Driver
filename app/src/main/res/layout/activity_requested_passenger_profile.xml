@@ -38,6 +38,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
                     android:orientation="vertical"
+                    android:background="@drawable/bottom_sheet_bkg"
                     android:padding="15dp">
 
                     <com.google.android.material.imageview.ShapeableImageView

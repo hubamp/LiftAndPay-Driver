@@ -149,7 +149,6 @@ public class UploadedRidesActivity extends AppCompatActivity {
                                             numberOfBookedPassengers = queryDocumentSnapshots.size();
                                             totalNumberOfBookedPassengers = totalNumberOfBookedPassengers + numberOfBookedPassengers;
 
-
                                             uploadedRidesModel = new uploadedRidesModel(
                                                     Objects.requireNonNull(Objects.requireNonNull(documentSnapshot.getData()).get("startLocation")).toString() +
                                                             " - " + Objects.requireNonNull(documentSnapshot.getData().get("endLocation")).toString(),
@@ -165,10 +164,18 @@ public class UploadedRidesActivity extends AppCompatActivity {
                                             );
 
                                         } else {
-                                            Toast.makeText(UploadedRidesActivity.this, "Value is still null", Toast.LENGTH_SHORT).show();
+                                            Log.e("Reference","Value is null");
+
                                         }
 
-                                        uploadedRidesModels.add(uploadedRidesModel);
+
+
+                                        if(!Objects.equals(documentSnapshot.getString("driversStatus"), "Cancelled")){
+                                            Log.i("driverStatus001",documentSnapshot.getString("driversStatus"));
+
+                                            uploadedRidesModels.add(uploadedRidesModel);
+
+                                        }
                                         if (uploadedRidesModels.size() <= 0) {
                                             noUploadTxt.setVisibility(View.GONE);
                                         }
@@ -213,6 +220,7 @@ public class UploadedRidesActivity extends AppCompatActivity {
                 public void onEvent(@Nullable @org.jetbrains.annotations.Nullable QuerySnapshot value, @Nullable @org.jetbrains.annotations.Nullable FirebaseFirestoreException error) {
 
                     if (value != null) {
+
                         numberOfBookedPassengers = value.size();
 
                         uploadedRidesModel = new uploadedRidesModel(
@@ -230,10 +238,15 @@ public class UploadedRidesActivity extends AppCompatActivity {
                         );
 
                     } else {
-                        Toast.makeText(UploadedRidesActivity.this, "Value is still null", Toast.LENGTH_SHORT).show();
+                        Log.e("Reference","Value is null");
+
                     }
 
-                    uploadedRidesModels.add(uploadedRidesModel);
+                    if(!Objects.equals(ds.getString("driversStatus"), "Cancelled")){
+                        Log.i("driverStatus",ds.getString("driversStatus"));
+                        uploadedRidesModels.add(uploadedRidesModel);
+
+                    }
                     if (uploadedRidesModels.size() > 0) {
                         noUploadTxt.setVisibility(View.GONE);
                     }

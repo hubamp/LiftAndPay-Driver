@@ -375,7 +375,7 @@
         android:focusable="true"
         android:backgroundTint="@color/white"
         android:layout_margin="15dp"
-        android:visibility="invisible"
+        android:visibility="visible"
         android:background="@drawable/ripple"
         android:padding="5dp"
         android:elevation="3dp">

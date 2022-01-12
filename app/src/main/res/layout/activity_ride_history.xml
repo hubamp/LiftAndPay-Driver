@@ -4,9 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RideHistory">
+    tools:context=".History.RideHistory">
 
     <TextView
+        android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background = "@color/primaryColors"
@@ -15,7 +16,12 @@
         android:padding="8dp"
         android:textSize="20sp"/>
 
-
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/title"
+        />
 
     <TextView
         android:layout_width="wrap_content"

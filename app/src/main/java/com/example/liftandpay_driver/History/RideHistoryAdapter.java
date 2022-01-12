@@ -1,4 +1,6 @@
-package com.example.liftandpay_driver.uploadedRide;
+package com.example.liftandpay_driver.History;
+
+import static android.content.Context.MODE_PRIVATE;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -10,12 +12,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -25,53 +25,48 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.work.WorkManager;
 
-import com.example.liftandpay_driver.Dashboard;
 import com.example.liftandpay_driver.R;
 import com.example.liftandpay_driver.uploadedRide.RequestedPassenger.RequestedPassengersSheet;
+import com.example.liftandpay_driver.uploadedRide.UploadedRideMap;
+import com.example.liftandpay_driver.uploadedRide.uploadedRidesModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Objects;
 
-import static android.content.Context.MODE_PRIVATE;
-
-public class UploadedRidesAdapter extends RecyclerView.Adapter<UploadedRidesAdapter.uploadedViewHolder> {
+public class RideHistoryAdapter extends RecyclerView.Adapter<RideHistoryAdapter.historyViewHolder> {
 
     Context context;
-    ArrayList<uploadedRidesModel> uploadedRidesModels;
+    ArrayList<historyModel> uploadedRidesModels;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private SharedPreferences sharedPreferences;
 
 
-    public UploadedRidesAdapter(Context context, ArrayList<uploadedRidesModel> uploadedRidesModels) {
+    public RideHistoryAdapter(Context context, ArrayList<historyModel> uploadedRidesModels) {
         this.context = context;
         this.uploadedRidesModels = uploadedRidesModels;
     }
 
     @NonNull
     @Override
-    public UploadedRidesAdapter.uploadedViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RideHistoryAdapter.historyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.model_uploaded_rides, parent, false);
-        return new uploadedViewHolder(view);
+        return new historyViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull UploadedRidesAdapter.uploadedViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RideHistoryAdapter.historyViewHolder holder, int position) {
 
-        uploadedRidesModel uploadedRidesModel = uploadedRidesModels.get(holder.getAdapterPosition());
+        historyModel uploadedRidesModel = uploadedRidesModels.get(holder.getAdapterPosition());
         holder.rTimeView.setText(uploadedRidesModel.getRIDETIME());
         holder.rDateView.setText(uploadedRidesModel.getRIDEDATE());
         holder.rJourney.setText(uploadedRidesModel.getJOURNEY());
@@ -145,16 +140,42 @@ public class UploadedRidesAdapter extends RecyclerView.Adapter<UploadedRidesAdap
                     }).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            db.collection("Driver").document(Objects.requireNonNull(mAuth.getUid())).collection("Rides").document("Pending").get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
 
-//                            db.collection("Rides").document(uploadedRidesModel.getDOCUMENTID()).update("driversStatus", "Cancelled");
+                                    Log.e("Delete Ride", "Request Completed");
+                                    if (task.isSuccessful()) {
+                                        Log.e("Delete Ride", "Request Successful");
 
+                                        DocumentReference rideIdRef = db.collection("Rides").document(uploadedRidesModels.get(holder.getAdapterPosition()).getDOCUMENTID());
 
-                            HashMap<String, Object> update = new HashMap<>();
-                            update.put("driversStatus", "Cancelled");
-                            db.collection("Rides").document(uploadedRidesModels.get(holder.getAdapterPosition()).getDOCUMENTID()).update(update);
-                            WorkManager.getInstance(context).cancelUniqueWork("UpdateMyLocId").getResult().isCancelled();
+                                        if (task.getResult().contains("AvailableRideIds")) {
 
+                                            rideIdRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task001) {
 
+                                                    if (task001.isSuccessful()) {
+                                                        ArrayList<String> availableRideIds = new ArrayList<>((Collection<? extends String>) task.getResult().get("AvailableRideIds"));
+                                                        availableRideIds.remove(uploadedRidesModels.get(holder.getAdapterPosition()).getDOCUMENTID());
+                                                        task.getResult().getReference().update("AvailableRideIds", availableRideIds);
+
+                                                       /* HashMap<String,Object> update = new HashMap<>();
+                                                        update.put("driversStatus","Cancelled");
+                                                        db.collection("Rides").document(uploadedRidesModels.get(holder.getAdapterPosition()).getDOCUMENTID()).update(update);
+*/
+                                                        WorkManager.getInstance(context).cancelUniqueWork("UpdateMyLocId").getResult().isCancelled();
+
+                                                        Log.e("Delete Ride", "Deleted Successfully");
+                                                    }
+                                                }
+                                            });
+
+                                        }
+                                    }
+                                }
+                            });
                             dialog.dismiss();
                         }
                     });
@@ -164,14 +185,15 @@ public class UploadedRidesAdapter extends RecyclerView.Adapter<UploadedRidesAdap
                     RequestedPassengersSheet requestedPassengersSheet = new RequestedPassengersSheet();
                     FragmentManager manager = ((AppCompatActivity) context).getSupportFragmentManager();
                     requestedPassengersSheet.setNumberOfRequests(Integer.parseInt(holder.rNumberOfPassengers.getText().toString()));
-                    requestedPassengersSheet.setTheRequestedId(uploadedRidesModels.get(position).getDOCUMENTID());
+                    requestedPassengersSheet.setTheRequestedId(uploadedRidesModels.get(holder.getAdapterPosition()).getDOCUMENTID());
 
                     //This sharedpreference from goes to RequestendPasesngersSheet.java
-                    applySharedToActiveRide(position);
+                    applySharedToActiveRide(holder.getAdapterPosition());
                     requestedPassengersSheet.show(manager, null);
                 }
             }
         });
+
 
 
     }
@@ -182,7 +204,7 @@ public class UploadedRidesAdapter extends RecyclerView.Adapter<UploadedRidesAdap
         return uploadedRidesModels.size();
     }
 
-    public class uploadedViewHolder extends RecyclerView.ViewHolder {
+    public class historyViewHolder extends RecyclerView.ViewHolder {
 
         private LinearLayout linearLayout;
         private ProgressBar toMapPrograssBar;
@@ -193,7 +215,7 @@ public class UploadedRidesAdapter extends RecyclerView.Adapter<UploadedRidesAdap
         private TextView rTimeView;
 
 
-        public uploadedViewHolder(@NonNull View itemView) {
+        public historyViewHolder(@NonNull View itemView) {
             super(itemView);
 
             toMapPrograssBar = itemView.findViewById(R.id.proceedToMapProgressbarrId);
@@ -208,13 +230,13 @@ public class UploadedRidesAdapter extends RecyclerView.Adapter<UploadedRidesAdap
 
     }
 
-    private void applySharedToActiveRide(int position) {
-        sharedPreferences = context.getSharedPreferences("ACTIVE_RIDEFILE", MODE_PRIVATE);
-        sharedPreferences.edit().putString("TheEndLat", uploadedRidesModels.get(position).getENDLAT()).apply();
-        sharedPreferences.edit().putString("TheEndLon", uploadedRidesModels.get(position).getENDLON()).apply();
-        sharedPreferences.edit().putString("TheStLat", uploadedRidesModels.get(position).getSTLAT()).apply();
+    private void applySharedToActiveRide(int position){
+        sharedPreferences = context.getSharedPreferences("ACTIVE_RIDEFILE",MODE_PRIVATE);
+        sharedPreferences.edit().putString("TheEndLat",uploadedRidesModels.get(position).getENDLAT()).apply();
+        sharedPreferences.edit().putString("TheEndLon",uploadedRidesModels.get(position).getENDLON()).apply();
+        sharedPreferences.edit().putString("TheStLat",uploadedRidesModels.get(position).getSTLAT()).apply();
         sharedPreferences.edit().putString("TheStLon", uploadedRidesModels.get(position).getSTLON()).apply();
-        sharedPreferences.edit().putString("TheRideId", uploadedRidesModels.get(position).getDOCUMENTID()).apply();
+        sharedPreferences.edit().putString("TheRideId",uploadedRidesModels.get(position).getDOCUMENTID()).apply();
     }
 
 

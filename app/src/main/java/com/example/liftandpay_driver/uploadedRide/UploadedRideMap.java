@@ -1,28 +1,19 @@
 package com.example.liftandpay_driver.uploadedRide;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
-import androidx.work.Operation;
 import androidx.work.WorkManager;
-import androidx.work.Worker;
-import androidx.work.WorkerParameters;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,34 +21,28 @@ import android.os.Vibrator;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.liftandpay_driver.R;
 import com.example.liftandpay_driver.Ratings;
+import com.example.liftandpay_driver.accounts.Payment;
 import com.example.liftandpay_driver.fastClass.StringFunction;
 import com.example.liftandpay_driver.fastClass.UpdatedDriverLocationWorker;
-import com.example.liftandpay_driver.pAPickUpLocation.ViewPickUpLocation;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.location.LocationEngineCallback;
 import com.mapbox.android.core.location.LocationEngineProvider;
-import com.mapbox.android.core.location.LocationEngineRequest;
 import com.mapbox.android.core.location.LocationEngineResult;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
@@ -98,13 +83,7 @@ import com.mapbox.turf.TurfTransformation;
 
 
 import org.jetbrains.annotations.NotNull;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -113,6 +92,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -136,11 +116,13 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
     private TextView startBtn;
     private ProgressBar startedProgessBar;
     private TextView navigationText;
+    private TextView completeRideBtn;
+    private TextView remainingDuration;
 
     private FloatingActionButton recenterBtn;
     private MapView mapView;
     private MapboxMap mapboxMap;
-    private static String previousInstruction, startedSpeech ="";
+    private static String previousInstruction, startedSpeech = "";
 
     private Handler handler = new Handler();
     private int LOCATION_UPDATE_TIME_INTERVAL_IN_SECONDS = 7000;
@@ -221,6 +203,11 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
             }
         });
 
+        activeRide_sharedPreference = getSharedPreferences("ACTIVE_RIDEFILE", MODE_PRIVATE);
+
+        rideId = activeRide_sharedPreference.getString("TheRideId", null);
+
+        completeRideBtn = findViewById(R.id.completeRideBtn);
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
         startBtn = findViewById(R.id.startBtn);
         cancelBtn = findViewById(R.id.cancelRideBtn);
@@ -228,11 +215,13 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
         distanceToPoint = findViewById(R.id.distanceToWayPoint);
         navigationText = findViewById(R.id.directionId);
 
+        remainingDuration = findViewById(R.id.time);
+
         locationEngine = LocationEngineProvider.getBestLocationEngine(UploadedRideMap.this);
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(UploadedRideMap.this);
-        recenterBtn =findViewById(R.id.recenterBtn);
+        recenterBtn = findViewById(R.id.recenterBtn);
 
     }
 
@@ -240,10 +229,7 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
     @Override
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
 
-        activeRide_sharedPreference = getSharedPreferences("ACTIVE_RIDEFILE", MODE_PRIVATE);
 
-        //from UploadedRideAdapter
-        rideId = activeRide_sharedPreference.getString("TheRideId", null);
 
 
         this.mapboxMap = mapboxMap;
@@ -303,7 +289,7 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                                 @Override
                                 public void onSuccess(Void unused) {
                                     rideStatus = "cancelled";
-                                    Ratings ratings = new Ratings(UploadedRideMap.this,bookedBIES.get(0).getPassengersId(),passengersStatus,rideStatus);
+                                    Ratings ratings = new Ratings(UploadedRideMap.this, bookedBIES.get(0).getPassengersId(), passengersStatus, rideStatus);
 
                                     switchStartBtn(toCANCELLED);
                                     Log.i("LastLocation", originPoint.latitude() + " : " + originPoint.longitude());
@@ -313,6 +299,51 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                                     dialog.dismiss();
                                     textToSpeech.speak("Ride is cancelled", TextToSpeech.QUEUE_FLUSH, null);
                                     WorkManager.getInstance(UploadedRideMap.this).cancelUniqueWork("UpdateMyLocId").getResult().isCancelled();
+
+                                }
+                            });
+
+                        }
+                    });
+                    builder.create().show();
+                });
+
+
+                completeRideBtn.setOnClickListener(view -> {
+                    AlertDialog.Builder builder
+                            = new AlertDialog
+                            .Builder(UploadedRideMap.this);
+
+                    // Show the delete message
+                    builder.setMessage("Have you completed the ride?");
+                    builder.setTitle("Complete Ride");
+                    builder.setCancelable(true);
+                    builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    }).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+
+                            db.collection("Rides").document(rideId).update("driversStatus", "Completed").addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @SuppressLint("MissingPermission")
+                                @Override
+                                public void onSuccess(Void unused) {
+                                    rideStatus = "completed";
+                                    switchStartBtn(toCOMPLETED);
+                                    Log.i("LastLocation", originPoint.latitude() + " : " + originPoint.longitude());
+
+                                    mapboxNavigation.stopNavigation();
+                                    Toast.makeText(UploadedRideMap.this, "Ride Completed", Toast.LENGTH_LONG).show();
+                                    dialog.dismiss();
+
+                                    startActivity(new Intent(UploadedRideMap.this, Payment.class));
+
+                                    WorkManager.getInstance(UploadedRideMap.this).cancelUniqueWork("UpdateMyLocId");
+
 
                                 }
                             });
@@ -412,7 +443,6 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                             //route from trip origin to trip destination
                             getRoute(originPoint, destinationPoint);
                             mapboxMap.moveCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds.build(), 250));
-
 
 
                             //Actions when start button is clicked
@@ -525,12 +555,9 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
             });
 
 
-
-
         } else {
             Toast.makeText(getApplicationContext(), "The Cordinates are null, Route could not render", Toast.LENGTH_LONG).show();
         }
-
 
 
         mapboxNavigation.addProgressChangeListener(new ProgressChangeListener() {
@@ -540,38 +567,37 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                 theDriverRangeInMeters = 400;
 
 //               String nextInstruction =routeProgress.voiceInstruction().getSsmlAnnouncement();
-               String nextInstruction = mapboxNavigation.retrieveSsmlAnnouncementInstruction(0);
+                String nextInstruction = mapboxNavigation.retrieveSsmlAnnouncementInstruction(0);
 
-               /*Filtering announcement xmlinstruction (ssmlAnnouncement)*/
+                /*Filtering announcement xmlinstruction (ssmlAnnouncement)*/
 
-                    String prosodyString = new StringFunction(mapboxNavigation.retrieveSsmlAnnouncementInstruction(0)).splitStringWithAndGet("prosody", 1);
-                    String removedRate = new StringFunction(prosodyString).splitStringWithAndGet(">", 1);
-                    String instruction = new StringFunction(removedRate).splitStringWithAndGet("<", 0);
+                String prosodyString = new StringFunction(mapboxNavigation.retrieveSsmlAnnouncementInstruction(0)).splitStringWithAndGet("prosody", 1);
+                String removedRate = new StringFunction(prosodyString).splitStringWithAndGet(">", 1);
+                String instruction = new StringFunction(removedRate).splitStringWithAndGet("<", 0);
 
-                navigationText.setText(String.format("%s",instruction));
+                navigationText.setText(String.format("%s", instruction));
 
-                if (!instruction.equals(previousInstruction)){
-                    textToSpeech.speak(instruction,TextToSpeech.QUEUE_ADD,null,"null");
+                if (!instruction.equals(previousInstruction)) {
+                    textToSpeech.speak(instruction, TextToSpeech.QUEUE_ADD, null, "null");
                     previousInstruction = instruction;
                 }
 
 
+                recenterBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
 
-               recenterBtn.setOnClickListener(new View.OnClickListener() {
-                   @Override
-                   public void onClick(View view) {
-                       locationComponent.setCameraMode(CameraMode.TRACKING_GPS_NORTH);
-
-                       locationComponent.tiltWhileTracking(50);
-                   }
-               });
-
+                        locationComponent.setCameraMode(CameraMode.TRACKING_GPS_NORTH);
+                        locationComponent.zoomWhileTracking(15);
+                        locationComponent.tiltWhileTracking(50);
+                    }
+                });
 
 
                 for (Point thisPoint : allWayPoints) {
                     double distanceFromWayPoint = distanceBtnCoordinates(location.getLatitude(), location.getLongitude(), thisPoint.latitude(), thisPoint.longitude());
 
-                    String distanceToPnt = String.format("%.2f",distanceFromWayPoint) + "km";
+                    String distanceToPnt = String.format("%.2f", distanceFromWayPoint) + "km";
                     distanceToPoint.setText(distanceToPnt);
 
 
@@ -614,6 +640,11 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                 }
 
 
+                Log.i("RouteProgress", "Time: " + routeProgress.durationRemaining());
+                Log.i("RouteProgress", "Distance: " + routeProgress.distanceRemaining());
+
+                String durationInMinutes = TimeUnit.SECONDS.toMinutes((long) routeProgress.durationRemaining()) + " mins to destination";
+                remainingDuration.setText(durationInMinutes);
 
 /*
                 routeProgress.remainingWaypoints();
@@ -640,6 +671,7 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
             }
         });
 
+
     }
 
     private void removeWayPoint(int i) {
@@ -659,6 +691,7 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
             locationComponent.activateLocationComponent(LocationComponentActivationOptions.builder(UploadedRideMap.this, loadedMapStyle).build());
             locationComponent.setLocationComponentEnabled(true);
             locationComponent.setRenderMode(RenderMode.GPS);
+
 
 // Set the component's camera mode
             locationComponent.setCameraMode(CameraMode.TRACKING_GPS);
@@ -854,7 +887,7 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
 
     }
 
-    private void buildNavigation(){
+    private void buildNavigation() {
         navigationRoute.build().getRoute(new Callback<DirectionsResponse>() {
             @Override
             public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
@@ -871,7 +904,7 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                 currentRoute.clear();
 
                 currentRoute.add(response.body().routes().get(0));
-                checkIfDriverHasStarted();
+                checkDriverStatus();
 
 
                 if (response.body().routes().size() > 1) {
@@ -895,7 +928,7 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
 
             @Override
             public void onFailure(Call<DirectionsResponse> call, Throwable t) {
-                Log.i("Main","Building failed");
+                Log.i("Main", "Building failed");
 
                 routDialog.dismiss();
                 Toast.makeText(UploadedRideMap.this, "Failing to load", Toast.LENGTH_SHORT).show();
@@ -1025,6 +1058,8 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                 setInputData(data).
                 build();
 
+        WorkManager.getInstance(UploadedRideMap.this).cancelAllWork().getResult();
+
         WorkManager.getInstance(getApplicationContext()).beginUniqueWork("UpdateMyLocId", ExistingWorkPolicy.REPLACE, updateDriverLocRequest).enqueue();
 
     }
@@ -1033,13 +1068,14 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
     String toSTARTED = "Started";
     String toCANCELLED = "Cancelled";
     String toONGOING = "Journey Continues";
+    String toCOMPLETED = "Trip Completed";
 
     /**
      * Switches among the start button statuses
      * <p>
-     * toCONFIRM_PICKUP, toSTARTED, toCANCELLED ,toONGOING
+     * toCONFIRM_PICKUP, toSTARTED, toCANCELLED ,toONGOING, toCOMPLETED
      *
-     * @param status One of {@link #toCONFIRM_PICKUP}, {@link #toSTARTED}, {@link #toCANCELLED} or {@link #toONGOING}.
+     * @param status One of {@link #toCONFIRM_PICKUP}, {@link #toSTARTED},  {@link #toCANCELLED} , {@link #toONGOING} or {@link #toCOMPLETED}.
      * @attr ref android.R.styleable#View_visibility
      */
     private void switchStartBtn(String status) {
@@ -1075,8 +1111,21 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                 startBtn.setFocusable(false);
                 startBtn.setTextColor(ContextCompat.getColor(UploadedRideMap.this, R.color.mapbox_navigation_route_layer_congestion_red));
                 startBtn.setBackground(ContextCompat.getDrawable(UploadedRideMap.this, R.color.transparentColor));
+
+                completeRideBtn.setEnabled(false);
+                cancelBtn.setEnabled(false);
                 break;
 
+            case "Trip Completed":
+                startBtn.setText("COMPLETED");
+                startBtn.setClickable(false);
+                startBtn.setFocusable(false);
+                startBtn.setTextColor(ContextCompat.getColor(UploadedRideMap.this, R.color.success));
+                startBtn.setBackground(ContextCompat.getDrawable(UploadedRideMap.this, R.color.extra_faded_success));
+
+                completeRideBtn.setVisibility(View.INVISIBLE);
+                cancelBtn.setVisibility(View.INVISIBLE);
+                break;
 
             default:
                 startBtn.setText("Start Ride");
@@ -1088,7 +1137,7 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
     }
 
 
-    private void checkIfDriverHasStarted(){
+    private void checkDriverStatus() {
         db.collection("Rides").document(rideId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -1097,12 +1146,11 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
 
                     if (documentSnapshot.get("driversStatus").equals("Started")) {
 
-                        if (currentRoute.size() !=0) {
+                        if (currentRoute.size() != 0) {
                             enableLocationComponent(mapboxMap.getStyle());
 
-                            if(!startedSpeech.equals("Ride has started"))
-                            {
-                                textToSpeech.speak("Ride has started", TextToSpeech.QUEUE_FLUSH, null,"");
+                            if (!startedSpeech.equals("Ride has started")) {
+                                textToSpeech.speak("Ride has started", TextToSpeech.QUEUE_FLUSH, null, "");
                                 startedSpeech = "Ride has started";
                             }
 
@@ -1121,6 +1169,17 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                         WorkManager.getInstance(UploadedRideMap.this).cancelUniqueWork("UpdateMyLocId").getResult().isCancelled();
 
                     }
+
+                    if (documentSnapshot.get("driversStatus").equals("Completed")) {
+
+                        switchStartBtn(toCOMPLETED);
+                        Log.i("LastLocation", originPoint.latitude() + " : " + originPoint.longitude());
+                        mapboxNavigation.stopNavigation();
+                        Toast.makeText(UploadedRideMap.this, "Ride Completed", Toast.LENGTH_LONG).show();
+                        textToSpeech.speak("Ride is cancelled", TextToSpeech.QUEUE_FLUSH, null);
+                        WorkManager.getInstance(UploadedRideMap.this).cancelUniqueWork("UpdateMyLocId");
+
+                    }
                 }
             }
         });
@@ -1132,6 +1191,30 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
     public void onResume() {
         super.onResume();
         mapView.onResume();
+
+        new Handler().postDelayed(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        db.collection("Rides").document(rideId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+
+                                if (documentSnapshot.get("driversStatus").equals("Completed")) {
+                                    Log.i("Drivers Status", "Completed");
+                                    startActivity(new Intent(UploadedRideMap.this, Payment.class));
+                                    WorkManager.getInstance(UploadedRideMap.this).cancelUniqueWork("UpdateMyLocId");
+
+                                }
+
+                            }
+                        });
+                    }
+                },7000
+        );
+
+
     }
 
     @Override
@@ -1184,53 +1267,6 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
     public void onPointerCaptureChanged(boolean hasCapture) {
 
     }
-
-
-
-
-
-    private String getXMLValue(String xmlString){
-
-        InputStream stream = new ByteArrayInputStream(xmlString.getBytes());
-
-        XmlPullParserFactory xmlFactoryObject = null;
-        try {
-            xmlFactoryObject = XmlPullParserFactory.newInstance();
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        }
-        try {
-            XmlPullParser myparser = xmlFactoryObject.newPullParser();
-            myparser.setInput(stream, null);
-
-            int event = myparser.getEventType();
-            while (event != XmlPullParser.END_DOCUMENT)  {
-                String name=myparser.getName();
-                switch (event){
-                    case XmlPullParser.START_TAG:
-                        break;
-
-                    case XmlPullParser.END_TAG:
-                        if(name.equals("prosody")){
-                            xmlString = myparser.getAttributeValue(null,"value");
-                        }
-                        break;
-                }
-                event = myparser.next();
-            }
-
-        } catch (XmlPullParserException | IOException e) {
-            e.printStackTrace();
-        }
-
-
-        return xmlString;
-    }
-
-
-
-
-
 
 
 }

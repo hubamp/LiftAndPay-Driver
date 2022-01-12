@@ -24,9 +24,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.liftandpay_driver.History.RideHistory;
 import com.example.liftandpay_driver.SignUp.PhoneAuthenticationActivity;
-import com.example.liftandpay_driver.accounts.AccountActivity;
 
+import com.example.liftandpay_driver.accounts.Payment;
 import com.example.liftandpay_driver.chats.ChatList;
 import com.example.liftandpay_driver.fastClass.BookedNotificationWorker;
 import com.example.liftandpay_driver.fastClass.CheckForSignUpWorker;
@@ -155,7 +156,7 @@ public class Dashboard extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // codes go here
-                Intent i = new Intent(Dashboard.this,RideHistory.class);
+                Intent i = new Intent(Dashboard.this, RideHistory.class);
                 startActivity(i);
             }
         });
@@ -179,7 +180,7 @@ public class Dashboard extends AppCompatActivity {
         accountsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Dashboard.this, AccountActivity.class);
+                Intent intent = new Intent(Dashboard.this, Payment.class);
                 startActivity(intent);
             }
         });
@@ -272,6 +273,7 @@ public class Dashboard extends AppCompatActivity {
                                         double endLat = value002.getDouble("endLat");
                                         double stLat = value002.getDouble("startLat");
                                         double stLon = value002.getDouble("startLon");
+
 
                                         distanceCost.setText(cost);
                                         dateTime.setText(dateTimes);
@@ -381,13 +383,15 @@ public class Dashboard extends AppCompatActivity {
                             public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task001) {
 
                                 if (task001.isSuccessful()) {
-                                    ArrayList<String> availableRideIds = new ArrayList<>((Collection<? extends String>) task.getResult().get("AvailableRideIds"));
+                                    /*ArrayList<String> availableRideIds = new ArrayList<>((Collection<? extends String>) task.getResult().get("AvailableRideIds"));
                                     availableRideIds.remove(theRideId);
                                     task.getResult().getReference().update("AvailableRideIds", availableRideIds);
-
-                                    HashMap<String,Object> update = new HashMap<>();
+*/
+                                   /* HashMap<String,Object> update = new HashMap<>();
                                     update.put("driversStatus","Cancelled");
                                     db.collection("Rides").document(theRideId).update(update);
+*/
+                                    WorkManager.getInstance(Dashboard.this).cancelUniqueWork("UpdateMyLocId").getResult().isCancelled();
 
                                     Log.e("Delete Ride", "Deleted Successfully");
                                 }
@@ -395,7 +399,6 @@ public class Dashboard extends AppCompatActivity {
                         });
 
                     }
-
                 }
             }
         });

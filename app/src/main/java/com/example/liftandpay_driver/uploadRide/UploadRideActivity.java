@@ -417,6 +417,7 @@ public class UploadRideActivity extends AppCompatActivity {
                                         lastNumber = (task.getResult().getString("LastNumber"));
                                         lastNumber = String.valueOf(Integer.parseInt(lastNumber) + 1);
 
+
                                         task.getResult().getReference().update("LastNumber", lastNumber);
                                         ArrayList<String> availableRideIds = new ArrayList<>((Collection<? extends String>) task.getResult().get("AvailableRideIds"));
                                         availableRideIds.add(theDriverId + " " + lastNumber);
@@ -429,8 +430,7 @@ public class UploadRideActivity extends AppCompatActivity {
                                                 if (task002.isSuccessful()) {
                                                     Log.e("Task002", "Successful");
 
-
-                                                    String size = String.valueOf(Integer.parseInt(task.getResult().getString("LastNumber")) + 1);
+                                                    String size = String.valueOf(Integer.valueOf((task.getResult().getString("LastNumber"))) + 1);
                                                     db.collection("Rides").document(theDriverId + " " + size).set(ride).addOnCompleteListener(new OnCompleteListener<Void>() {
                                                         @Override
                                                         public void onComplete(@NonNull @NotNull Task<Void> task003) {
@@ -438,7 +438,6 @@ public class UploadRideActivity extends AppCompatActivity {
                                                                 Snackbar.make(UploadRideActivity.this, time, "Uploaded successfully", 5000)
                                                                         .setTextColor(Color.WHITE)
                                                                         .setBackgroundTint(getResources().getColor(R.color.success)).show();
-
                                                                 openDialog();
                                                             }
                                                         }
