@@ -106,7 +106,10 @@ public class UpdatedDriverLocationWorker extends Worker {
 
                 locationHashMap.put("driversLat", task.getResult().getLatitude());
                 locationHashMap.put("driversLon",task.getResult().getLongitude());
+                locationHashMap.put("driversBearing", task.getResult().getBearing());
 
+
+                Log.i("UpdatedLoc - hashMapBearing001", "" + locationHashMap.get("driversBearing"));
                 Log.i("UpdatedLoc - hashMapLat001", "" + locationHashMap.get("driversLat"));
                 Log.i("UpdatedLoc - hashMapLon001", "" + locationHashMap.get("driversLon"));
                 Log.i("UpdatedLoc - hashMaptheRideID", "" + theRideId);

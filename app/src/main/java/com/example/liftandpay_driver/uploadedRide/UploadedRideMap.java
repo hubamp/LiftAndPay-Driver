@@ -40,6 +40,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.location.LocationEngineCallback;
 import com.mapbox.android.core.location.LocationEngineProvider;
@@ -168,6 +169,7 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
     private TextView distanceToPoint;
 
     private int theDriverRangeInMeters;
+    private double distanceFromWayPoint;
 
     private AlertDialog routDialog;
     private AlertDialog.Builder routingDialog;
@@ -175,7 +177,7 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
     // Not static final because they will be adjusted by the seekbars and spinner menu
     private final String circleUnit = UNIT_KILOMETERS;
     private final int circleSteps = 180;
-    private final double circleRadius = 0.1;
+    private final double circleRadius = 0.4;
 
     private static int nearByReportId = 0;
     private OneTimeWorkRequest updateDriverLocRequest;
@@ -228,8 +230,6 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
 
     @Override
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
-
-
 
 
         this.mapboxMap = mapboxMap;
@@ -595,7 +595,7 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
 
 
                 for (Point thisPoint : allWayPoints) {
-                    double distanceFromWayPoint = distanceBtnCoordinates(location.getLatitude(), location.getLongitude(), thisPoint.latitude(), thisPoint.longitude());
+                    distanceFromWayPoint = distanceBtnCoordinates(location.getLatitude(), location.getLongitude(), allWayPoints.get(allWayPoints.size()-1).latitude(), allWayPoints.get(allWayPoints.size()-1).longitude());
 
                     String distanceToPnt = String.format("%.2f", distanceFromWayPoint) + "km";
                     distanceToPoint.setText(distanceToPnt);
@@ -606,15 +606,21 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                         theDriverRangeInMeters = 400;
                         switchStartBtn(toCONFIRM_PICKUP);
 
+
                         nearByReportId++;
                         if (nearByReportId == 1) {
                             textToSpeech.speak("You are almost at the pickup area", TextToSpeech.QUEUE_FLUSH, null, "");
+
+
 
                             //Alert passenger that driver is almost around.
                             db.collection("Rides").document(rideId).collection("Booked By").document(bookedBIES.get(0).passengersId)
                                     .update("Status", "Driver almost there");
 
+
                             passengersStatus = "Driver almost there";
+
+
                         }
 
 
@@ -633,6 +639,8 @@ public class UploadedRideMap extends FragmentActivity implements OnMapReadyCallb
                         }
 
                     } else {
+
+
                         theDriverRangeInMeters = 500;
                         switchStartBtn(toONGOING);
                         nearByReportId = 0;

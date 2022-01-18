@@ -124,6 +124,8 @@ public class ViewPickUpLocation extends AppCompatActivity implements OnMapReadyC
 
 
         approveBtn.setOnClickListener(View -> {
+
+
             AlertDialog.Builder builder
                     = new AlertDialog
                     .Builder(ViewPickUpLocation.this);
@@ -141,6 +143,10 @@ public class ViewPickUpLocation extends AppCompatActivity implements OnMapReadyC
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
 
+                    AlertDialog.Builder approvingDlgBuild = new AlertDialog.Builder(ViewPickUpLocation.this);
+
+                   AlertDialog approvingDlg = approvingDlgBuild.setMessage("Approving ...").create();
+
                     db.collection("Rides")
                             .document(activeRide_sharedPreference
                                     .getString("TheRideId", null))
@@ -149,6 +155,7 @@ public class ViewPickUpLocation extends AppCompatActivity implements OnMapReadyC
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull @NotNull Task<Void> task) {
+                                    approvingDlg.dismiss();
                                     dialog.dismiss();
                                     Snackbar.make(chatFab, "Approved", 3000).setBackgroundTint(ContextCompat.getColor(ViewPickUpLocation.this, R.color.mapbox_plugins_green)).show();
                                 }
@@ -156,6 +163,7 @@ public class ViewPickUpLocation extends AppCompatActivity implements OnMapReadyC
                             .addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull @NotNull Exception e) {
+                                    approvingDlg.dismiss();
                                     dialog.dismiss();
                                     Snackbar.make(chatFab, "Approval Incomplete", 3000).setBackgroundTint(ContextCompat.getColor(ViewPickUpLocation.this, R.color.mapbox_navigation_route_layer_congestion_red)).show();
 
@@ -342,28 +350,19 @@ public class ViewPickUpLocation extends AppCompatActivity implements OnMapReadyC
 
                         passengerPickUpLocMarker(Point.fromLngLat(pickupLon, pickupLat));
 
+
+                        mapboxMap.easeCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder().zoom(15).target(new LatLng(pickupLat, pickupLon)).build()), 2000);
+
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-
-
-                                mapboxMap.easeCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder().zoom(15).target(new LatLng(pickupLat,pickupLon)).build()),2000);
-
-
-
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(
-                                                initlatLngBounds,150),3000);
-                                    }
-                                },5000);
-
+                                mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(
+                                        initlatLngBounds, 150), 3000);
                             }
-                        },3000);
-
+                        }, 3000);
 
                     }
+
 
                     @Override
                     public void onFailure(Call<DirectionsResponse> call, Throwable t) {

@@ -37,6 +37,7 @@ import com.google.android.libraries.places.api.Places;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -115,6 +116,10 @@ public class UploadRideActivity extends AppCompatActivity {
     private double sLat, sLong, eLat, eLong;
 
     private static String myName,myPlate;
+
+    private String CURRENCY = "GHC";
+    private double routeMoney;
+    private double routeKilo;
 
 
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -356,11 +361,13 @@ public class UploadRideActivity extends AppCompatActivity {
                     ride.put("startLocation", startLocation.getText().toString());
                     ride.put("endLocation", endingLocation.getText().toString());
                     ride.put("rideDistance", distanceText);
-                    ride.put("rideCost", cost.getText().toString());
+                    ride.put("rideCost", routeMoney);
                     ride.put("rideDate", date.getText().toString());
                     ride.put("rideTime", time.getText().toString());
                     ride.put("startLon", sLong);
                     ride.put("startLat", sLat);
+                    ride.put("currency", CURRENCY);
+                    ride.put("uploadedTimestamp", new Timestamp(new Date()));
                     ride.put("endLon", eLong);
                     ride.put("endLat", eLat);
                     ride.put("phone number", phoneNumber);
@@ -651,9 +658,9 @@ public class UploadRideActivity extends AppCompatActivity {
 
                         route = response.body().routes().get(0);
                         Toast.makeText(UploadRideActivity.this, "received", Toast.LENGTH_LONG).show();
-                        double routeKilo = route.distance() / 1000;
+                        routeKilo = route.distance() / 1000;
                         routeKilo = truncate(routeKilo, 3);
-                        double routeMoney = routeKilo * 0.4;
+                        routeMoney = routeKilo * 0.4;
                         routeMoney = truncate(routeMoney, 2);
 
                         String distanceKilo = String.valueOf(routeKilo) + "km";

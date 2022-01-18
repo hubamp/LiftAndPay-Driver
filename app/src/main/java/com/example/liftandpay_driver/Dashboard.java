@@ -266,7 +266,7 @@ public class Dashboard extends AppCompatActivity {
 
                                     if (value002.exists()) {
                                         Log.e("lastRide", "Ride exists");
-                                        String cost = value002.getString("rideCost");
+                                        String cost = value002.get("currency")+(String.valueOf(value002.get("rideCost")))+ "/passenger";
                                         String dateTimes = value002.getString("rideDate") + " " + value002.getString("rideTime");
                                         String journey = value002.getString("startLocation") + "\n" + "to" + "\n" + value002.getString("endLocation");
                                         double endLon = value002.getDouble("endLon");
