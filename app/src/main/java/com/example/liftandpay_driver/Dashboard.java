@@ -24,7 +24,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.liftandpay_driver.History.RideHistory;
+import com.example.liftandpay_driver.History.RideHistoryList;
 import com.example.liftandpay_driver.SignUp.PhoneAuthenticationActivity;
 
 import com.example.liftandpay_driver.accounts.Payment;
@@ -55,7 +55,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 
 public class Dashboard extends AppCompatActivity {
 
@@ -156,7 +155,7 @@ public class Dashboard extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // codes go here
-                Intent i = new Intent(Dashboard.this, RideHistory.class);
+                Intent i = new Intent(Dashboard.this, RideHistoryList.class);
                 startActivity(i);
             }
         });

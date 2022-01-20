@@ -32,7 +32,7 @@
             android:name=".accounts.Payment"
             android:exported="true" />
         <activity
-            android:name=".History.RideHistory"
+            android:name=".History.RideHistoryList"
             android:exported="true" />
         <activity android:name=".Dashboard" />
         <activity
@@ -49,7 +49,7 @@
         <activity android:name=".search.SearchActivity" />
         <activity android:name=".uploadedRide.RequestedPassenger.RequestedPassengerProfile" />
         <activity android:name=".chats.ChatList" />
-        <activity android:name=".message.ChatActivity" />
+        <activity android:name=".History.RideHistoryInfo"/>
         <activity android:name=".chats.ChatActivity" />
         <activity android:name=".uploadRide.ViewMapActivity" />
         <activity android:name=".menu.ProfileActivity" />

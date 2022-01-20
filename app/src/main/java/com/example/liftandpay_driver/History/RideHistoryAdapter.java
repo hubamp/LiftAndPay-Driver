@@ -59,7 +59,7 @@ public class RideHistoryAdapter extends RecyclerView.Adapter<RideHistoryAdapter.
     @NonNull
     @Override
     public RideHistoryAdapter.historyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.model_uploaded_rides, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.model_ride_histories, parent, false);
         return new historyViewHolder(view);
     }
 
@@ -86,34 +86,11 @@ public class RideHistoryAdapter extends RecyclerView.Adapter<RideHistoryAdapter.
 
                 } else {
                     holder.toMapPrograssBar.setVisibility(View.VISIBLE);
-                    Intent intent = new Intent(context, UploadedRideMap.class);
+                    Intent intent = new Intent(context, RideHistoryInfo.class);
                     applySharedToActiveRide(holder.getAdapterPosition());
                     context.startActivity(intent);
                     holder.toMapPrograssBar.setVisibility(View.INVISIBLE);
                 }
-            }
-        });
-
-        holder.linearLayout.setOnLongClickListener(new View.OnLongClickListener() {
-            @SuppressLint("UseCompatLoadingForDrawables")
-            @Override
-            public boolean onLongClick(View v) {
-
-//                if (Objects.equals(holder.linearLayout.getForeground().getConstantState(), context.getResources().getColor(R.color.transparentColor))) {
-                if (holder.linearLayout.getForeground().getConstantState().equals(context.getResources().getDrawable(R.color.transparentColor, null).getConstantState())) {
-                    // Do what you have to do...
-                    //Selected
-                    holder.linearLayout.setForeground(ContextCompat.getDrawable(context, R.color.fadedBlue));
-                    holder.requestedPassengersBtn.setForeground(new ColorDrawable(ContextCompat.getColor(context, R.color.fadedBlue)));
-                    holder.rNumberOfPassengers.setBackground(ContextCompat.getDrawable(context, R.drawable.btn_delete));
-                    return true;
-
-                } else {
-                    // Do what you have to do...
-                    //Unselected
-                    return true;
-                }
-
             }
         });
 

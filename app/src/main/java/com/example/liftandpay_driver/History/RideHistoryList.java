@@ -1,43 +1,27 @@
 package com.example.liftandpay_driver.History;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.work.WorkManager;
 
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
-import com.example.liftandpay_driver.Dashboard;
 import com.example.liftandpay_driver.R;
 import com.example.liftandpay_driver.fastClass.StringFunction;
-import com.example.liftandpay_driver.uploadedRide.UploadedRidesActivity;
-import com.example.liftandpay_driver.uploadedRide.UploadedRidesAdapter;
-import com.example.liftandpay_driver.uploadedRide.uploadedRidesModel;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class RideHistory extends AppCompatActivity {
+public class RideHistoryList extends AppCompatActivity {
 
-   private ArrayList<historyModel> historyModels;
+   private ArrayList<historyModel> historyModels = new ArrayList<>();
    private historyModel historyModel;
    private RideHistoryAdapter historyAdapter;
    private FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -49,7 +33,7 @@ public class RideHistory extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ride_history);
 
-        /*recyclerView = findViewById(R.id.recyclerview);
+        recyclerView = findViewById(R.id.recyclerview);
 
         CollectionReference rideCollection = db.collection("Rides");
 
@@ -88,13 +72,13 @@ public class RideHistory extends AppCompatActivity {
                                     );
 
                                 } else {
-                                    Toast.makeText(RideHistory.this, "Value is still null", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(RideHistoryList.this, "Value is still null", Toast.LENGTH_SHORT).show();
                                 }
 
                                 historyModels.add(historyModel);
 
-                                historyAdapter = new RideHistoryAdapter(RideHistory.this, historyModels);
-                                recyclerView.setLayoutManager(new LinearLayoutManager(RideHistory.this, LinearLayoutManager.VERTICAL, false));
+                                historyAdapter = new RideHistoryAdapter(RideHistoryList.this, historyModels);
+                                recyclerView.setLayoutManager(new LinearLayoutManager(RideHistoryList.this, LinearLayoutManager.VERTICAL, false));
                                 recyclerView.setAdapter(historyAdapter);
 
 
@@ -110,7 +94,6 @@ public class RideHistory extends AppCompatActivity {
             }
         });
 
-*/
 
     }
 }
