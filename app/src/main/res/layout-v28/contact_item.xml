@@ -19,7 +19,7 @@
                 <!--name-->
                 <TextView
 
-                    android:id="@+id/pAnameId"
+                    android:id="@+id/pANameId"
                     style="@style/nameOfContact"
                     android:text="---" />
 

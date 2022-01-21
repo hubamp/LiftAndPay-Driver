@@ -112,7 +112,7 @@ public class RequestedPassengersAdapter extends RecyclerView.Adapter<RequestedPa
         public ApproveRequestHolder(@NonNull View itemView) {
             super(itemView);
             mainLayout = itemView.findViewById(R.id.mainRequestedPassengerLayout);
-            pAName = itemView.findViewById(R.id.pAnameId);
+            pAName = itemView.findViewById(R.id.pANameId);
             pAPickUpLocationId = itemView.findViewById(R.id.pickupLocationId);
             pAStatus = itemView.findViewById(R.id.statusId);
             pAImage = itemView.findViewById(R.id.pAImage);

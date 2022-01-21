@@ -21,12 +21,12 @@ import java.util.Objects;
 
 public class RideHistoryList extends AppCompatActivity {
 
-   private ArrayList<historyModel> historyModels = new ArrayList<>();
-   private historyModel historyModel;
-   private RideHistoryAdapter historyAdapter;
-   private FirebaseFirestore db = FirebaseFirestore.getInstance();
-   private FirebaseAuth mAuth = FirebaseAuth.getInstance();
-   private RecyclerView recyclerView;
+    private ArrayList<historyModel> historyModels = new ArrayList<>();
+    private historyModel historyModel;
+    private RideHistoryAdapter historyAdapter;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,14 +55,13 @@ public class RideHistoryList extends AppCompatActivity {
                             public void onSuccess(QuerySnapshot queryDocumentSnapshots001) {
 
                                 if (queryDocumentSnapshots001 != null) {
-                                   int  numberOfBookedPassengers = queryDocumentSnapshots.size();
 
                                     historyModel = new historyModel(
                                             Objects.requireNonNull(Objects.requireNonNull(documentSnapshot.getData()).get("startLocation")).toString() +
                                                     " - " + Objects.requireNonNull(documentSnapshot.getData().get("endLocation")).toString(),
                                             Objects.requireNonNull(documentSnapshot.getData().get("rideDate")).toString(),
                                             Objects.requireNonNull(documentSnapshot.getData().get("rideTime")).toString(),
-                                            numberOfBookedPassengers,
+                                            Objects.requireNonNull(documentSnapshot.getData().get("driversStatus")).toString(),
                                             documentSnapshot.getId(),
                                             Objects.requireNonNull(documentSnapshot.getData().get("startLat")).toString(),
                                             Objects.requireNonNull(documentSnapshot.getData().get("startLon")).toString(),
@@ -80,7 +79,6 @@ public class RideHistoryList extends AppCompatActivity {
                                 historyAdapter = new RideHistoryAdapter(RideHistoryList.this, historyModels);
                                 recyclerView.setLayoutManager(new LinearLayoutManager(RideHistoryList.this, LinearLayoutManager.VERTICAL, false));
                                 recyclerView.setAdapter(historyAdapter);
-
 
 
                             }

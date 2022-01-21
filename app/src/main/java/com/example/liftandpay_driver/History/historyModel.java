@@ -4,7 +4,7 @@ public class historyModel {
     private String JOURNEY;
     private String RIDEDATE;
     private String RIDETIME;
-    private int NUMBEROFREQUESTS;
+    private String RIDESTATUS;
     private String DOCUMENTID;
     private String STLAT,STLON,ENDLAT,ENDLON;
 
@@ -12,7 +12,7 @@ public class historyModel {
     public historyModel(String JOURNEY,
                               String RIDEDATE,
                               String RIDETIME,
-                              int NUMBEROFREQUESTS,
+                              String NUMBEROFREQUESTS,
                               String DOCUMENTID,
                               String STLAT,
                               String STLON,
@@ -22,7 +22,7 @@ public class historyModel {
         this.JOURNEY = JOURNEY;
         this.RIDEDATE = RIDEDATE;
         this.RIDETIME = RIDETIME;
-        this.NUMBEROFREQUESTS = NUMBEROFREQUESTS;
+        this.RIDESTATUS = NUMBEROFREQUESTS;
         this.DOCUMENTID = DOCUMENTID;
         this.STLAT = STLAT;
         this.STLON = STLON;
@@ -54,12 +54,12 @@ public class historyModel {
         this.RIDETIME = RIDETIME;
     }
 
-    public int getNUMBEROFREQUESTS() {
-        return NUMBEROFREQUESTS;
+    public String getRIDESTATUS() {
+        return RIDESTATUS;
     }
 
-    public void setNUMBEROFREQUESTS(int NUMBEROFREQUESTS) {
-        this.NUMBEROFREQUESTS = NUMBEROFREQUESTS;
+    public void setRIDESTATUS(String RIDESTATUS) {
+        this.RIDESTATUS = RIDESTATUS;
     }
 
     public String getDOCUMENTID() {

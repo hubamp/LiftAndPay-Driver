@@ -2,37 +2,28 @@ package com.example.liftandpay_driver.chats.model_ChaltList;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.liftandpay_driver.R;
 import com.example.liftandpay_driver.chats.ChatActivity;
-import com.example.liftandpay_driver.chats.ChatList;
-import com.example.liftandpay_driver.uploadedRide.UploadedRidesAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-
-import static android.content.Context.MODE_PRIVATE;
 
 public class chatListAdapter extends RecyclerView.Adapter<chatListAdapter.chatViewHolder> {
 
@@ -110,7 +101,7 @@ public class chatListAdapter extends RecyclerView.Adapter<chatListAdapter.chatVi
             super(itemView);
 
             layout = itemView.findViewById(R.id.layout_id);
-            name = itemView.findViewById(R.id.pAnameId);
+            name = itemView.findViewById(R.id.pANameId);
             status = itemView.findViewById(R.id.pAstatusId);
             message = itemView.findViewById(R.id.pALastMessageId);
             time = itemView.findViewById(R.id.timeModelId);
