@@ -7,6 +7,8 @@
     android:layout_height="match_parent"
     tools:context=".accounts.AccountActivity">
 
+
+    <!-- App bar-->
     <RelativeLayout
         android:id="@+id/appBar"
         android:layout_width="match_parent"
@@ -31,86 +33,69 @@
            android:gravity="center"
             android:layout_centerHorizontal="true"
             android:layout_toEndOf="@+id/back_arrow"
-            android:text="Accounts"
+            android:text="Payment Account"
             android:textColor="#FAF6F6"
             android:textSize="20sp"
             android:textStyle="bold" />
 
     </RelativeLayout>
 
+
+
+    <!--Amount Left to be paid-->
     <RelativeLayout
-        android:id="@+id/amountBar"
+        android:id="@+id/amountLeftLayout"
         android:layout_width="match_parent"
-        android:layout_height="240dp"
-        android:layout_below="@id/appBar"
-        android:layout_marginTop="0dp"
-        android:background="@color/fadedBlue">
+        android:layout_height="wrap_content"
+        android:layout_below="@id/appBar">
 
         <TextView
-            android:id="@+id/amountT"
-            android:layout_width="110dp"
-            android:layout_height="32dp"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="18dp"
-            android:text="Amount"
-            android:textColor="@color/black"
-            android:textSize="24sp"
-            android:textStyle="bold" />
-
-        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:background="@drawable/img_bck_rectangle"
-            android:orientation="vertical"
-            android:padding="15dp">
+            android:layout_toLeftOf="@id/makepaymentBtn"
 
-            <TextView
-                android:id="@+id/amountTxt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/amountT"
-                android:text="Gh"
-                android:textColor="@color/black"
-                android:textSize="30sp"
-                android:textStyle="bold" />
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="8dp"
+            android:text="GHC 5,000"
+            android:textColor="@color/primaryColors"
+            android:textSize="25dp"
+            android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="5000.00"
-                android:textColor="@color/primaryColors"
-                android:textSize="45sp"
-                android:textStyle="bold" />
 
-        </LinearLayout>
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/swipeBar"
-        android:layout_width="match_parent"
-        android:layout_height="450dp"
-        android:layout_below="@id/amountBar"
-        android:layout_marginTop="0dp"
-        android:background="@color/fadedBlue">
-
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tab_layout"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/makepaymentBtn"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/fadedBlue"
-            app:layout_constraintTop_toBottomOf="parent" />
-
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/view_pager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@id/tab_layout" />
-
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/ripple"
+            android:backgroundTint="@color/extra_faded_success"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="8dp"
+            android:text="Make Payment"
+            android:textColor="@color/success" />
     </RelativeLayout>
+
+
+    <!--List all the rides-->
+    <TextView
+        android:id="@+id/rideText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Rides"
+        android:layout_below="@id/amountLeftLayout"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/paymentRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rideText" />
 
 </RelativeLayout>

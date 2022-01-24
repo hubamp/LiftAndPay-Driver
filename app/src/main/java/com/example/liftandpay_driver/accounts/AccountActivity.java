@@ -5,52 +5,44 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.example.liftandpay_driver.History.RideHistoryInfo;
 import com.example.liftandpay_driver.R;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import java.util.ArrayList;
+
 public class AccountActivity extends AppCompatActivity {
 
-    TabLayout tabLayout;
-    ViewPager2 viewPager2;
 
-    private final String[] titles = new String[]{"ALL", "RECEIVED", "WITHDRAWAL"};
+
+
+    private RecyclerView recyclerView;
+    private paymentAccountAdapter paymentAccountAdapter;
+    private ArrayList<accountModel> accountModels = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
 
-        tabLayout = findViewById(R.id.tab_layout);
-        viewPager2 = findViewById(R.id.view_pager);
+        recyclerView = findViewById(R.id.paymentRecycler);
 
-        viewPager2.setAdapter(new ViewPagerFragmentStateAdapter(this));
-        new TabLayoutMediator(tabLayout, viewPager2, (tab, position) -> tab.setText(titles[position])
-        ).attach();
-    }
-    public class ViewPagerFragmentStateAdapter extends FragmentStateAdapter {
-        public ViewPagerFragmentStateAdapter(FragmentActivity fragmentActivity){
-            super(fragmentActivity);
-        }
-        @Override
-        public Fragment createFragment(int position){
-            switch(position){
-                case 0:
-                    return new All();
-                case 1:
-                    return new Received();
-                case 2:
-                    return new Withdrawal();
-            }
-            return new All();
-        }
 
-        @Override
-        public int getItemCount() {
-            return titles.length;
-        }
+        accountModels.add(new accountModel("","",5.5));
+        accountModels.add(new accountModel("","",5.5));
+        accountModels.add(new accountModel("","",5.5));
+        accountModels.add(new accountModel("","",5.5));
+        accountModels.add(new accountModel("","",5.5));
+
+        paymentAccountAdapter = new paymentAccountAdapter(AccountActivity.this,accountModels);
+        recyclerView.setLayoutManager(new LinearLayoutManager(AccountActivity.this, LinearLayoutManager.VERTICAL, false));
+        recyclerView.setAdapter(paymentAccountAdapter);
+
     }
 }

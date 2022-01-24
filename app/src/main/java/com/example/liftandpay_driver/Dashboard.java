@@ -27,6 +27,7 @@ import android.widget.Toast;
 import com.example.liftandpay_driver.History.RideHistoryList;
 import com.example.liftandpay_driver.SignUp.PhoneAuthenticationActivity;
 
+import com.example.liftandpay_driver.accounts.AccountActivity;
 import com.example.liftandpay_driver.accounts.Payment;
 import com.example.liftandpay_driver.chats.ChatList;
 import com.example.liftandpay_driver.fastClass.BookedNotificationWorker;
@@ -179,7 +180,7 @@ public class Dashboard extends AppCompatActivity {
         accountsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Dashboard.this, Payment.class);
+                Intent intent = new Intent(Dashboard.this, AccountActivity.class);
                 startActivity(intent);
             }
         });
