@@ -1,9 +1,11 @@
 package com.example.liftandpay_driver.accounts;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,6 +34,20 @@ public class paymentAccountAdapter extends RecyclerView.Adapter<paymentAccountAd
     @Override
     public void onBindViewHolder(@NonNull paymentAccountAdapter.AccountHolder holder, int position) {
 
+        String totalAmount = accountModels.get(holder.getAdapterPosition()).getTotalAmount()+"";
+        holder.stLoc.setText(accountModels.get(holder.getAdapterPosition()).getStart());
+        holder.endLoc.setText(accountModels.get(holder.getAdapterPosition()).getEnd());
+        holder.rideCost.setText(totalAmount);
+
+        //When Pay button is clicked
+        holder.singlePayBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(context,Payment.class);
+                context.startActivity(i);
+            }
+        });
+
     }
 
     @Override
@@ -40,8 +56,21 @@ public class paymentAccountAdapter extends RecyclerView.Adapter<paymentAccountAd
     }
 
     public class AccountHolder extends RecyclerView.ViewHolder {
+
+        private TextView stLoc;
+        private TextView endLoc;
+        private TextView rideCost;
+        private TextView singlePayBtn;
+
         public AccountHolder(@NonNull View itemView) {
             super(itemView);
+
+
+
+            singlePayBtn = itemView.findViewById(R.id.singlePay);
+            stLoc = itemView.findViewById(R.id.startingId);
+            endLoc = itemView.findViewById(R.id.endingId);
+            rideCost = itemView.findViewById(R.id.rideCostId);
         }
     }
 }
