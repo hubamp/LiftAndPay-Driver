@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.liftandpay_driver.API.paystack.paystack;
 import com.example.liftandpay_driver.History.RideHistoryAdapter;
 import com.example.liftandpay_driver.R;
 
@@ -44,6 +45,7 @@ public class paymentAccountAdapter extends RecyclerView.Adapter<paymentAccountAd
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(context,Payment.class);
+                new paystack().postData("huba@gmail.com",5.0);
                 context.startActivity(i);
             }
         });
