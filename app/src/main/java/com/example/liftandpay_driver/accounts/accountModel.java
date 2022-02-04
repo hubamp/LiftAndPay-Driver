@@ -3,13 +3,15 @@ package com.example.liftandpay_driver.accounts;
 public class accountModel {
     private String start;
     private String end;
+    private String rideId;
     private double totalAmount;
 
 
-    public accountModel(String start, String end, double totalAmount) {
+    public accountModel(String start, String end, double totalAmount, String rideId) {
         this.start = start;
         this.end = end;
         this.totalAmount = totalAmount;
+        this.rideId = rideId;
     }
 
     public String getStart() {

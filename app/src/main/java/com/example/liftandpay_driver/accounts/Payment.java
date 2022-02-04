@@ -11,11 +11,14 @@ import com.example.liftandpay_driver.R;
 public class Payment extends AppCompatActivity {
 
     private WebView webview;
+    private String authUrl;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment);
 
+        //received authUrl from paymentAccountAdapter.java or AccountActivity.java
+        authUrl = getIntent().getStringExtra("authUrl");
         webview = findViewById(R.id.webView);
 
         webview.setWebViewClient(new WebViewClient());
@@ -23,7 +26,7 @@ public class Payment extends AppCompatActivity {
         webview.getSettings().setDomStorageEnabled(true);
         webview.setOverScrollMode(WebView.OVER_SCROLL_NEVER);
         webview.canGoBack();
-        webview.loadUrl("https://liftnpay.gameitupgh.com/public/getform");
+        webview.loadUrl(authUrl);
 
     }
 }

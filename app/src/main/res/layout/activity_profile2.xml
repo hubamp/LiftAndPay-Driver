@@ -4,13 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@drawable/bkg_gradient_primary"
     tools:context=".menu.ProfileActivity">
 
     <RelativeLayout
         android:id="@+id/topViewId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
+        android:background="@color/primaryColors"
         android:layout_marginBottom="10dp"
         android:padding="5dp">
 
@@ -21,6 +22,8 @@
             android:layout_height="30dp"
             android:layout_centerVertical="true"
             android:background="@drawable/ripplebtn"
+            android:backgroundTint="@color/white"
+            android:elevation="2dp"
             android:focusable="true"
             android:src="@drawable/btn_back" />
 
@@ -29,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="Profile"
-            android:textColor="@color/primaryColors"
+            android:textColor="@color/white"
             android:textSize="22sp" />
 
     </RelativeLayout>
@@ -58,6 +61,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/top_rounded_bkg"
                 android:orientation="vertical">
 
                 <ImageView
@@ -65,6 +69,8 @@
                     android:layout_width="150dp"
                     android:layout_height="150dp"
                     android:layout_gravity="center"
+                    android:padding="3dp"
+                    android:background="@drawable/img_bck_rectangle"
                     android:layout_margin="5dp"
                     android:layout_marginBottom="1dp"
                     android:foreground="@drawable/ripple"
@@ -93,6 +99,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
+                    android:elevation="5dp"
                     android:orientation="horizontal">
 
 

@@ -25,6 +25,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class AccountActivity extends AppCompatActivity {
@@ -33,10 +34,10 @@ public class AccountActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private paymentAccountAdapter paymentAccountAdapter;
     private ArrayList<accountModel> accountModels = new ArrayList<>();
-    private static Double totalAmount;
+    private Double totalAmount;
     private String mUid = FirebaseAuth.getInstance().getUid();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private static Double overallAmount=0.0;
+    private Double overallAmount = 0.0;
     private TextView overallAmountView;
     private TextView makeOverallPaymentBtn;
     private ImageView backBtn;
@@ -49,7 +50,7 @@ public class AccountActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.paymentRecycler);
         overallAmountView = findViewById(R.id.overallAmount);
         makeOverallPaymentBtn = findViewById(R.id.makepaymentBtn);
-        backBtn =findViewById(R.id.back_arrow);
+        backBtn = findViewById(R.id.back_arrow);
 
 
         backBtn.setOnClickListener(new View.OnClickListener() {
@@ -63,18 +64,18 @@ public class AccountActivity extends AppCompatActivity {
         makeOverallPaymentBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(AccountActivity.this,Payment.class);
+                Intent i = new Intent(AccountActivity.this, Payment.class);
 
                 startActivity(i);
             }
         });
 
 
-
         db.collection("Rides").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
 
+                accountModels.clear();
 
                 for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
 
@@ -82,52 +83,54 @@ public class AccountActivity extends AppCompatActivity {
                     if (doc.getReference().getId().contains(mUid)) {
 
 
-                        Log.i("totalAmount before multiplication",totalAmount+"");
-                      doc.getReference().collection("Booked By").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                           @Override
-                           public void onSuccess(QuerySnapshot qDocSnapshot) {
+                        Log.i("totalAmount before multiplication", totalAmount + "");
+                        doc.getReference().collection("Booked By").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                            @Override
+                            public void onSuccess(QuerySnapshot qDocSnapshot) {
 
-                               if (doc.get("rideCost") instanceof String) {
+                                if (doc.get("rideCost") instanceof String) {
 
-                                   totalAmount = Double.parseDouble(doc.getString("rideCost"));
+                                    totalAmount = Double.parseDouble(doc.getString("rideCost")) * 0.12;
 
-                               } else {
-                                   totalAmount = doc.getDouble("rideCost");
-                               }
-                               totalAmount = totalAmount * qDocSnapshot.getDocuments().size();
-                               Log.i("totalAmount during multiplication",totalAmount+"");
-                               Log.i("totalSize during multiplication",qDocSnapshot.getDocuments().size()+"");
+                                } else {
+                                    totalAmount = doc.getDouble("rideCost") * 0.12;
+                                }
+                                totalAmount = totalAmount * qDocSnapshot.getDocuments().size();
+                                DecimalFormat decimalFormat = new DecimalFormat("#.##");
+                                totalAmount = Double.valueOf(decimalFormat.format(totalAmount));
 
-
-                               Log.i("totalAmount after multiplication",totalAmount+"");
-
-
-                               overallAmount = overallAmount+totalAmount;
-
-                               accountModels.add(new accountModel(
-                                       doc.getString("startLocation"),
-                                       doc.getString("endLocation"),
-                                       totalAmount));
+                                Log.i("totalAmount during multiplication", totalAmount + "");
+                                Log.i("totalSize during multiplication", qDocSnapshot.getDocuments().size() + "");
 
 
-                               //Activate payment parameters
-                               makeOverallPaymentBtn.setEnabled(true);
-                               overallAmountView.setText("GHC"+overallAmount.toString());
+                                Log.i("totalAmount after multiplication", totalAmount + "");
 
 
-                               paymentAccountAdapter = new paymentAccountAdapter(AccountActivity.this, accountModels);
-                               recyclerView.setLayoutManager(new LinearLayoutManager(AccountActivity.this, LinearLayoutManager.VERTICAL, false));
-                               recyclerView.setAdapter(paymentAccountAdapter);
+                                overallAmount = overallAmount + totalAmount;
 
-                           }
-                       });
+                                accountModels.add(new accountModel(
+                                        doc.getString("startLocation"),
+                                        doc.getString("endLocation"),
+                                        totalAmount,
+                                        doc.getReference().getId()));
+
+
+                                //Activate payment parameters
+                                makeOverallPaymentBtn.setEnabled(true);
+                                overallAmountView.setText("GHC" + overallAmount.toString());
+
+                                paymentAccountAdapter = new paymentAccountAdapter(AccountActivity.this, accountModels);
+                                recyclerView.setLayoutManager(new LinearLayoutManager(AccountActivity.this, LinearLayoutManager.VERTICAL, false));
+                                recyclerView.setAdapter(paymentAccountAdapter);
+
+                            }
+                        });
 
 
                     }
 
 
                 }
-
 
 
             }

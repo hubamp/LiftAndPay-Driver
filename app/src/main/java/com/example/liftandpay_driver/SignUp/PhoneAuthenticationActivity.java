@@ -82,7 +82,6 @@ public class PhoneAuthenticationActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
 
-
                                 if (task.isSuccessful()) {
 
                                     HashMap<String,Object> data = new HashMap<>();
@@ -98,7 +97,6 @@ public class PhoneAuthenticationActivity extends AppCompatActivity {
 
                                                 Intent intent = new Intent(PhoneAuthenticationActivity.this, Dashboard.class);
                                                 startActivity(intent);
-                                                finish();
                                             }
                                             else {
 
@@ -106,8 +104,8 @@ public class PhoneAuthenticationActivity extends AppCompatActivity {
 
                                                 Intent intent = new Intent(PhoneAuthenticationActivity.this, Dashboard.class);
                                                 startActivity(intent);
-                                                finish();
                                             }
+                                            finish();
                                         }
                                     });
                                 }
@@ -177,7 +175,7 @@ public class PhoneAuthenticationActivity extends AppCompatActivity {
                     PhoneAuthOptions options =
                             PhoneAuthOptions.newBuilder(mAuth)
                                     .setPhoneNumber(phoneNumber)       // Phone number to verify
-                                    .setTimeout(90L, TimeUnit.SECONDS) // Timeout and unit
+                                    .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
                                     .setActivity(PhoneAuthenticationActivity.this)                 // Activity (for callback binding)
                                     .setCallbacks(mCallbacks)          // OnVerificationStateChangedCallbacks
                                     .build();

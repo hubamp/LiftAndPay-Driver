@@ -7,7 +7,6 @@
     android:keepScreenOn="true"
     >
 
-
     <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/mapView"
         android:layout_width="match_parent"
@@ -20,7 +19,6 @@
         android:background="@color/white"
         android:orientation="vertical"
         android:padding="8dp">
-
 
 
             <TextView

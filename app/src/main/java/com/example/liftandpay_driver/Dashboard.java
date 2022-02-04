@@ -126,15 +126,21 @@ public class Dashboard extends AppCompatActivity {
          menuBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Dashboard.this, MenuListActivity.class);
+              /*  Intent intent = new Intent(Dashboard.this, MenuListActivity.class);
                 startActivity(intent);
-                overridePendingTransition(0, 0);
+                overridePendingTransition(0, 0);*/
+
+
+                Intent intent = new Intent(Dashboard.this, PhoneAuthenticationActivity.class);
+                startActivity(intent);
+                mAuth.signOut();
+                finish();
 
             }
         });
 
 
-        /*imageMenu.setOnClickListener(view ->{
+       /* imageMenu.setOnClickListener(view ->{
             Intent intent = new Intent(Dashboard.this, PhoneAuthenticationActivity.class);
             startActivity(intent);
             mAuth.signOut();

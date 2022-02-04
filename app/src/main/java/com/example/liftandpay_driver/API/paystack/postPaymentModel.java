@@ -1,13 +1,21 @@
 package com.example.liftandpay_driver.API.paystack;
 
+import com.google.gson.annotations.SerializedName;
+
+import java.util.HashMap;
+
 public class postPaymentModel {
 
-    private String status;
-    private double message;
-    public class theData{
+
+    private boolean status;
+    private String message;
+    private HashMap<String,String> data = new HashMap<>();
+
+    protected class dataModel {
         private String authorization_url;
         private String access_code;
         private String reference;
+
 
         public String getAuthorization_url() {
             return authorization_url;
@@ -22,25 +30,39 @@ public class postPaymentModel {
         }
     }
 
-    public String getStatus() {
+    postPaymentModel(){
+
+    }
+
+    public boolean isStatus() {
         return status;
     }
 
-    public double getMessage() {
+    public String getMessage() {
         return message;
     }
 
-    public theData getData(){
-        return new theData();
+    public HashMap<String,String> getData(){
+        return data;
     }
+
+   /* public dataModel getData() {
+        return new dataModel();
+    }*/
+
     /*
     *
+ [
+    {
         "status": true,
         "message": "Authorization URL created",
         "data": {
-            "authorization_url": "https://checkout.paystack.com/oyty6b35f6yy8y8",
-            "access_code": "oyty6b35f6yy8y8",
-            "reference": "g3ffp0igez"
+            "authorization_url": "https://checkout.paystack.com/om8olhzyvia3f9v",
+            "access_code": "om8olhzyvia3f9v",
+            "reference": "q4vpfmn00k"
+        }
+    }
+ ]
     * */
 
 }
