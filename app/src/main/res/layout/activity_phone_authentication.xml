@@ -4,87 +4,54 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#083D56F5"
-    tools:context=".SignUp.PhoneAuthenticationActivity">
+    android:id="@+id/maincontainer"
+    tools:context=".SignUp.PhoneAuthenticationActivity"
+    android:background="@color/extraFadedBlue">
 
-    <View
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:background="@drawable/wave_view"
-        android:rotation="180"
-        android:layout_alignParentTop="true"
-        />
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@color/extraFadedBlue"
+        android:elevation="1dp"
+        android:padding="5dp"
+        android:text="Hello there... \nLiftandPay is here to help you subsidize your everyday fuel cost"
+        android:textColor="@color/primaryColors"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/welcomeAnim"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:layout_above="@id/footer"
+        android:layout_centerInParent="true"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/welcome"
+        app:tint="@color/primaryColors" />
+
+
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:background="#083D56F5"
-        android:padding="10dp"
-        android:gravity="center"
-        android:orientation="vertical">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:textSize="20sp"
-        android:layout_marginBottom="15dp"
-        android:text="Phone Authentication"/>
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:background="@color/white"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/footer">
 
-        <LinearLayout
+        <Button
+            android:id="@+id/signin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <EditText
-                android:id="@+id/countryCodeId"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:inputType="phone"
-                android:maxLength="3"
-                android:hint="+233"/>
-
-            <EditText
-                android:id="@+id/phoneNumberId"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingStart="15dp"
-                android:inputType="phone"
-                android:maxLength="10"
-                android:minWidth="190dp"
-                android:hint="Number"/>
-
-        </LinearLayout>
-        <ProgressBar
-            android:id="@+id/verifyProgressId"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            />
-
-    <Button
-        android:id="@+id/verifyPhoneNumberBtnId"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="verify"/>
-
-    <TextView
-        android:id="@+id/infoText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Make sure you have enough SMS credit"
-        android:textColor="@color/primaryColors"/>
-
+            android:text="signin"/>
 
     </LinearLayout>
-
-
-<View
-    android:layout_width="match_parent"
-    android:layout_height="80dp"
-    android:background="@drawable/wave_view"
-    android:layout_alignParentBottom="true"
-    />
-
 
 </RelativeLayout>

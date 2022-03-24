@@ -18,6 +18,16 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <style name="FirebaseUITheme" parent="FirebaseUI">
+        <item name="colorPrimary">@color/primaryColors</item>
+        <item name="colorPrimaryVariant">@color/primaryColors</item>
+        <item name="colorAccent">@color/fadedBlue</item>
+        <item name="android:colorBackground">@color/white</item>
+
+        <!-- On API 21+ you can use android:statusBarColor -->
+        <item name="colorPrimaryDark">@color/primaryColors</item>
+    </style>
+
 <!--    Theme For SplashScreen-->
     <style name="Theme.Transparent" parent="Theme.MaterialComponents.Light.NoActionBar">
 <!--        <item name="android:windowShowAnimation"-->
