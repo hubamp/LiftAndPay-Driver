@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.LnPay.driver.R;
 import com.LnPay.driver.chats.ChatList;
@@ -60,6 +61,7 @@ public class MenuListActivity extends AppCompatActivity {
         messageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                Toast.makeText(MenuListActivity.this,"Coming soon", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(MenuListActivity.this, ChatList.class);
                 startActivity(intent);
             }

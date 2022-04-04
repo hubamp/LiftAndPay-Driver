@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.LnPay.driver.Dashboard;
 import com.LnPay.driver.R;
+import com.airbnb.lottie.LottieAnimationView;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -35,6 +36,8 @@ public class PhoneAuthenticationActivity extends AppCompatActivity {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private Button signinBtn;
 
+    private LottieAnimationView welcomeLottie;
+
     FirebaseStorage storage = FirebaseStorage.getInstance();
 
 
@@ -44,13 +47,14 @@ public class PhoneAuthenticationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_phone_authentication);
 
 
-
-
+        welcomeLottie = findViewById(R.id.welcomeAnim);
 
         signinBtn = findViewById(R.id.signin);
         signinBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                welcomeLottie.pauseAnimation();
                 startSignIn();
             }
         });
@@ -117,10 +121,17 @@ public class PhoneAuthenticationActivity extends AppCompatActivity {
                         new AuthUI.IdpConfig.PhoneBuilder().build()
                 ))
                 .setTheme(R.style.FirebaseUITheme)
+                .setTosAndPrivacyPolicyUrls("https://liftandpay.com/privacy-policies/","https://liftandpay.com/privacy-policies/")
                 .build();
 
         signInLauncher.launch(signInIntent);
 
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        welcomeLottie.playAnimation();
+    }
 }

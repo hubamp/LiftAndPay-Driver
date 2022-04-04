@@ -5,6 +5,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.LnPay.driver.R;
@@ -27,6 +29,7 @@ public class RideHistoryList extends AppCompatActivity {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private RecyclerView recyclerView;
+    private TextView noHistoryTextId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +37,7 @@ public class RideHistoryList extends AppCompatActivity {
         setContentView(R.layout.activity_ride_history);
 
         recyclerView = findViewById(R.id.recyclerview);
+        noHistoryTextId = findViewById(R.id.noHistoryTextId);
 
         CollectionReference rideCollection = db.collection("Rides");
 
@@ -80,6 +84,14 @@ public class RideHistoryList extends AppCompatActivity {
                                 recyclerView.setLayoutManager(new LinearLayoutManager(RideHistoryList.this, LinearLayoutManager.VERTICAL, false));
                                 recyclerView.setAdapter(historyAdapter);
 
+                                if (historyModels.size()==0)
+                                {
+                                    noHistoryTextId.setVisibility(View.VISIBLE);
+                                }
+                                else
+                                {
+                                    noHistoryTextId.setVisibility(View.GONE);
+                                }
 
                             }
                         });

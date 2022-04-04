@@ -23,6 +23,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:id="@+id/topViewId"
+        android:padding="10dp"
         android:background="@color/primaryColors"
         android:orientation="horizontal">
 
@@ -45,18 +46,6 @@
             android:textColor="@color/white"
             android:text="Pending rides"/>
 
-        <ImageButton
-            android:id="@+id/menu_spinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:clickable="true"
-            android:focusable="true"
-            android:src="@drawable/btn_menu"
-            android:backgroundTint="@color/primaryColors"
-            android:layout_marginHorizontal="5dp"
-            android:background="@drawable/ripplebtn"
-            app:tint="@color/white" />
 
 
     </LinearLayout>

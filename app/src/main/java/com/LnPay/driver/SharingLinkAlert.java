@@ -108,26 +108,9 @@ public class SharingLinkAlert extends AlertDialog.Builder {
 
     public void build() {
 
-     /*   if (
-                purpose == null ||
-                        theDriverId == null ||
-                        startLat == 0.0 ||
-                        startl
-        )*/
-
         baseLink = baseLink +
                 "p='" + purpose + "'" + "," +
-//                "DRID='" + theDriverId + "'" + "," +
-//                "startLat='" + startLat + "'" + "," +
-//                "startLon='" + startLon + "'" + "," +
-//                "endLat='" + endLat + "'" + "," +
-//                "endLon='" + endLon + "'" + "," +
-                "RIID='" + theRideId + "'" + ","
-//                "startTime='" + startTime + "'" + "," +
-//                "journey='" + journey + "'" + "," +
-//                "distance='" + distance + "'" + "," +
-//                "driverName='" + driverName + "'"
-        ;
+                "RIID='" + theRideId + "'" + ",";
 
         baseLink = baseLink.replace(" ", "%20");
         generatedLink.setText(baseLink);

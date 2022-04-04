@@ -11,44 +11,44 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:elevation="15dp"
-        android:layout_margin="5dp"
+        android:layout_margin="2dp"
         >
 
     <View
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_alignParentTop="true"
-        android:elevation="50dp"
+        android:background="@color/primaryColors"
+
         />
 
         <ImageView
             android:id="@+id/btn_backward_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
             android:src="@drawable/btn_back"
             android:background="@drawable/ripple"
             android:clickable="true"
             android:layout_centerVertical="true"
+            app:tint="@color/primaryColors"
+            android:foregroundTint="@color/white"
+            android:tintMode="multiply"
+            android:backgroundTint="@color/white"
             android:focusable="true"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ride Details"
-            android:textColor="@color/primaryColors"
             android:layout_centerInParent="true"
-            android:textSize="22sp"/>
+            android:text="Ride Details"
+            android:textColor="@color/white"
+            android:textSize="22sp" />
 
 
 
     </RelativeLayout>
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="@color/black"
-        android:layout_below="@id/topViewId"
-        android:contentDescription="TODO" />
 
 
     <ScrollView
@@ -175,7 +175,8 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingVertical="8dp"
-            android:background="@color/fadedBlue"
+            android:background="@color/white"
+            android:elevation="10dp"
             android:gravity="center">
 
             <LinearLayout

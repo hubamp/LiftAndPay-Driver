@@ -56,7 +56,7 @@ public class chatListAdapter extends RecyclerView.Adapter<chatListAdapter.chatVi
         holder.time.setText(new SimpleDateFormat("K:mm a").format(chatListModels.get(position).getTime().toDate()));
 
 
-        holder.layout.setOnClickListener(new View.OnClickListener() {
+      /*  holder.layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String passengerId = chatListModels.get(holder.getAdapterPosition()).getPassengerId();
@@ -82,7 +82,7 @@ public class chatListAdapter extends RecyclerView.Adapter<chatListAdapter.chatVi
                 intent.putExtra("passengerProfile",passengerProfile);
                 context.startActivity(intent);
             }
-        });
+        });*/
     }
 
     @Override

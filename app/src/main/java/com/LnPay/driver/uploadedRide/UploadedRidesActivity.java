@@ -49,7 +49,7 @@ public class UploadedRidesActivity extends AppCompatActivity {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String theDriverId = mAuth.getUid();
     private CoordinatorLayout coordinatorLayout;
-    private ImageButton menuBtn;
+
     private uploadedRidesModel uploadedRidesModel;
     private UploadedRidesAdapter uploadedRidesAdapter;
     int numberOfBookedPassengers = 0;
@@ -70,7 +70,7 @@ public class UploadedRidesActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerViewId);
         uploadBtn = findViewById(R.id.addRidebtnId);
         mainLayout = findViewById(R.id.mainLayout);
-        menuBtn = findViewById(R.id.menu_spinner);
+
         noUploadTxt = findViewById(R.id.noUplaodTxt);
         backBtn = findViewById(R.id.backButton);
 
@@ -93,20 +93,6 @@ public class UploadedRidesActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(UploadedRidesActivity.this, UploadRideActivity.class);
                 startActivity(intent);
-            }
-        });
-
-        menuBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                 Intent intent = new Intent(UploadedRidesActivity.this, PhoneAuthenticationActivity.class);
-                startActivity(intent);
-                mAuth.signOut();
-                finish();
-               /* Intent intent = new Intent(UploadedRidesActivity.this, MenuListActivity.class);
-                startActivity(intent);
-                overridePendingTransition(0, 0);*/
-
             }
         });
 

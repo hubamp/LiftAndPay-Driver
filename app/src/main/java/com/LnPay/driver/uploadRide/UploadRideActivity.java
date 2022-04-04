@@ -167,8 +167,15 @@ public class UploadRideActivity extends AppCompatActivity {
         db.collection("Driver").document(mAuth.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
-                myName = task.getResult().getString("Name");
-                myPlate = task.getResult().getString("Numberplate");
+               
+                if (task.isSuccessful()) {
+                    myName = task.getResult().getString("Name");
+                    myPlate = task.getResult().getString("Numberplate");
+                }
+                else {
+                    finish();
+                    Toast.makeText(UploadRideActivity.this, "Could not open", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

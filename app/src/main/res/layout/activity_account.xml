@@ -18,29 +18,29 @@
 
         <ImageView
             android:id="@+id/back_arrow"
-            android:layout_width="47dp"
-            android:layout_height="34dp"
+            android:layout_width="30dp"
+            android:layout_height="25dp"
             android:layout_alignParentStart="true"
             android:layout_marginStart="1dp"
-            android:scrollbarSize="10dp"
+            android:background="@drawable/ripple"
+            android:backgroundTint="@color/white"
             android:clickable="true"
             android:focusable="true"
-            android:background="@drawable/ripple"
-            android:backgroundTint="@color/transparentColor"
-            android:src="@drawable/btn_back"
-            app:tint="@color/white" />
+            android:src="@drawable/btn_back" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-           android:gravity="center"
-            android:layout_centerHorizontal="true"
+
             android:layout_toEndOf="@+id/back_arrow"
+            android:gravity="center_vertical"
+            android:layout_centerVertical="true"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
             android:text="Payment Account"
             android:textColor="#FAF6F6"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textSize="15sp" />
 
     </RelativeLayout>
 
@@ -51,8 +51,8 @@
         android:id="@+id/amountLeftLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/extraFadedBlue"
-        android:layout_below="@id/appBar">
+        android:layout_below="@id/appBar"
+        android:background="@color/extraFadedBlue">
 
         <TextView
             android:id="@+id/overallAmount"

@@ -29,14 +29,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LiftAndPayDriver">
         <activity
-            android:name="com.LnPay.driver.accounts.Payment"
+            android:name=".carBrand.CarBrandsSelection"
+            android:exported="false" />
+        <activity
+            android:name=".accounts.Payment"
             android:exported="true" />
         <activity
-            android:name="com.LnPay.driver.History.RideHistoryList"
+            android:name=".History.RideHistoryList"
             android:exported="true" />
-        <activity android:name="com.LnPay.driver.Dashboard" />
+        <activity android:name=".Dashboard" />
         <activity
-            android:name="com.LnPay.driver.SplashScreen"
+            android:name=".SplashScreen"
             android:theme="@style/Theme.Transparent">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -44,18 +47,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.LnPay.driver.pAPickUpLocation.ViewPickUpLocation" />
-        <activity android:name="com.LnPay.driver.accounts.AccountActivity" />
-        <activity android:name="com.LnPay.driver.search.SearchActivity" />
-        <activity android:name="com.LnPay.driver.uploadedRide.RequestedPassenger.RequestedPassengerProfile" />
-        <activity android:name="com.LnPay.driver.chats.ChatList" />
-        <activity android:name="com.LnPay.driver.History.RideHistoryInfo"/>
-        <activity android:name="com.LnPay.driver.chats.ChatActivity" />
-        <activity android:name="com.LnPay.driver.uploadRide.ViewMapActivity" />
-        <activity android:name="com.LnPay.driver.menu.ProfileActivity" />
-        <activity android:name="com.LnPay.driver.menu.MenuListActivity">
-
-        </activity>
+        <activity android:name=".pAPickUpLocation.ViewPickUpLocation" />
+        <activity android:name=".accounts.AccountActivity" />
+        <activity android:name=".search.SearchActivity" />
+        <activity android:name=".uploadedRide.RequestedPassenger.RequestedPassengerProfile" />
+        <activity android:name=".chats.ChatList" />
+        <activity android:name=".History.RideHistoryInfo" />
+        <activity android:name=".chats.ChatActivity" />
+        <activity android:name=".uploadRide.ViewMapActivity" />
+        <activity android:name=".menu.ProfileActivity" />
+        <activity android:name=".menu.MenuListActivity"></activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -69,13 +70,13 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name="com.LnPay.driver.uploadedRide.UploadedRideMap"
+            android:name=".uploadedRide.UploadedRideMap"
             android:label="@string/title_activity_uploaded_ride_map" />
-        <activity android:name="com.LnPay.driver.uploadedRide.UploadedRidesActivity" />
-        <activity android:name="com.LnPay.driver.UploadDetailsActivity_2" />
-        <activity android:name="com.LnPay.driver.UploadDetailsActivity_3" />
-        <activity android:name="com.LnPay.driver.uploadRide.UploadRideActivity" />
-        <activity android:name="com.LnPay.driver.SignUp.PhoneAuthenticationActivity" />
+        <activity android:name=".uploadedRide.UploadedRidesActivity" />
+        <activity android:name=".UploadDetailsActivity_2" />
+        <activity android:name=".UploadDetailsActivity_3" />
+        <activity android:name=".uploadRide.UploadRideActivity" />
+        <activity android:name=".SignUp.PhoneAuthenticationActivity" />
 
         <uses-library
             android:name="com.google.android.wearable"

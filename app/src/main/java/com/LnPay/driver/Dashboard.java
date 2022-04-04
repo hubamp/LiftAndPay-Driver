@@ -134,7 +134,6 @@ public class Dashboard extends AppCompatActivity {
         requestedPassengerLayout = findViewById(R.id.requestedPassengers);
 
         /*Library Testing Implementation starts here*/
-
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(LnPayAPI_Interface.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -159,11 +158,11 @@ public class Dashboard extends AppCompatActivity {
                      {
                          if (drivers.get(i).getId().equals("1"))
                          {
-                             Log.i("driverInterfaceLog",drivers.get(i).getPhone_number());
+                             Log.i("driverInterfaceLog",drivers.get(i).getPhone_number()+" Answer");
                          }
                      }
                      Log.i("driverInterfaceLog","Received Here");
-                     Log.i("driverInterfaceLog",response.body().getDrivers().indexOf(di)+"");
+                     Log.i("driverInterfaceLog",response.body().getDrivers().indexOf(di)+"yeah");
 
                  }
 

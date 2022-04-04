@@ -1,10 +1,14 @@
 package com.LnPay.liftandpay_api;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.sql.Timestamp;
 
 public class driver {
 
+    @SerializedName("id")
     private String id;
+
     private String name;
     private String email;
     private String car_image;

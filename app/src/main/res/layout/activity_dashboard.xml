@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:layout_weight="1"
-            android:text="Dashboard"
+            android:text="LiftandPay"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -111,7 +111,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerInParent="true"
                     android:background="@drawable/bkg_left_rounded_square"
-                    android:backgroundTint="@color/extraFadedBlue"
+                    android:backgroundTint="@color/white"
                     android:visibility="visible">
 
                     <ImageView
@@ -120,7 +120,7 @@
                         android:layout_height="40dp"
                         android:layout_toEndOf="@id/mainRideUpload001"
                         android:background="@drawable/ic_circle"
-                        android:backgroundTint="@color/success"
+                        android:backgroundTint="@color/primaryColors"
                         android:elevation="100dp"
                         android:padding="5dp"
                         android:src="@drawable/btn_back"

@@ -57,7 +57,7 @@
                 android:gravity="center"
                 android:orientation="horizontal">
 
-                <LinearLayout style="@style/ParentLayoutForCarImages">
+                <LinearLayout style="@style/ShapeAppearanceOverlay.MaterialAlertDialog.Material3">
 
                     <TextView
                         style="@style/TextViewForCarImages"

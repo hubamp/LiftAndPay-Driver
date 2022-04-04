@@ -10,14 +10,18 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.LnPay.driver.R;
+import com.LnPay.driver.carBrand.CarBrandsSelection;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -42,8 +46,8 @@ import timber.log.Timber;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    private EditText name, email, phone, about, carBrand, carPlate, carColor,numberOfSeats;
-    private TextView mainName;
+    private EditText name, email, phone, about, carPlate, carColor,numberOfSeats;
+    private TextView mainName,carBrand;
     private String mUID = FirebaseAuth.getInstance().getUid();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -52,6 +56,8 @@ public class ProfileActivity extends AppCompatActivity {
     private ImageView mainCarImage,sideCarImage;
 
     private Button editBtn;
+
+    private Spinner carSpinner;
 
     private StorageReference profileImageRef = storage.getReference().child("Driver").child(mUID).child("profile.png");
     private StorageReference mainCarImageRef = storage.getReference().child("Driver").child(mUID).child("main.png");
@@ -80,6 +86,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         mainCarImage = findViewById(R.id.mainCarId);
         sideCarImage = findViewById(R.id.sideCarId);
+        carSpinner = findViewById(R.id.carSpinner);
 
         profileImage.setDrawingCacheEnabled(true);
         profileImage.buildDrawingCache();
@@ -93,6 +100,33 @@ public class ProfileActivity extends AppCompatActivity {
 
         toggleEdit(true);
 
+
+        ArrayAdapter<CharSequence> adapter= ArrayAdapter.createFromResource(this, R.array.carBrands, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
+        carSpinner.setAdapter(adapter);
+
+        carSpinner.setPrompt("Car Brands");
+
+        carSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                carBrand.setText(adapterView.getSelectedItem().toString());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        carBrand.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ProfileActivity.this, CarBrandsSelection.class);
+                startActivity(intent);
+//                carSpinner.performClick();
+            }
+        });
 
 
         editBtn.setOnClickListener(new View.OnClickListener() {
@@ -160,7 +194,7 @@ public class ProfileActivity extends AppCompatActivity {
                 );
 
                 if (documentSnapshot.contains("About")) about.setText(documentSnapshot.getString("About"));
-                if (documentSnapshot.contains("Car Model")) carBrand.setText(documentSnapshot.getString("Car Model"));
+                if (documentSnapshot.contains("Car Model"))  carBrand.setText(documentSnapshot.getString("Car Model"));
                 if (documentSnapshot.contains("Car color")) carColor.setText(documentSnapshot.getString("Car color"));
                 if (documentSnapshot.contains("Numberplate")) carPlate.setText(documentSnapshot.getString("Numberplate"));
                 if (documentSnapshot.contains("Number of Seats")) numberOfSeats.setText(documentSnapshot.getString("Number of Seats"));
@@ -252,7 +286,7 @@ public class ProfileActivity extends AppCompatActivity {
         email.setEnabled(editable);
         about.setEnabled(editable);
         name.setEnabled(editable);
-        carBrand.setEnabled(editable);
+//        carBrand.setEnabled(editable);
         carColor.setEnabled(editable);
         numberOfSeats.setEnabled(editable);
 
