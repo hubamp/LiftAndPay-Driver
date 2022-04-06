@@ -31,6 +31,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -41,6 +42,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 import timber.log.Timber;
 
@@ -62,6 +64,7 @@ public class ProfileActivity extends AppCompatActivity {
     private StorageReference profileImageRef = storage.getReference().child("Driver").child(mUID).child("profile.png");
     private StorageReference mainCarImageRef = storage.getReference().child("Driver").child(mUID).child("main.png");
     private StorageReference otherCarImageRef = storage.getReference().child("Driver").child(mUID).child("otherImage.png");
+    private final int BRAND_SEARCH_CODE =419;
 
 
 
@@ -105,25 +108,12 @@ public class ProfileActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
         carSpinner.setAdapter(adapter);
 
-        carSpinner.setPrompt("Car Brands");
-
-        carSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                carBrand.setText(adapterView.getSelectedItem().toString());
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
 
         carBrand.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(ProfileActivity.this, CarBrandsSelection.class);
-                startActivity(intent);
+                startActivityIfNeeded(intent, BRAND_SEARCH_CODE );
 //                carSpinner.performClick();
             }
         });
@@ -388,6 +378,13 @@ public class ProfileActivity extends AppCompatActivity {
                 });
               /*  driverInfoPreferences.edit().putString("TheSideImageString", Arrays.toString(datas)).apply();*/
 
+            }
+        }
+
+
+        if (requestCode == 419) {
+            if (data!=null){
+                carBrand.setText(data.getStringExtra("theSelectedBrand"));
             }
         }
     }

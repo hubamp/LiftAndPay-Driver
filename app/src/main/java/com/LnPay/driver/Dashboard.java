@@ -506,6 +506,7 @@ public class Dashboard extends AppCompatActivity {
     }
 
 
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -518,9 +519,14 @@ public class Dashboard extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
 
+        startNotificationWorker(Dashboard.this);
+
         HashMap<String, Object> data = new HashMap<>();
         data.put("LastSeen", new Timestamp(new Date()));
         db.collection("Driver")
                 .document(mAuth.getUid()).update(data);
     }
+
+
+
 }

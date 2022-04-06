@@ -7,4 +7,8 @@ public class carBrandItem {
     carBrandItem(String carBrand){
         this.carBrand = carBrand;
     }
+
+    public String getCarBrand() {
+        return carBrand;
+    }
 }
