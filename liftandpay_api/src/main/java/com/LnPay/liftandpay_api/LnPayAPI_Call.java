@@ -34,6 +34,11 @@ public class LnPayAPI_Call extends Observable {
             @Override
             public void onResponse(Call<driverModel> call, Response<driverModel> response)
             {
+                try {
+                    response.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 driver di = new driver();
                 di.setId("1");
 

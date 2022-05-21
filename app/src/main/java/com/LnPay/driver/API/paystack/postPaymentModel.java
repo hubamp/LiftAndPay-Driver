@@ -1,7 +1,10 @@
 package com.LnPay.driver.API.paystack;
 
+import androidx.annotation.Keep;
+
 import java.util.HashMap;
 
+@Keep
 public class postPaymentModel {
 
 

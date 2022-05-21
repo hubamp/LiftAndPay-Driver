@@ -1,6 +1,5 @@
 package com.LnPay.driver.accounts;
 
-import static com.LnPay.driver.API.paystack.paystack.authUrl;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.LnPay.driver.API.paystack.paystack;
+import com.LnPay.driver.Dashboard;
+import com.LnPay.driver.History.RideHistoryInfo;
 import com.LnPay.driver.R;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -54,40 +55,25 @@ public class paymentAccountAdapter extends RecyclerView.Adapter<paymentAccountAd
         holder.endLoc.setText(accountModels.get(holder.getAdapterPosition()).getEnd());
         holder.rideCost.setText(totalAmount);
 
-        rideId =accountModels.get(holder.getAdapterPosition()).getRideId();
+        rideId = accountModels.get(holder.getAdapterPosition()).getRideId();
 
         //if there the amount is 0 display paid.
-        if(totalAmount.equals("0.0")){
-            holder.singlePayBtn.setText("Paid");
-            holder.singlePayBtn.setEnabled(false);
-        }
 
+        holder.singlePayBtn.setEnabled(true);
         holder.singlePayBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //When Pay button is clicked, do a post request to paystack and get the authorization url
                 /*This authorization url is what will be required to get to the paystack API */
 
-                db.collection("Driver").document(mUid).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-
-                        documentSnapshot.getString("email");
-
-                    }
-                });
-                myPost = new paystack().
-                        postData(
-                                "hubamp@gmail.com",
-                                accountModels.get(holder.getAdapterPosition()).getTotalAmount(),
-                                mUid,
-                                rideId
-                        );
-
-                dataNullCheck();
-
-//                Log.e("PaymentAdapterAccount", myPost.getAuthUrl());
-
+//                holder.toMapPrograssBar.setVisibility(View.VISIBLE);
+                Intent intent = new Intent(context, RideHistoryInfo.class);
+                intent.putExtra("TheRideId", accountModels.get(holder.getAdapterPosition()).getRideId());
+                intent.putExtra("TheEndLat", accountModels.get(holder.getAdapterPosition()).getEndLat());
+                intent.putExtra("TheEndLon", accountModels.get(holder.getAdapterPosition()).getEndLon());
+                intent.putExtra("TheStLat", accountModels.get(holder.getAdapterPosition()).getStartLat());
+                intent.putExtra("TheStLon", accountModels.get(holder.getAdapterPosition()).getStartLon());
+                context.startActivity(intent);
             }
         });
 
@@ -116,34 +102,4 @@ public class paymentAccountAdapter extends RecyclerView.Adapter<paymentAccountAd
     }
 
 
-    private int time = 1000;
-
-    private void dataNullCheck() {
-
-        if (authUrl == null) {
-
-            if (time < 10000) {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        dataNullCheck();
-                    }
-                }, time + 200);
-                Log.e("payment URL NOT RETRIEVED", "myPost.getAuthUrl()");
-            }
-            else{
-                Toast.makeText(context,"Failed to open",Toast.LENGTH_LONG).show();
-            }
-
-        } else {
-            Log.e("payment URL RETRIEVED", authUrl);
-            Intent i = new Intent(context, Payment.class);
-            i.putExtra(
-                    "authUrl",
-                    authUrl);
-            context.startActivity(i);
-
-            authUrl = null;
-        }
-    }
 }

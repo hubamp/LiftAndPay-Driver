@@ -56,6 +56,8 @@ public class BookedNotificationWorker extends Worker {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
 
+                Log.i("New Book", "Book Notification Started");
+
                 for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges(MetadataChanges.EXCLUDE)) {
                     String theID = new StringFunction(doc.getDocument().getId()).splitStringWithAndGet(" ", 0);
 

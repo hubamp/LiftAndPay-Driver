@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/top_rounded_bkg"
-    android:orientation="vertical">
+    android:layout_marginHorizontal="15dp"
+    android:layout_marginVertical="5dp"
+    android:padding="4dp"
+    android:elevation="5dp"
+    android:background="@color/extraFadedBlueOpaque"
+    android:outlineAmbientShadowColor="@color/primaryColors"
+    android:outlineSpotShadowColor="@color/primaryColors"
+    android:orientation="vertical"
+    tools:targetApi="p">
 
 
     <LinearLayout
@@ -77,21 +85,24 @@
         </LinearLayout>
 
 
-            <TextView
-                android:id="@+id/singlePay"
-                android:layout_alignParentEnd="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Pay"
-                android:layout_gravity="end"
-                android:paddingHorizontal="25dp"
-                android:layout_margin="5dp"
-                android:paddingVertical="6dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="@drawable/ripple"
-                android:backgroundTint="@color/extra_faded_success"
-                android:textColor="@color/success"/>
+        <TextView
+            android:id="@+id/singlePay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="end"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/ripple"
+            android:backgroundTint="@color/extra_faded_success"
+            android:clickable="true"
+            android:focusable="true"
+            android:paddingHorizontal="25dp"
+            android:paddingVertical="6dp"
+            android:text="Details"
+            android:textColor="@color/success" />
 
 
 

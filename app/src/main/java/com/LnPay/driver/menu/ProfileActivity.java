@@ -104,10 +104,34 @@ public class ProfileActivity extends AppCompatActivity {
         toggleEdit(true);
 
 
-        ArrayAdapter<CharSequence> adapter= ArrayAdapter.createFromResource(this, R.array.carBrands, android.R.layout.simple_spinner_item);
+     /*   ArrayAdapter<CharSequence> adapter= ArrayAdapter.createFromResource(this, R.array.carBrands, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
         carSpinner.setAdapter(adapter);
 
+        Toast.makeText(this, adapter.getCount()+"", Toast.LENGTH_SHORT).show();
+
+        Toast.makeText(this, adapter.getItem(6), Toast.LENGTH_SHORT).show();
+
+        for (int i=0;i<adapter.getCount();i++)
+        {
+            Map<String, String> carMap = new HashMap<>();
+            carMap.put("Car",adapter.getItem(i).toString());
+            db.collection("CarBrands").document(adapter.getItem(i).toString()).set(carMap);
+        }
+
+        carSpinner.setPrompt("Car Brands");*/
+
+        carSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                carBrand.setText(adapterView.getSelectedItem().toString());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         carBrand.setOnClickListener(new View.OnClickListener() {
             @Override

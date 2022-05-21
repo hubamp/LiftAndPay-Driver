@@ -5,6 +5,7 @@
     <color name="transparentColor">#00FFFFFF</color>
     <color name="fadedBlue">#333D56F5</color>
     <color name="extraFadedBlue">#0F3D56F5</color>
+    <color name="extraFadedBlueOpaque">#F2F4FF</color>
     <color name="extraFadedRed">#0FF53D3D</color>
     <color name="hintColor">#653D56F5</color>
     <color name="purple_700">#FF3700B3</color>

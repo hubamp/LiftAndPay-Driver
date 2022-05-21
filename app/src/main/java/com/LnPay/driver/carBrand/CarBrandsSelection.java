@@ -41,7 +41,8 @@ public class CarBrandsSelection extends AppCompatActivity {
     private ArrayList<carBrandItem> carBrandItems = new ArrayList<>();
     private carBrandItem carBrandItem;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private TextView closeBtn;
+
+    private TextView closebtn;
 
 
     @Override
@@ -51,12 +52,12 @@ public class CarBrandsSelection extends AppCompatActivity {
 
         carBrandRecyclerView = findViewById(R.id.carBrandRecyclerViewId);
         searchView = findViewById(R.id.carBrandSearchViewID);
-        closeBtn = findViewById(R.id.closBtnId);
 
-        closeBtn.setOnClickListener(V->{
+        closebtn = findViewById(R.id.closBtnId);
+
+        closebtn.setOnClickListener(v->{
             finish();
         });
-
 
         db.collection("CarBrands").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -72,7 +73,6 @@ public class CarBrandsSelection extends AppCompatActivity {
                 carBrandRecyclerView.setLayoutManager(new LinearLayoutManager(CarBrandsSelection.this, LinearLayoutManager.VERTICAL, false));
                 carBrandRecyclerView.setAdapter(carBrandAdapter);
 
-                searchView.setFocusable(true);
                 searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                     @RequiresApi(api = Build.VERSION_CODES.N)
                     @Override

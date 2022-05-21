@@ -1,5 +1,6 @@
 package com.LnPay.driver;
 
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -9,6 +10,9 @@ import androidx.fragment.app.FragmentManager;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -24,6 +28,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.LnPay.driver.API.paystack.paystack;
+import com.LnPay.driver.accounts.Payment;
+import com.LnPay.driver.fastClass.BroadcastNewBooking;
+import com.LnPay.driver.fastClass.BroadcastNewMessage;
 import com.LnPay.liftandpay_api.LnPayAPI_Interface;
 import com.LnPay.liftandpay_api.driver;
 import com.LnPay.liftandpay_api.driverInterface;
@@ -102,6 +110,25 @@ public class Dashboard extends AppCompatActivity {
 
 
     driver thisDriver;
+
+
+    public void scheduledJob() {
+        ComponentName componentName = new ComponentName(this, BroadcastNewBooking.class);
+        JobInfo info = new JobInfo.Builder(200, componentName)
+                .setPersisted(true)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                .setPeriodic(15 * 60 * 1000)
+                .build();
+
+        JobScheduler scheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
+        int resultCode = scheduler.schedule(info);
+        if (resultCode == JobScheduler.RESULT_SUCCESS) {
+            Log.i("BaguvixMain", "scheduledJob: Successful");
+        } else {
+            Log.i("BaguvixMain", "scheduledJob: Unsuccessful");
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -134,6 +161,30 @@ public class Dashboard extends AppCompatActivity {
         requestedPassengerLayout = findViewById(R.id.requestedPassengers);
 
         /*Library Testing Implementation starts here*/
+
+  /*   Thread paymentThread =   new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+       *//*    Log.i("Payment auth Dashboard",s.getAuthUrl()   );
+                Log.e("payment URL RETRIEVED", s.getAuthUrl());
+                Intent i = new Intent(Dashboard.this, Payment.class);
+                i.putExtra(
+                        "authUrl",
+                        s.getAuthUrl());
+                startActivity(i);*//*
+
+                paystack response = new paystack(Dashboard.this);
+                response.checkPendingCharge("yv1nqknhx9",null);
+                Log.i("Charge Looper"," Responded");
+            }
+        });
+
+     paymentThread.start();*/
+/*
+
+
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(LnPayAPI_Interface.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -175,10 +226,15 @@ public class Dashboard extends AppCompatActivity {
              });
 
 //        Log.i("driverInterfaceLog",thisDriver.getPhone_number());
-
+*/
         /*Library Testing Implementation starts here*/
 
-                startNotificationWorker(Dashboard.this);
+
+        /**/
+        scheduledJob();
+        /**/
+
+        startNotificationWorker(Dashboard.this);
 
         menuBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -231,7 +287,7 @@ public class Dashboard extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Dashboard.this, ChatList.class);
-                Toast.makeText(Dashboard.this,"Coming soon", Toast.LENGTH_LONG).show();
+                Toast.makeText(Dashboard.this, "Coming soon", Toast.LENGTH_LONG).show();
 //                startActivity(intent);
             }
         });
@@ -325,104 +381,134 @@ public class Dashboard extends AppCompatActivity {
 
                                     if (value002.exists()) {
                                         Log.e("lastRide", "Ride exists");
-                                        String cost = value002.get("currency") + (String.valueOf(value002.get("rideCost"))) + "/passenger";
-                                        String dateTimes = value002.getString("rideDate") + " " + value002.getString("rideTime");
-                                        String journey = value002.getString("startLocation") + "\n" + "to" + "\n" + value002.getString("endLocation");
-                                        String distance = value002.getString("rideDistance");
-                                        String driverName = value002.getString("driverName");
-                                        double endLon = value002.getDouble("endLon");
-                                        double endLat = value002.getDouble("endLat");
-                                        double stLat = value002.getDouble("startLat");
-                                        double stLon = value002.getDouble("startLon");
+
+                                        if (value002.getString("driversStatus") != null) {
+                                            Log.i("driversStatus","Not null");
+
+                                            if (!value002.getString("driversStatus").equals("Completed")) {
+
+                                              if(!value002.getString("driversStatus").equals("Cancelled"))  {
+                                                    Log.i("driversStatus", "is neither cancelled nor completed");
+
+                                                    String cost = value002.get("currency") + (String.valueOf(value002.get("rideCost"))) + "/passenger";
+                                                    String dateTimes = value002.getString("rideDate") + " " + value002.getString("rideTime");
+                                                    String journey = value002.getString("startLocation") + "\n" + "to" + "\n" + value002.getString("endLocation");
+                                                    String distance = value002.getString("rideDistance");
+                                                    String driverName = value002.getString("driverName");
+                                                    double endLon = value002.getDouble("endLon");
+                                                    double endLat = value002.getDouble("endLat");
+                                                    double stLat = value002.getDouble("startLat");
+                                                    double stLon = value002.getDouble("startLon");
 
 
-                                        shareBtn.setOnClickListener(View -> {
+                                                    shareBtn.setOnClickListener(View -> {
 
-                                            SharingLinkAlert shareDialog = new SharingLinkAlert(Dashboard.this);
+                                                        SharingLinkAlert shareDialog = new SharingLinkAlert(Dashboard.this);
 
-                                            shareDialog.setPurpose("bkng")
-                                                    .setTheDriverId(mUid)
-                                                    .setStartLat(stLat)
-                                                    .setEndLat(endLat)
-                                                    .setStartLon(stLon)
-                                                    .setEndLon(endLon)
-                                                    .setTheRideId(lastAvailableRideId)
-                                                    .setStartTime(dateTimes)
-                                                    .setJourney(journey.replaceAll("\n", " "))
-                                                    .setDistance(distance)
-                                                    .setDriverName(driverName)
-                                                    .build();
+                                                        shareDialog.setPurpose("bkng")
+                                                                .setTheDriverId(mUid)
+                                                                .setStartLat(stLat)
+                                                                .setEndLat(endLat)
+                                                                .setStartLon(stLon)
+                                                                .setEndLon(endLon)
+                                                                .setTheRideId(lastAvailableRideId)
+                                                                .setStartTime(dateTimes)
+                                                                .setJourney(journey.replaceAll("\n", " "))
+                                                                .setDistance(distance)
+                                                                .setDriverName(driverName)
+                                                                .build();
 
-                                        });
-
-
-                                        distanceCost.setText(cost);
-                                        dateTime.setText(dateTimes);
-                                        journeyName.setText(journey);
-
-                                        //View check map
-                                        checkRideBtn.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                Intent intent = new Intent(Dashboard.this, UploadedRideMap.class);
-
-                                                sharedPreferences = getSharedPreferences("ACTIVE_RIDEFILE", MODE_PRIVATE);
-                                                sharedPreferences.edit().putString("TheEndLat", "" + endLat).apply();
-                                                sharedPreferences.edit().putString("TheEndLon", "" + endLon).apply();
-                                                sharedPreferences.edit().putString("TheStLat", "" + stLat).apply();
-                                                sharedPreferences.edit().putString("TheStLon", "" + stLon).apply();
-                                                sharedPreferences.edit().putString("TheRideId", "" + lastAvailableRideId).apply();
-
-
-                                                startActivity(intent);
-                                            }
-                                        });
-
-
-                                        //Listen to requested passengers
-                                        value002.getReference().collection("Booked By").addSnapshotListener(new EventListener<QuerySnapshot>() {
-                                            @Override
-                                            public void onEvent(@Nullable @org.jetbrains.annotations.Nullable QuerySnapshot value003, @Nullable @org.jetbrains.annotations.Nullable FirebaseFirestoreException error) {
-                                                assert value003 != null;
-                                                if (value003.isEmpty()) {
-                                                    Log.e("Request", "Empty");
-                                                    no_Requests.setText("0");
-
-                                                    requestedPassengerLayout.setOnClickListener(view -> {
-                                                        Toast.makeText(Dashboard.this, "No request yet", Toast.LENGTH_SHORT).show();
                                                     });
-                                                } else {
-                                                    Log.e("Request", "Not Empty");
-                                                    no_Requests.setText("" + value003.size());
 
-                                                    for (DocumentChange changes : value003.getDocumentChanges()) {
-                                                        if (changes.getType() == DocumentChange.Type.MODIFIED) {
-                                                            no_Requests.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(Dashboard.this, R.color.success)));
+
+                                                    distanceCost.setText(cost);
+                                                    dateTime.setText(dateTimes);
+                                                    journeyName.setText(journey);
+
+                                                    //View check map
+                                                    checkRideBtn.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            Intent intent = new Intent(Dashboard.this, UploadedRideMap.class);
+
+                                                            sharedPreferences = getSharedPreferences("ACTIVE_RIDEFILE", MODE_PRIVATE);
+                                                            sharedPreferences.edit().putString("TheEndLat", "" + endLat).apply();
+                                                            sharedPreferences.edit().putString("TheEndLon", "" + endLon).apply();
+                                                            sharedPreferences.edit().putString("TheStLat", "" + stLat).apply();
+                                                            sharedPreferences.edit().putString("TheStLon", "" + stLon).apply();
+                                                            sharedPreferences.edit().putString("TheRideId", "" + lastAvailableRideId).apply();
+
+
+                                                            startActivity(intent);
                                                         }
-                                                    }
+                                                    });
 
-                                                    //Setting up click function for the Requested Passengers
-                                                    requestedPassengerLayout.setOnClickListener(view -> {
-                                                        RequestedPassengersSheet requestedPassengersSheet = new RequestedPassengersSheet();
-                                                        FragmentManager manager = getSupportFragmentManager();
 
-                                                        requestedPassengersSheet.setNumberOfRequests(Integer.parseInt(no_Requests.getText().toString()));
-                                                        requestedPassengersSheet.setTheRequestedId(lastAvailableRideId);
-                                                        activeRidesShared = getSharedPreferences("ACTIVE_RIDEFILE", MODE_PRIVATE);
-                                                        activeRidesShared.edit().putString("TheEndLat", String.valueOf(endLat)).apply();
-                                                        activeRidesShared.edit().putString("TheEndLon", String.valueOf(endLon)).apply();
-                                                        activeRidesShared.edit().putString("TheStLat", String.valueOf(stLat)).apply();
-                                                        activeRidesShared.edit().putString("TheStLon", String.valueOf(stLon)).apply();
-                                                        activeRidesShared.edit().putString("TheRideId", lastAvailableRideId).apply();
+                                                    //Listen to requested passengers
+                                                    value002.getReference().collection("Booked By").addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                                        @Override
+                                                        public void onEvent(@Nullable @org.jetbrains.annotations.Nullable QuerySnapshot value003, @Nullable @org.jetbrains.annotations.Nullable FirebaseFirestoreException error) {
+                                                            assert value003 != null;
+                                                            if (value003.isEmpty()) {
+                                                                Log.e("Request", "Empty");
+                                                                no_Requests.setText("0");
 
-                                                        requestedPassengersSheet.show(manager, "null");
+                                                                requestedPassengerLayout.setOnClickListener(view -> {
+                                                                    Toast.makeText(Dashboard.this, "No request yet", Toast.LENGTH_SHORT).show();
+                                                                });
+                                                            } else {
+                                                                Log.e("Request", "Not Empty");
+                                                                no_Requests.setText("" + value003.size());
+
+                                                                for (DocumentChange changes : value003.getDocumentChanges()) {
+                                                                    if (changes.getType() == DocumentChange.Type.MODIFIED) {
+                                                                        no_Requests.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(Dashboard.this, R.color.success)));
+                                                                    }
+                                                                }
+
+                                                                //Setting up click function for the Requested Passengers
+                                                                requestedPassengerLayout.setOnClickListener(view -> {
+                                                                    RequestedPassengersSheet requestedPassengersSheet = new RequestedPassengersSheet();
+                                                                    FragmentManager manager = getSupportFragmentManager();
+
+                                                                    requestedPassengersSheet.setNumberOfRequests(Integer.parseInt(no_Requests.getText().toString()));
+                                                                    requestedPassengersSheet.setTheRequestedId(lastAvailableRideId);
+                                                                    activeRidesShared = getSharedPreferences("ACTIVE_RIDEFILE", MODE_PRIVATE);
+                                                                    activeRidesShared.edit().putString("TheEndLat", String.valueOf(endLat)).apply();
+                                                                    activeRidesShared.edit().putString("TheEndLon", String.valueOf(endLon)).apply();
+                                                                    activeRidesShared.edit().putString("TheStLat", String.valueOf(stLat)).apply();
+                                                                    activeRidesShared.edit().putString("TheStLon", String.valueOf(stLon)).apply();
+                                                                    activeRidesShared.edit().putString("TheRideId", lastAvailableRideId).apply();
+
+                                                                    requestedPassengersSheet.show(manager, "null");
+                                                                });
+                                                            }
+                                                        }
+
                                                     });
                                                 }
+                                              else {
+                                                  Log.i("driversStatus","is either cancelled or completed");
+
+                                                  parentLayout.setVisibility(View.VISIBLE);
+                                                  noRideLayout.setVisibility(View.VISIBLE);
+                                                  rideAvailableLayout.setVisibility(View.INVISIBLE);
+                                                  pendingRideText.setText("Pending Ride");
+                                              }
                                             }
+                                            else {
+                                                Log.i("driversStatus","is either cancelled or completed");
 
-                                        });
+                                                parentLayout.setVisibility(View.VISIBLE);
+                                                noRideLayout.setVisibility(View.VISIBLE);
+                                                rideAvailableLayout.setVisibility(View.INVISIBLE);
+                                                pendingRideText.setText("Pending Ride");
+                                            }
+                                        }
+                                        else {
+                                            Log.i("driversStatus","null");
 
-
+                                        }
                                     } else {
                                         Log.e("lastRide", "does not exists");
                                     }
@@ -486,11 +572,11 @@ public class Dashboard extends AppCompatActivity {
 
 
     static void startNotificationWorker(Context context) {
-        OneTimeWorkRequest bookedNotificationWorker = new OneTimeWorkRequest.Builder(BookedNotificationWorker.class).build();
+        /*OneTimeWorkRequest bookedNotificationWorker = new OneTimeWorkRequest.Builder(BookedNotificationWorker.class).build();
         OneTimeWorkRequest chatNotificationWorker = new OneTimeWorkRequest.Builder(NewChatNotificationWorker.class).build();
 
         WorkManager.getInstance(context).enqueue(bookedNotificationWorker);
-        WorkManager.getInstance(context).enqueue(chatNotificationWorker);
+        WorkManager.getInstance(context).enqueue(chatNotificationWorker);*/
     }
 
     @Override
@@ -506,12 +592,13 @@ public class Dashboard extends AppCompatActivity {
     }
 
 
-
     @Override
     protected void onResume() {
         super.onResume();
         OneTimeWorkRequest checkForSignUpWorker = new OneTimeWorkRequest.Builder(CheckForSignUpWorker.class).build();
         WorkManager.getInstance(Dashboard.this).enqueue(checkForSignUpWorker);
+
+
     }
 
 
@@ -526,7 +613,6 @@ public class Dashboard extends AppCompatActivity {
         db.collection("Driver")
                 .document(mAuth.getUid()).update(data);
     }
-
 
 
 }

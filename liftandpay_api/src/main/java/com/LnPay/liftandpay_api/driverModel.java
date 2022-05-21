@@ -1,10 +1,13 @@
 package com.LnPay.liftandpay_api;
 
+import androidx.annotation.Keep;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
+@Keep
 public class driverModel {
 
     @SerializedName("status")
